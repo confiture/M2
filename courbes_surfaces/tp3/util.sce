@@ -48,4 +48,28 @@ function ecrit_poly_rat(nom_f,L)
   end
   
   mclose(fid)
+endfunction
+
+function creer_fig_b()
+  f = figure();
+  //set(f,"background",8); // fond en blanc
+  //set(f,"axes_size",[500 500]);
+  a=gca();
+  set(a,"auto_clear","off")
+  set(a,"data_bounds",[0,0;100,100])      // bornes des axes en x et y
+  set(a,"margins",[0.05,0.05,0.05,0.05])  // marges du repère dans la fenetre
+  set(a,"axes_visible",["on","on","on"])  // afficher les axes
+  set(a,"box","on")                       
+  set(a,"auto_scale","off")                    
+endfunction
+
+function creer_fig_iso()
+  f = figure();
+  set(f,"background",8); // fond en blanc
+  set(f,"axes_size",[500 500]);
+  a=gca();
+  a.isoview="on"
+  set(a,"margins",[0.05,0.05,0.05,0.05])  // marges du repère dans la fenetre
+  set(a,"axes_visible",["on","on","on"])  // afficher les axes
+  set(a,"box","on")                       
 endfunction  

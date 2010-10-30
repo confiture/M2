@@ -29,6 +29,7 @@ function [C]=courbe_rat(L,t)
   
   C= [C(1,:)./C(3,:) ; C(2,:)./C(3,:)]
 endfunction
+
   
   
    
