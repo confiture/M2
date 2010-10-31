@@ -12,6 +12,17 @@ end
 
 endfunction
 
+function [P2]=coord_homo(P)
+  P2=P
+  P2(1,:)=P2(1,:)./P2(3,:)
+  P2(2,:)=P2(2,:)./P2(3,:)
+endfunction
+
+function [P2]=proj_plan(P)
+  P2=P
+  P2(1,:)=P2(1,:)./P2(3,:)
+  P2(2,:)=P2(2,:)./P2(3,:)
+endfunction
 
 //trace la courbe rationnelle à partir de la matrice L
 //L : matrice de 3 lignes, sur chaque colonne on a (x,y,poids)
@@ -30,6 +41,37 @@ function [C]=courbe_rat(L,t)
   C= [C(1,:)./C(3,:) ; C(2,:)./C(3,:)]
 endfunction
 
+
+//elevation du degre du polygone P, les points de P
+//doivent être en coordonnées homogènes.
+function [P2]=elev_deg(P)
+	n=size(P,2)
+	P2=zeros(3,n+1)
+	P2(:,1)=P(:,1)
+	P2(:,n+1)=P(:,n)
+	vec1=[(1:n-1)./n;(1:n-1)./n ;(1:n-1)./n]
+	vec2=[(n-(1:n-1))./n;(n-(1:n-1))./n;(n-(1:n-1))./n]
+	
+	P2(:,2:n)=vec1.*P(:,1:n-1)+vec2.*P(:,2:n)
+endfunction
+
+//Elevation de degré.
+function [P2]=elev_deg_rat(P)
+  n=size(P,2)
+  P2=zeros(3,n)
   
+  //passage en coordonnées homogènes
+  P2(1,:)=P(1,:).*P(3,:)
+  P2(2,:)=P(2,:).*P(3,:)
+  P2(3,:)=P(3,:)
+  disp(P2)
+  disp("==============")
+  P3=elev_deg(P2)
+  P2=P3
+  
+  disp(P2)
+  P2(1,:)=P2(1,:)./P2(3,:)
+  P2(2,:)=P2(2,:)./P2(3,:)
+endfunction
   
    

@@ -1,5 +1,6 @@
 exec('util.sce')
 exec('courbe_rationnelle.sce')
+exec('nurbs.sce')
 
 //question 1
 function q11()
@@ -59,4 +60,19 @@ function q13()
   xs2png(2,"q13-n2.png") 
 endfunction
 
+function q14()
+  Linit=inputpoly_rat()
+  t=0:0.01:1  
+  C=courbe_rat(Linit,t)
+  plot(Linit(1,:),Linit(2,:),"b")
+  plot(C(1,:),C(2,:))
   
+  L=elev_deg_rat(Linit)
+  C=courbe_rat(L,t)
+  plot(L(1,:),L(2,:),"r")
+  plot(C(1,:),C(2,:))
+  
+  xs2png(0,"q14.png")
+endfunction
+
+
