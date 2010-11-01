@@ -7,7 +7,7 @@ L=[]
 f=figure();  // une nouvelle fenetre
 f.background=8;
 set(gca(),"auto_clear","off")
-//set(gca(),"data_bounds",[0,0;100,100])      // bornes des axes en x et y
+set(gca(),"data_bounds",[0,0;100,100])      // bornes des axes en x et y
 set(gca(),"margins",[0.05,0.05,0.05,0.05])  // marges du repere dans la fenetre
 set(gca(),"axes_visible",["on","on","on"])  // afficher les axes
 set(gca(),"box","on")                       
@@ -34,8 +34,6 @@ for i=1:size(L,2)
   mprintf("poids points numéro %i : ",i)
   L(3,i)=mscanf("%f");
 end
-
-return L
 endfunction
 
 
@@ -52,9 +50,10 @@ endfunction
 
 function creer_fig_b()
   f = figure();
-  //set(f,"background",8); // fond en blanc
-  //set(f,"axes_size",[500 500]);
+  set(f,"background",8); // fond en blanc
+  set(f,"axes_size",[500 500]);
   a=gca();
+  a.isoview="on"
   set(a,"auto_clear","off")
   set(a,"data_bounds",[0,0;100,100])      // bornes des axes en x et y
   set(a,"margins",[0.05,0.05,0.05,0.05])  // marges du repère dans la fenetre

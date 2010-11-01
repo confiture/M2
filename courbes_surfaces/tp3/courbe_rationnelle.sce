@@ -14,8 +14,8 @@ endfunction
 
 function [P2]=coord_homo(P)
   P2=P
-  P2(1,:)=P2(1,:)./P2(3,:)
-  P2(2,:)=P2(2,:)./P2(3,:)
+  P2(1,:)=P2(1,:).*P2(3,:)
+  P2(2,:)=P2(2,:).*P2(3,:)
 endfunction
 
 function [P2]=proj_plan(P)
@@ -24,7 +24,7 @@ function [P2]=proj_plan(P)
   P2(2,:)=P2(2,:)./P2(3,:)
 endfunction
 
-//trace la courbe rationnelle à partir de la matrice L
+//calcule la courbe rationnelle à partir de la matrice L
 //L : matrice de 3 lignes, sur chaque colonne on a (x,y,poids)
 //t : vecteur allant de 0 à 1
 function [C]=courbe_rat(L,t)
@@ -64,14 +64,24 @@ function [P2]=elev_deg_rat(P)
   P2(1,:)=P(1,:).*P(3,:)
   P2(2,:)=P(2,:).*P(3,:)
   P2(3,:)=P(3,:)
-  disp(P2)
-  disp("==============")
+
   P3=elev_deg(P2)
   P2=P3
   
-  disp(P2)
+  //on revient aux coordonnées normales en projetant sur le plan z=1
   P2(1,:)=P2(1,:)./P2(3,:)
   P2(2,:)=P2(2,:)./P2(3,:)
 endfunction
+
+//Normalise les poids de telle sorte à avoir p(1)=p(n)=1
+//Retourne les poids normalisés.
+function [pnorm]=norm_poids(poids)
+  pnorm=poids
+  pnorm=pnorm/pnorm(1)
   
+  wbn=pnorm($)
+  div=ones(1,size(pnorm,2))*wbn
+  div=div.^(ones(1,size(pnorm,2))./(1:size(pnorm,2)))
+  pnorm=pnorm./div
+endfunction
    
