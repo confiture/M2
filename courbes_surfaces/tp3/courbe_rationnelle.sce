@@ -84,4 +84,3 @@ function [pnorm]=norm_poids(poids)
   div=div.^(ones(1,size(pnorm,2))./(1:size(pnorm,2)))
   pnorm=pnorm./div
 endfunction
-   

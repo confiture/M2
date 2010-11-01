@@ -1,6 +1,7 @@
 exec('util.sce')
 exec('courbe_rationnelle.sce')
 exec('nurbs.sce')
+exec('prog3.sce')
 
 //question 1
 function q11()
@@ -110,7 +111,7 @@ function q22(k)
   tau = inputnoeuds(nbNds,XG,XD,Ynoeuds);
   t = sature_noeuds(tau,k)
 		
-  // 3) Calcul et affichage de différents points de la courbe
+  // Calcul et affichage de la courbe
   // par l'algorithme de De Boor-Cox
   C=nurbsB(L,k,t)	
   plot(L(1,:),L(2,:),"o",'Color',[0.5 0.5 0.5])
@@ -138,7 +139,7 @@ function q23()
   nbpts = size(L,2);	
 	
   nbNds = nbpts-k+2;
-  Ynoeuds = 10;XG = 10;XD = 90;//Coord d''affichage de la barre des noeuds
+  Ynoeuds = 10;XG = 10;XD = 90;//Coord d'affichage de la barre des noeuds
   tau = inputnoeuds(nbNds,XG,XD,Ynoeuds);
   t = sature_noeuds(tau,k)
     
@@ -159,4 +160,43 @@ function q23()
   plot(C(1,:), C(2,:), 'Color', [1 0 0], 'LineWidth', 2)
   xs2png(1,'q23-a2b3lambda4.png')
 endfunction
+
+
+function test_prog3()
+  L=lire_liste_Bezier('liste_bezier.txt')
+  L=elev_deg3(L)
+  disp(L)
+  t=fabrique_noeuds(L)
+  disp("=====================")
+  disp(t) 
+endfunction
+
+function q31()
+  k=4
+  LP=lire_liste_Bezier('liste_bezier.txt')
+  [L,t]=conversion(LP)
+  
+  C=nurbsB(L,k,t)
+  plot(L(1,:),L(2,:),"o",'Color',[0.5 0.5 0.5])
+  plot(C(1,:), C(2,:), 'Color', [1 0 0], 'LineWidth', 2)
+  xs2png(0,'q31.png')
+endfunction
+
+function q32()
+  k=4
+  //LP=lire_liste_Bezier('cercle3.txt')
+  LP=lire_liste_Bezier('liste_bezier.txt')
+  [L,t]=conv_simplif(LP)
+  disp(t)
+  disp(L)
+  C=nurbsB(L,k,t)
+  plot(L(1,:),L(2,:),"o",'Color',[0.5 0.5 0.5])
+  plot(C(1,:), C(2,:), 'Color', [1 0 0], 'LineWidth', 2)
+  xs2png(0,'q31.png')
+endfunction
+
+
+
+  
+
   
