@@ -11,44 +11,45 @@
 class image{
 public:
 
-image(int hauteur, int largeur,int valmax);
+  image(int hauteur, int largeur,int valmax);
 
-image(char* nomFichier);
+  image(char* nomFichier);
 
-/**
-*Destructeur.
-*/
-inline ~image(){
-  delete [] buffer;
-}
-   
+  /**
+   *Destructeur.
+   */
+  inline ~image(){
+    delete [] buffer;
+  }
 
-int EcrireImagePGM(char* nomFichier)const;
 
-int& operator()(int i,int j);
+  int EcrireImagePGM(char* nomFichier)const;
 
-int operator()(int i,int j)const;
+  int& operator()(int i,int j);
 
-image LireImagePGM(char* nomFichier);
+  int operator()(int i,int j)const;
 
-void ApplyFilter(int p,float** filter,int pix_i,int pix_j,image & sortie);
+  image LireImagePGM(char* nomFichier);
 
-image* contourX();
+  void ApplyFilter(int p,float** filter,int pix_i,int pix_j,image & sortie);
 
-image* contourY();
+  image* contourX();
 
-image* contourX2();
-image* contourY2();
-image* contourXY();
+  image* contourY();
 
-image* LissageGaussienX2();
-image* LissageGaussienY2();
-image* LissageGaussienXY();
+  image* contourX2();
+  image* contourY2();
+  image* contourXY();
 
-image* GaussFilter();
+  image* LissageGaussienX2();
+  image* LissageGaussienY2();
+  image* LissageGaussienXY();
+
+  image* HarrisFilter(double alpha);
+  image* GaussFilter();
 
 private:
-int largeur, hauteur, valmax;
-int* buffer;
+  int largeur, hauteur, valmax;
+  int* buffer;
 
 };

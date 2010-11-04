@@ -1,22 +1,16 @@
 #include "image.hpp"
 
+void exHarris(char* charfic,double alpha,char* sortiefic){
+  image im(charfic);
+  image* sortie=im.HarrisFilter(alpha);
+  sortie->EcrireImagePGM(sortiefic);
+  delete sortie;
+}
+
 int main(int argc, char* argv[]){
-  
-  
-  image im(argv[1]);
-  
-  // im.EcrireImagePGM("test.pgm");
-  // Exercice 2 //
- 
-  image* Ix=im.contourX2();
-  image* Iy=im.contourY2();
-  image* Ixy=im.contourXY();
-  
-  // Lissage
-  
-  image* imGauss= im.GaussFilter();
-  imGauss->EcrireImagePGM(argv[2]);
-  //image* Iy=im.contourY();
- //contourX(const image & im,int rows,int cols);
+
+  double alpha;
+  sscanf(argv[2],"%f",&alpha);
+  exHarris(argv[1],alpha,argv[3]);
   return 0;
 }
