@@ -12,5 +12,8 @@ int main(int argc, char* argv[]){
   double alpha;
   sscanf(argv[2],"%f",&alpha);
   exHarris(argv[1],alpha,argv[3]);
+
+  //image im(argv[1]);
+  //im.EcrireImagePGM("test.pgm");
   return 0;
 }

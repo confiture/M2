@@ -15,6 +15,8 @@ public:
 
   image(char* nomFichier);
 
+  image(const image & im);
+
   /**
    *Destructeur.
    */
@@ -46,7 +48,10 @@ public:
   image* LissageGaussienXY();
 
   image* HarrisFilter(double alpha);
+
   image* GaussFilter();
+
+  void recadre(int a,int b);
 
 private:
   int largeur, hauteur, valmax;

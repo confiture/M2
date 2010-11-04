@@ -17,6 +17,19 @@ image::image(int hauteur, int largeur,int valmax){
 	this->valmax=valmax;
 }
 
+image::image(const image & im){
+	this->buffer = new int[im.hauteur*im.largeur];
+	this->hauteur=im.hauteur;
+	this->largeur=im.largeur;
+	this->valmax=im.valmax;
+
+	for(int i=0;i<hauteur;i++){
+		for(int j=0;j<largeur;j++){
+			(*this)(i,j)=im(i,j);
+		}
+	}
+}
+
 image::image(char* nomFichier){
 	/* Ouverture */
 	FILE* ifp = fopen(nomFichier,"r");
@@ -84,6 +97,28 @@ int image::EcrireImagePGM(char* nomFichier)const{
 
 }
 
+
+void image::recadre(int a,int b){
+	int min;
+	int max;
+	min=max=(*this)(1,1);
+	for(int i=1;i<hauteur-1;i++){
+		for(int j=1;j<largeur-1;j++){
+			if(min>(*this)(i,j))min=(*this)(i,j);
+			if(max<(*this)(i,j))max=(*this)(i,j);
+		}
+	}
+
+	for(int i=1;i<hauteur;i++){
+		for(int j=1;j<largeur;j++){
+			(*this)(i,j)=((float)(*this)(i,j)-(float)min)/
+				((float)max-(float)min)*(b-a)+a;
+		}
+	}
+
+	valmax=b;
+}
+
 /**
  *On applique le filtre filter de dimensions p*p sur la positions (pix_i,pix_j)
  *à partir de l'image courante sur l'image de sortie passée en paramètre.
@@ -113,13 +148,19 @@ image* image::HarrisFilter(double alpha){
 	image* Iy2g=Iy2->GaussFilter();
 	image* Ixyg=Ixy->GaussFilter();
 
+	Ix2g->EcrireImagePGM("Ix2g.pgm");
+	Iy2g->EcrireImagePGM("Iy2g.pgm");
+	Ixyg->recadre(0,255);
+	Ixyg->EcrireImagePGM("Ixyg.pgm");
+
 	delete gauss;delete Ix2;delete Iy2;delete Ixy;
 
 	image* sortie=new image(hauteur,largeur,0);
 	for(int i=1;i<hauteur;i++){
 		for(int j=1;j<largeur;j++){
-			(*this)(i,j)=(*Ix2g)(i,j)*(*Iy2g)(i,j)-
+			(*this)(i,j)=(*Ix2g)(i,j)*(*Iy2g)(i,j)-(*Ixyg)(i,j)*(*Ixyg)(i,j)-
 				alpha*((*Ix2g)(i,j)+(*Ix2g)(i,j))*((*Ix2g)(i,j)+(*Ix2g)(i,j));
+			if((*this)(i,j)<valmax)valmax=(*this)(i,j);
 		}
 	}
 
