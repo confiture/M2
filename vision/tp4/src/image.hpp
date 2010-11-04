@@ -7,6 +7,9 @@
 #include <iostream>
 #include <fstream>
 #include <streambuf>
+#include <algorithm>
+#include "pixel.hpp"
+#include <list>
 
 class image{
 public:
@@ -48,6 +51,10 @@ public:
   image* LissageGaussienXY();
 
   image* HarrisFilter(double alpha);
+
+  void elim_neg();
+
+  std::list<pixel> best_interest_points(int n);
 
   image* GaussFilter();
 

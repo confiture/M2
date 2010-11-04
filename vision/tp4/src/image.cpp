@@ -150,7 +150,6 @@ image* image::HarrisFilter(double alpha){
 
 	Ix2g->EcrireImagePGM("Ix2g.pgm");
 	Iy2g->EcrireImagePGM("Iy2g.pgm");
-	Ixyg->recadre(0,255);
 	Ixyg->EcrireImagePGM("Ixyg.pgm");
 
 	delete gauss;delete Ix2;delete Iy2;delete Ixy;
@@ -158,13 +157,42 @@ image* image::HarrisFilter(double alpha){
 	image* sortie=new image(hauteur,largeur,0);
 	for(int i=1;i<hauteur;i++){
 		for(int j=1;j<largeur;j++){
-			(*this)(i,j)=(*Ix2g)(i,j)*(*Iy2g)(i,j)-(*Ixyg)(i,j)*(*Ixyg)(i,j)-
-				alpha*((*Ix2g)(i,j)+(*Ix2g)(i,j))*((*Ix2g)(i,j)+(*Ix2g)(i,j));
-			if((*this)(i,j)<valmax)valmax=(*this)(i,j);
+			(*sortie)(i,j)=(*Ix2g)(i,j)*(*Iy2g)(i,j)-(*Ixyg)(i,j)*(*Ixyg)(i,j)-
+				alpha*((*Ix2g)(i,j)+(*Iy2g)(i,j))*((*Ix2g)(i,j)+(*Iy2g)(i,j));
+			if((*sortie)(i,j)<valmax)valmax=(*sortie)(i,j);
 		}
 	}
 
 	return sortie;
+}
+
+void image::elim_neg(){
+	for(int i=1;i<hauteur-1;i++){
+		for(int j=1;j<largeur-1;j++){
+			if((*this)(i,j)<0)(*this)(i,j)=0;
+		}
+	}
+}
+
+std::list<pixel> image::best_interest_points(int n){
+	list<pixel> lpixel;
+	for(int i=1;i<hauteur-1;i++){
+		for(int j=1;j<largeur-1;j++){
+			pixel p(i,j,(*this)(i,j));
+			lpixel.push_back(p);
+		}
+	}
+
+	reverse(lpixel.begin(),lpixel.end());
+
+	list<pixel> lpixsortie;
+	std::list<pixel>::iterator it=lpixel.begin();
+	for(int i=0;i<n;i++){
+		lpixsortie.push_back(*it);
+		it++;
+	}
+
+	return lpixsortie;
 }
 
 
