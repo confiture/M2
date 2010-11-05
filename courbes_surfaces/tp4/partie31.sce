@@ -1,9 +1,9 @@
-// surface de Bézier triangulaire
-// définition de la Bézier triangulaire par ses points de controle
+// surface de Bï¿½zier triangulaire
+// dï¿½finition de la Bï¿½zier triangulaire par ses points de controle
 // P{i,j,k}=(X{i,j,k},Y{i,j,k},Z{i,j,k}) et poids W{i,j,k}
 // sous forme de 4 tableaux (vecteurs-ligne) X, Y, Z et W 
-// avec (n+1)*(n+2)/2 éléments (n étant le degré de la Bézier)
-// les éléménts d'indices {i,j,k} sont stockés ainsi :
+// avec (n+1)*(n+2)/2 ï¿½lï¿½ments (n ï¿½tant le degrï¿½ de la Bï¿½zier)
+// les ï¿½lï¿½mï¿½nts d'indices {i,j,k} sont stockï¿½s ainsi :
 //   element{n,0,0} 
 //   element{n-1,1,0} 
 //   ...
@@ -19,20 +19,20 @@ function prog31()
 
 //------------ 1 ------------    
 // les points de controle et les poids correspondant
-// definir le degré n puis 
+// definir le degrï¿½ n puis 
 // 4 tableaux X,Y,Z et W de longueur (n+1)*(n+2)/2
 
-// exemple de surface de degré 3
-n=3;// degré
+// exemple de surface de degrï¿½ 3
+n=3;// degrï¿½
 X = [3 3 2 0  3 2 0  2 0  0];
 Y = [0 2 3 3  0 2 3  0 2  0];
 Z = [0 0 0 0  2 2 2  3 3  3];
 W = [1 1 1 1  1 1 1  1 1  1];
 
 //------------ 2 ------------    
-// la triangulation du polyèdre de controle
+// la triangulation du polyï¿½dre de controle
 // n*n triangles :
-// définir S le tableau des sommets à partir de X,Y,Z
+// dï¿½finir S le tableau des sommets ï¿½ partir de X,Y,Z
 // et T le tableau des triangles
 S = [X' Y' Z'];
 T = zeros(n*n,3);
@@ -65,37 +65,45 @@ mclose(fid);
 // passage en Bezier rationnelle rectangulaire
 // convertir les vecteurs X,Y,Z et W en
 // 4 matrices Pbar1,Pbar2,Pbar3 et Pbar4 de dimensions (n+1,n+1)
-// contenant les points de controle en coordonnées homogènes 
-// de la Bézier rationnelle rectangulaire équivalente
+// contenant les points de controle en coordonnï¿½es homogï¿½nes 
+// de la Bï¿½zier rationnelle rectangulaire ï¿½quivalente
 // Pbar4(k,l) correspond au poids omega(k,l)
 // [Pbar1(k,l),Pbar2(k,l),Pbar3(k,l)] au produit 
 // du point de controle P(k,l) par le poids omega(k,l) 
 
-// PARTIE A COMPLETER
+
+for i=1:n
+  P=
+  for j=1:n-
+    P=elevation_degre(P)
+  end
+  Pbar
+end
+
 
 // ------------ 5 ------------   
-// écriture de la Bézier rectangulaire rationnelle
+// ï¿½criture de la Bï¿½zier rectangulaire rationnelle
 //
 
 // DECOMMENTER LES LIGNES SUIVANTES AVANT ENDFUNCTION 
 
-//fid = mopen("bezrect.bez","w");
-//mfprintf(fid, "BEZ%d%d4\n",n,n);
-//for i=1:n+1
-//  for j=1:n+1
-//    mfprintf(fid, "%15.7e %15.7e %15.7e %15.7e \n",...
-//      Pbar1(i,j),Pbar2(i,j),Pbar3(i,j),Pbar4(i,j));
-//  end
-//end
-//  
-//mclose(fid);
+fid = mopen("bezrect.bez","w");
+mfprintf(fid, "BEZ%d%d4\n",n,n);
+for i=1:n+1
+  for j=1:n+1
+    mfprintf(fid, "%15.7e %15.7e %15.7e %15.7e \n",...
+      Pbar1(i,j),Pbar2(i,j),Pbar3(i,j),Pbar4(i,j));
+  end
+end
+  
+mclose(fid);
 
 endfunction
 
 /////////////////////////////////////////////////////////
 // elevation de degre d'un polygone de controle de degre n-1
-// à un polygone de controle de degré n
-// Entrée : P = tableau des n points de controle
+// ï¿½ un polygone de controle de degrï¿½ n
+// Entrï¿½e : P = tableau des n points de controle
 //          matrice avec n colonnes (1 point par colonne)
 // Sortie : P2 = tableau des n+1 points de controle
 //          matrice avec n+1 colonnes (1 point par colonne)
@@ -114,15 +122,15 @@ endfunction
 
 //----------------------------------------------
 // ecriture d'un objet OFF triangulation
-// Entrée : S, T = tableaux décrivant la triangulation
+// Entrï¿½e : S, T = tableaux dï¿½crivant la triangulation
 //          c = une couleur au format RGB : c = (r,g,b)
-//              avec r,g et b trois réels entre 0 et 1
+//              avec r,g et b trois rï¿½els entre 0 et 1
 function write_OFF(fid,S,T,c)
 
 nS = size(S,1);
 nT = size(T,1);
 
-// début de l'objet composite
+// dï¿½but de l'objet composite
 mfprintf(fid,"{\n");
 
 mfprintf(fid, 'OFF\n%d %d 0\n', nS, nT);
