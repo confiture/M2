@@ -71,13 +71,17 @@ mclose(fid);
 // [Pbar1(k,l),Pbar2(k,l),Pbar3(k,l)] au produit 
 // du point de controle P(k,l) par le poids omega(k,l) 
 
-
+nbpts=3
+incr=1
 for i=1:n
-  P=
+  P=S(:,incr:incr+nbpts)'
   for j=1:n-
     P=elevation_degre(P)
   end
   Pbar
+  
+  incr=incr+nbpts
+  nbpts=nbpts-1
 end
 
 
