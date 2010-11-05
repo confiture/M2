@@ -1,0 +1,46 @@
+%!PS-Adobe-2.0 EPSF-1.2
+%%Title: Geomview Snapshot
+%%Creator: Geomview
+%%CreationDate: Fri Nov  5 09:01:42 2010
+%%For: trlinm
+%%BoundingBox: 18 108 594 684
+%%EndComments
+gsave
+1 setlinecap 1 setlinejoin
+18.000000 108.000000 translate
+1.280000 1.280000 scale
+[  % stack mark
+/poly {
+  setrgbcolor newpath moveto
+  counttomark 2 idiv { lineto } repeat closepath fill
+} bind def
+/epoly {
+  setrgbcolor newpath moveto
+  counttomark 4 sub 2 idiv { lineto } repeat closepath
+gsave fill grestore setrgbcolor setlinewidth stroke
+} bind def
+/lines {
+  setlinewidth setrgbcolor newpath moveto
+  counttomark 2 idiv { lineto } repeat stroke
+} bind def
+/clines {
+  setlinewidth setrgbcolor newpath moveto
+  counttomark 2 idiv { lineto } repeat closepath stroke
+} bind def
+/circ {
+  setrgbcolor newpath 0 360 arc fill
+} bind def
+/tri {
+  setrgbcolor newpath moveto lineto lineto
+  closepath fill
+} bind def
+/l {
+  setrgbcolor newpath moveto lineto stroke
+} bind def
+%
+0 0 moveto 450 0 lineto 450 450 lineto 0 450 lineto
+0.333333 0.333333 0.333333 setrgbcolor closepath fill
+pop
+grestore
+showpage
+

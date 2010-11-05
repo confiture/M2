@@ -1,0 +1,14 @@
+# objet composite formé des deux objets lus à partir de deux fichiers
+{
+	LIST
+	
+	# le premier objet
+	{
+		< bezier.bez
+	}
+	
+	# le deuxième objet
+	{
+		< bezier.mesh
+	}
+}
