@@ -10,8 +10,11 @@ int image::operator()(int i,int j)const{
 	return buffer[i*largeur+j];
 }
 
-image::image(int largeur, int hauteur,int valmax){
-
+image::image(int hauteur, int largeur,int valmax){
+	this->hauteur=hauteur;
+	this->largeur=largeur;
+	this->valmax=valmax;
+	this->buffer=new int[hauteur*largeur];
 }
 
 image::image(char* nomFichier){
@@ -122,36 +125,39 @@ int** image::composante_connnex(int conn)const{
 
 	std::vector<int> equiv;
 
-
-	for(int i=0;i<hauteur;i++)corres[i]=0;
-
+	cout<<"c0"<<std::endl;
 	if(4==4){
 		for(int i=0;i<hauteur-1;i++){
-			for(int j=0;i<largeur-1;j++){
+			for(int j=0;j<largeur-1;j++){
 				if((*this)(i,j)==255){
 					//on regarde le voisin à droite et en dessous s'il fait partie d'une composante connexe
-					if(corres[i][j+1]!=-1){//à droite
+					if(corres[i][j+1]!=-1 && (*this)(i,j+1)==255){//à droite
 						if(corres[i][j]==-1){corres[i][j]=corres[i][j+1];}
 						else{updateEquiv(equiv,id,corres[i][j],corres[i][j+1]);}
 					}
-					if(corres[i+1][j]!=-1){//en dessous
+					else if(corres[i+1][j]!=-1 && (*this)(i+1,j)==255){//en dessous
 						if(corres[i][j]==-1){corres[i][j]=corres[i+1][j];}
 						else{updateEquiv(equiv,id,corres[i][j],corres[i+1][j]);}
 					}
 					else{
 						equiv.push_back(id);
 						corres[i][j]=id;
+						if((*this)(i,j+1)==255)corres[i][j+1]=id;
+						if((*this)(i+1,j)==255)corres[i+1][j]=id;
 						id++;
 					}
 				}
 			}
 		}
 
+		cout<<"c1"<<std::endl;
+
+		//colonne de droite
 		int j=largeur-1;
 		for(int i=0;i<hauteur-1;i++){
 			if((*this)(i,j)==255){
 				//on regarde le voisin à droite et en dessous s'il fait partie d'une composante connexe
-				if(corres[i+1][j]!=-1){//en dessous
+				if(corres[i+1][j]!=-1 && (*this)(i,j+1)==255){//en dessous
 					if(corres[i][j]==-1){corres[i][j]=corres[i+1][j];}
 					else{updateEquiv(equiv,id,corres[i][j],corres[i+1][j]);}
 				}
@@ -163,50 +169,62 @@ int** image::composante_connnex(int conn)const{
 			}
 		}
 
+		cout<<"c2"<<std::endl;
+
+		//ligne du bas
 		int i=hauteur-1;
-		for(int j=0;j<largeur-1;i++){
+		for(int j=0;j<largeur-1;j++){
 			if((*this)(i,j)==255){
-				if(corres[i][j+1]!=-1){//en dessous
-						if(corres[i][j]==-1){corres[i][j]=corres[i][j+1];}
-						else{updateEquiv(equiv,id,corres[i][j],corres[i][j+1]);}
-					}
-					else{
-						equiv.push_back(id);
-						corres[i][j]=id;
-						id++;
-					} 
+				if(corres[i][j+1]!=-1 && (*this)(i,j+1)==255){//en dessous
+					if(corres[i][j]==-1){corres[i][j]=corres[i][j+1];}
+					else{updateEquiv(equiv,id,corres[i][j],corres[i][j+1]);}
+				}
+				else{
+					equiv.push_back(id);
+					corres[i][j]=id;
+					id++;
+				}
 			}
 		}
-		
+
+		cout<<"c3"<<std::endl;
 		if(corres[hauteur-1][largeur-1]==-1)corres[hauteur-1][largeur-1]=id;
 	}
-	
+
 	//mise à jour des groupes grâce au tableau des équivalences
 	for(int i=0;i<hauteur;i++){
-	  for(int j=0;j<largeur;j++){
-	    corres[i][j]=equiv[corres[i][j]]+1; // +1 pour rammener -1 à 0
-	  }
+		for(int j=0;j<largeur;j++){
+			cout<<equiv[corres[i][j]]<<endl;
+			corres[i][j]=equiv[corres[i][j]]+1; // +1 pour rammener -1 à 0
+		}
 	}
-	
+
 	return corres;
 }
 
 
 void image::dispCompConn(char* fic)const{
- image sortie(hauteur,largeur,255);
- image im_s(*this);
- im_s.seuiller(100);
- int** conn=im_s.composante_connnex(4);
- 
- for(int i=0;i<hauteur;i++){
-   for(int j=0;j<largeur;j++){
-      if(conn[i][j]!=0){
-	sortie(i,j)=255;
-      }
-      else{
-	sortie(i,j)=0;
-      }
-   }
- }
+	image sortie(hauteur,largeur,255);
+	image im_s(*this);
+	im_s.seuiller(100);
+
+	im_s.EcrireImagePGM("seuillage.pgm");
+
+	std::cout<<"ici 0"<<std::endl;
+	int** conn=im_s.composante_connnex(4);
+
+	std::cout<<"ici 1"<<std::endl;
+	for(int i=0;i<hauteur;i++){
+		for(int j=0;j<largeur;j++){
+			if(conn[i][j]!=0){
+				sortie(i,j)=255;
+			}
+			else{
+				sortie(i,j)=0;
+			}
+		}
+	}
+
+	sortie.EcrireImagePGM(fic);
 }
 

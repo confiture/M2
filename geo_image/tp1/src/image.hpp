@@ -12,17 +12,17 @@
 class image{
 public:
 
-	image(int largeur, int hauteur,int valmax);
+	image(int hauteur, int largeur,int valmax=0);
 
 	image(char* nomFichier);
-	
+
 	image(const image &);
-	
-	  /**
-	*Destructeur.
-	  */
+
+	/**
+	 *Destructeur.
+	 */
 	inline ~image(){
-	  delete [] buffer;
+		delete [] buffer;
 	}
 
 	int EcrireImagePGM(char* nomFichier)const;
@@ -36,9 +36,9 @@ public:
 	int seuiller(int seuil);
 
 	int negatif();
-	
+
 	int** composante_connnex(int conn)const;
-	
+
 	void dispCompConn(char* fic)const;
 
 private:
