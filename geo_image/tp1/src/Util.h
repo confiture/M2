@@ -19,7 +19,6 @@ float mod2PI(float);
 
 template<class T>
 void updateEquiv(T & vec,int taille,int a,int b){
-  std::cout<<"memerde"<<std::endl;
   assert(a>-1);
   assert(b>-1);
   int min;
@@ -28,10 +27,7 @@ void updateEquiv(T & vec,int taille,int a,int b){
 
   if(a>b){max=a;min=b;}
 
-  std::cout<<"VECCC"<<std::endl;
-
   for(int i=0;i<taille;i++){
-    std::cout<<vec[i]<<std::endl;
     if(vec[i]==max)vec[i]=min;
   }
 }

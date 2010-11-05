@@ -130,28 +130,47 @@ int** image::composante_connnex(int conn)const{
 		for(int i=0;i<hauteur-1;i++){
 			for(int j=0;j<largeur-1;j++){
 				if((*this)(i,j)==255){
-					//on regarde le voisin à droite et en dessous s'il fait partie d'une composante connexe
-					if(corres[i][j+1]!=-1 && (*this)(i,j+1)==255){//à droite
-						if(corres[i][j]==-1){corres[i][j]=corres[i][j+1];}
-						else{updateEquiv(equiv,id,corres[i][j],corres[i][j+1]);}
+					//voisins noirs
+					if((*this)(i+1,j)==0 && (*this)(i,j+1)==0){
+						if(corres[i][j]==-1){
+							corres[i][j]=id;
+							equiv.push_back(id);
+							id++;
+						}
 					}
-					else if(corres[i+1][j]!=-1 && (*this)(i+1,j)==255){//en dessous
-						if(corres[i][j]==-1){corres[i][j]=corres[i+1][j];}
-						else{updateEquiv(equiv,id,corres[i][j],corres[i+1][j]);}
+					//un des voisins n'est pas noir et appartient à un groupe
+					else if(corres[i+1][j]!=-1 || corres[i][j+1]!=-1){
+						if(corres[i+1][j]!=-1){
+							if(corres[i][j]==-1){corres[i][j]=equiv[corres[i+1][j]];}
+							else{
+								updateEquiv(equiv,id,equiv[corres[i][j]],equiv[corres[i+1][j]]);
+							}
+						}
+						if(corres[i][j+1]!=-1){
+							if(corres[i][j]==-1){corres[i][j]=equiv[corres[i][j+1]];}
+							else{
+								updateEquiv(equiv,id,equiv[corres[i][j]],equiv[corres[i][j+1]]);
+							}
+						}
 					}
+					//aucun n'appartient à un groupe
 					else{
-						equiv.push_back(id);
-						corres[i][j]=id;
-						if((*this)(i,j+1)==255)corres[i][j+1]=id;
-						if((*this)(i+1,j)==255)corres[i+1][j]=id;
-						id++;
+						//si le point courant ne fait pas partie d'un groupe on le crée
+						if(corres[i][j]==-1){
+							corres[i][j]=id;
+							equiv.push_back(id);
+							id++;
+						}
+
+						if((*this)(i+1,j)!=0){corres[i+1][j]=equiv[corres[i][j]];}
+						if((*this)(i,j+1)!=0){corres[i][j+1]=equiv[corres[i][j]];}
 					}
 				}
 			}
 		}
 
 		cout<<"c1"<<std::endl;
-
+		/*
 		//colonne de droite
 		int j=largeur-1;
 		for(int i=0;i<hauteur-1;i++){
@@ -186,16 +205,17 @@ int** image::composante_connnex(int conn)const{
 				}
 			}
 		}
-
 		cout<<"c3"<<std::endl;
 		if(corres[hauteur-1][largeur-1]==-1)corres[hauteur-1][largeur-1]=id;
+		*/
 	}
 
 	//mise à jour des groupes grâce au tableau des équivalences
 	for(int i=0;i<hauteur;i++){
 		for(int j=0;j<largeur;j++){
-			cout<<equiv[corres[i][j]]<<endl;
-			corres[i][j]=equiv[corres[i][j]]+1; // +1 pour rammener -1 à 0
+			//cout<<equiv[corres[i][j]]<<endl;
+			if(corres[i][j]!=-1){corres[i][j]=equiv[corres[i][j]]+1;} // +1 pour rammener -1 à 0
+			else{corres[i][j]=0;std::cout}
 		}
 	}
 
@@ -210,18 +230,20 @@ void image::dispCompConn(char* fic)const{
 
 	im_s.EcrireImagePGM("seuillage.pgm");
 
-	std::cout<<"ici 0"<<std::endl;
 	int** conn=im_s.composante_connnex(4);
 
-	std::cout<<"ici 1"<<std::endl;
 	for(int i=0;i<hauteur;i++){
 		for(int j=0;j<largeur;j++){
 			if(conn[i][j]!=0){
 				sortie(i,j)=255;
 			}
 			else{
+				cout<<"blabalbal"<<endl;
+				exit(-1);
 				sortie(i,j)=0;
 			}
+
+			//std::cout<<conn[i][j]<<endl;
 		}
 	}
 
