@@ -215,7 +215,7 @@ int** image::composante_connnex(int conn)const{
 		for(int j=0;j<largeur;j++){
 			//cout<<equiv[corres[i][j]]<<endl;
 			if(corres[i][j]!=-1){corres[i][j]=equiv[corres[i][j]]+1;} // +1 pour rammener -1 à 0
-			else{corres[i][j]=0;std::cout}
+			else{corres[i][j]=0;}
 		}
 	}
 
@@ -238,8 +238,6 @@ void image::dispCompConn(char* fic)const{
 				sortie(i,j)=255;
 			}
 			else{
-				cout<<"blabalbal"<<endl;
-				exit(-1);
 				sortie(i,j)=0;
 			}
 
