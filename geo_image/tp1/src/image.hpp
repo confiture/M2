@@ -7,6 +7,7 @@
 #include <iostream>
 #include <fstream>
 #include <streambuf>
+#include <vector>
 
 class image{
 public:
@@ -14,6 +15,15 @@ public:
 	image(int largeur, int hauteur,int valmax);
 
 	image(char* nomFichier);
+	
+	image(const image &);
+	
+	  /**
+	*Destructeur.
+	  */
+	inline ~image(){
+	  delete [] buffer;
+	}
 
 	int EcrireImagePGM(char* nomFichier)const;
 
@@ -26,6 +36,10 @@ public:
 	int seuiller(int seuil);
 
 	int negatif();
+	
+	int** composante_connnex(int conn)const;
+	
+	void dispCompConn(char* fic)const;
 
 private:
 	int largeur, hauteur, valmax;

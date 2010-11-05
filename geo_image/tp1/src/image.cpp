@@ -48,6 +48,19 @@ image::image(char* nomFichier){
 	fclose(ifp);
 }
 
+image::image(const image & im){
+	this->buffer = new int[im.hauteur*im.largeur];
+	this->hauteur=im.hauteur;
+	this->largeur=im.largeur;
+	this->valmax=im.valmax;
+
+	for(int i=0;i<hauteur;i++){
+		for(int j=0;j<largeur;j++){
+			(*this)(i,j)=im(i,j);
+		}
+	}
+}
+
 int image::EcrireImagePGM(char* nomFichier)const{
 	/* Ouverture */
 	filebuf fb;
@@ -88,8 +101,8 @@ int image::negatif(){
 	int max=-1;
 	for(int i=0;i<hauteur;i++){
 		for(int j=0;j<largeur;j++){
-		(*this)(i,j)=valmax-(*this)(i,j);
-		if((*this)(i,j)>max)max=(*this)(i,j);
+			(*this)(i,j)=valmax-(*this)(i,j);
+			if((*this)(i,j)>max)max=(*this)(i,j);
 		}
 	}
 
@@ -97,40 +110,103 @@ int image::negatif(){
 	return 1;
 }
 
-int** composante_connnex(int conn){
-	int id_comp=0;
-	int** corres=new int*[hauteur];//le tableau des correspondances
+
+
+int** image::composante_connnex(int conn)const{
+	int id=0;
+	int** corres=new int*[hauteur];//l'image des étiquettes
 	for(int i=0;i<hauteur;i++){
-		corres=new int[largeur];
-		for(int j=0;j<largeur;j++)corres[i][j]=0;
+		corres[i]=new int[largeur];
+		for(int j=0;j<largeur;j++)corres[i][j]=-1;
 	}
+
+	std::vector<int> equiv;
 
 
 	for(int i=0;i<hauteur;i++)corres[i]=0;
-	id_comp++;
 
-	if(d==4){
+	if(4==4){
 		for(int i=0;i<hauteur-1;i++){
 			for(int j=0;i<largeur-1;j++){
-				//on regarde le voisin à droite et en dessous s'il fait partie d'une composante connexe
-				if(corres[i][j+1]!=0){//à droite
-					if(corres[i][j]==0){corres[i][j]=corres[i][j+1];}
-					else if(corres[i][j]<corres[i][j+1]){corres[i][j]=corres[i][j+1];}
-					else{corres[i][j+1]=corres[i][j];}
-				}
-				if(corres[i+1][j]!=0){//en dessous
-					if(corres[i][j]==0){corres[i][j]=corres[i+1][j];}
-					else if(corres[i][j]<corres[i+1][j]){corres[i+1][j]=corres[i][j+1];}
-					else{corres[i][j+1]=corres[i][j];}
-				}
-				else{
-
+				if((*this)(i,j)==255){
+					//on regarde le voisin à droite et en dessous s'il fait partie d'une composante connexe
+					if(corres[i][j+1]!=-1){//à droite
+						if(corres[i][j]==-1){corres[i][j]=corres[i][j+1];}
+						else{updateEquiv(equiv,id,corres[i][j],corres[i][j+1]);}
+					}
+					if(corres[i+1][j]!=-1){//en dessous
+						if(corres[i][j]==-1){corres[i][j]=corres[i+1][j];}
+						else{updateEquiv(equiv,id,corres[i][j],corres[i+1][j]);}
+					}
+					else{
+						equiv.push_back(id);
+						corres[i][j]=id;
+						id++;
+					}
 				}
 			}
 		}
-	}
 
+		int j=largeur-1;
+		for(int i=0;i<hauteur-1;i++){
+			if((*this)(i,j)==255){
+				//on regarde le voisin à droite et en dessous s'il fait partie d'une composante connexe
+				if(corres[i+1][j]!=-1){//en dessous
+					if(corres[i][j]==-1){corres[i][j]=corres[i+1][j];}
+					else{updateEquiv(equiv,id,corres[i][j],corres[i+1][j]);}
+				}
+				else{
+					equiv.push_back(id);
+					corres[i][j]=id;
+					id++;
+				}
+			}
+		}
+
+		int i=hauteur-1;
+		for(int j=0;j<largeur-1;i++){
+			if((*this)(i,j)==255){
+				if(corres[i][j+1]!=-1){//en dessous
+						if(corres[i][j]==-1){corres[i][j]=corres[i][j+1];}
+						else{updateEquiv(equiv,id,corres[i][j],corres[i][j+1]);}
+					}
+					else{
+						equiv.push_back(id);
+						corres[i][j]=id;
+						id++;
+					} 
+			}
+		}
+		
+		if(corres[hauteur-1][largeur-1]==-1)corres[hauteur-1][largeur-1]=id;
+	}
+	
+	//mise à jour des groupes grâce au tableau des équivalences
+	for(int i=0;i<hauteur;i++){
+	  for(int j=0;j<largeur;j++){
+	    corres[i][j]=equiv[corres[i][j]]+1; // +1 pour rammener -1 à 0
+	  }
+	}
+	
+	return corres;
 }
 
 
+void image::dispCompConn(char* fic)const{
+ image sortie(hauteur,largeur,255);
+ image im_s(*this);
+ im_s.seuiller(100);
+ int** conn=im_s.composante_connnex(4);
+ 
+ for(int i=0;i<hauteur;i++){
+   for(int j=0;j<largeur;j++){
+      if(conn[i][j]!=0){
+	sortie(i,j)=255;
+      }
+      else{
+	sortie(i,j)=0;
+      }
+   }
+ }
+}
 
