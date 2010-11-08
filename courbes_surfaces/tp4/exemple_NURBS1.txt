@@ -1,0 +1,55 @@
+# exemple de NURBS quadrique en u et cubique en v
+# toute ligne commençant par le caractere # est un commentaire
+
+# degré en u (entre 1 et 6)
+2
+
+# le nombre de noeuds en u (supérieur ou égal à 2)
+3		
+# la liste des noeuds (par ordre croissant) en u sur une seule ligne
+0 2 5
+
+# degré en v (entre 1 et 6)
+3
+
+# le nombre de noeuds en v (supérieur ou égal à 2)
+4		
+# la liste des noeuds (par ordre croissant) en v sur une seule ligne
+0 1 3 4
+
+# --> grille de M x N points
+# M = degre_en_u + nb_noeuds_en_u - 1 = 4
+# N = degre_en_v + nb_noeuds_en_v - 1 = 6
+# une matrice de dimensions 4 x 6 pour les coordonnées X
+# une matrice de dimensions 4 x 6 pour les coordonnées Y
+# une matrice de dimensions 4 x 6 pour les coordonnées Z
+# une matrice de dimensions 4 x 6 pour les poids omega
+
+# les points décrits par coordonnée
+# coordonnée X
+# M lignes avec N valeurs sur chaque ligne
+0 1 2 3 4 5 
+0 1 2 3 4 5 
+0 1 2 3 4 5 
+0 1 2 3 4 5 
+
+# coordonnée Y
+# M lignes avec N valeurs sur chaque ligne
+0 0 0 0 0 0
+1 1 1 1 1 1
+2 2 2 2 2 2
+3 3 3 3 3 3
+
+# coordonnée Z
+# M lignes avec N valeurs sur chaque ligne
+0 0 0 0 0 0
+0 2 3 3 2 1
+0 2 3 3 2 1
+0 0 0 0 0 0
+
+# poids
+# M lignes avec N valeurs sur chaque ligne
+1 1 1 1 1 1
+1 1 3 1 1 1
+1 1 3 1 1 1
+1 1 1 1 1 1

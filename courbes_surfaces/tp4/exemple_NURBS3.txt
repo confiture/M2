@@ -1,0 +1,71 @@
+# exemple de NURBS quadrique en u et cubique en v
+# toute ligne commençant par le caractere # est un commentaire
+
+# degré en u (entre 1 et 6)
+3
+
+# le nombre de noeuds en u (supérieur ou égal à 2)
+6		
+# la liste des noeuds (par ordre croissant) en u sur une seule ligne
+0 1 2 3 4 5
+
+# degré en v (entre 1 et 6)
+3
+
+# le nombre de noeuds en v (supérieur ou égal à 2)
+8		
+# la liste des noeuds (par ordre croissant) en v sur une seule ligne
+0 1 2 3 4 5 6 7
+
+# --> grille de M x N points
+# M = degre_en_u + nb_noeuds_en_u - 1 = 4
+# N = degre_en_v + nb_noeuds_en_v - 1 = 6
+# une matrice de dimensions 4 x 6 pour les coordonnées X
+# une matrice de dimensions 4 x 6 pour les coordonnées Y
+# une matrice de dimensions 4 x 6 pour les coordonnées Z
+# une matrice de dimensions 4 x 6 pour les poids omega
+
+# les points décrits par coordonnée
+# coordonnée X
+# M lignes avec N valeurs sur chaque ligne
+-6.75  -5.25  -3.75  -2.25  -0.75    0.75    2.25    3.75    5.25   6.75
+-6.75  -5.25  -3.75  -2.25  -0.75    0.75    2.25    3.75    5.25   6.75
+-6.75  -5.25  -3.75  -2.25  -0.75    0.75    2.25    3.75    5.25   6.75
+-6.75  -5.25  -3.75  -2.25  -0.75    0.75    2.25    3.75    5.25   6.75
+-6.75  -5.25  -3.75  -2.25  -0.75    0.75    2.25    3.75    5.25   6.75
+-6.75  -5.25  -3.75  -2.25  -0.75    0.75    2.25    3.75    5.25   6.75
+-6.75  -5.25  -3.75  -2.25  -0.75    0.75    2.25    3.75    5.25   6.75
+-6.75  -5.25  -3.75  -2.25  -0.75    0.75    2.25    3.75    5.25   6.75
+
+# coordonnée Y
+# M lignes avec N valeurs sur chaque ligne
+   -2.5   -2.5   -2.5   -2.5   -2.5   -2.5   -2.5   -2.5   -2.5   -2.5  
+   -2.5   -2.5   -2.5   -2.5   -2.5   -2.5   -2.5   -2.5   -2.5   -2.5  
+   -1.5   -1.5   -1.5   -1.5   -1.5   -1.5   -1.5   -1.5   -1.5   -1.5  
+   -0.5   -0.5   -0.5   -0.5   -0.5   -0.5   -0.5   -0.5   -0.5   -0.5  
+    0.5    0.5    0.5    0.5    0.5    0.5    0.5    0.5    0.5    0.5  
+    1.5    1.5    1.5    1.5    1.5    1.5    1.5    1.5    1.5    1.5  
+    2.5    2.5    2.5    2.5    2.5    2.5    2.5    2.5    2.5    2.5  
+    2.5    2.5    2.5    2.5    2.5    2.5    2.5    2.5    2.5    2.5  
+
+# coordonnée Z
+# M lignes avec N valeurs sur chaque ligne
+   -2.5   -0.5   -0.5   -2.5   -2.5   -2.5   -2.5   -0.5   -0.5   -2.5  
+   -2.5    0.5    0.5   -2.5   -2.5   -2.5   -2.5    0.5    0.5   -2.5  
+   -1.5   -0.5   -0.5   -0.5    0.5    0.5    0.5   -0.5   -1.5   -2.5  
+   -1.5    0.5    0.5    0.5    1.5    1.5    1.5    1.5    0.5   -1.5  
+   -1.5    0.5    0.5    0.5    1.5    1.5    1.5    1.5    0.5   -1.5  
+   -1.5   -0.5   -0.5   -0.5    0.5    0.5    0.5   -0.5   -1.5   -2.5  
+   -2.5    0.5    0.5   -2.5   -2.5   -2.5   -2.5    0.5    0.5   -2.5  
+   -2.5   -0.5   -0.5   -2.5   -2.5   -2.5   -2.5   -0.5   -0.5   -2.5  
+
+# poids
+# M lignes avec N valeurs sur chaque ligne
+    1    1    1    1    1    1    1    1    1     1  
+    1    1    1    1    1    1    1    1    1     1  
+    1    5    5    1    5    1    1    5    5     1  
+    1    0    1    1    5    1    1    1    10    1  
+    1    0    1    1    5    1    1    1    10    1  
+    1    5    5    1    5    1    1    5    5     1  
+    1    1    1    1    1    1    1    1    1     1  
+    1    1    1    1    1    1    1    1    1     1  

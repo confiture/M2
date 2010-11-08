@@ -1,0 +1,52 @@
+# structure de controle decrite sous forme d'une liste
+# de lignes de controle
+#   3 lignes de 4 points et 4 lignes de 3 points
+VECT
+
+# nb de lignes, nb total de points, nb total de couleurs
+7 24 0
+
+# nb de points par ligne
+4 4 4 3 3 3 3
+
+# nb de couleur par ligne
+0 0 0 0 0 0 0
+
+# points de la ligne 1
+0  0  0
+0  1  0
+0  2  0
+0  3  0
+
+# points de la ligne 1
+1  0  0
+1  1  5
+1  2 -5
+1  3  0
+
+# points de la ligne 2
+2  0  0
+2  1  0
+2  2  0
+2  3  0
+
+# points de la ligne 3
+0  0  0
+1  0  0
+2  0  0
+
+# points de la ligne 4
+0  1  0
+1  1  5
+2  1  0
+
+# points de la ligne 5
+0  2  0
+1  2 -5
+2  2  0
+
+# points de la ligne 6
+0  3  0
+1  3  0
+2  3  0
+
