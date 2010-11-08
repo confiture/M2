@@ -60,6 +60,8 @@ public:
 
   void recadre(int a,int b);
 
+  void croix(int i,int j,int color);
+
 private:
   int largeur, hauteur, valmax;
   int* buffer;

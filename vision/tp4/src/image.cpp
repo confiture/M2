@@ -194,8 +194,21 @@ std::list<pixel> image::best_interest_points(int n){
 
 	return lpixsortie;
 }
+/*
+void image::croix(int i,int j,int color){
+	int epais=5;
+	int grand=5;
 
-
+	//la verticale
+	for(int ii=i-grand;ii<=i+grand;ii++){
+		for(int jj=j-epais;jj<=j+epais;jj++){
+			if(ii>=0 && ii<hauteur && jj<largeur && jj>=0){
+					(*this)(i,j)=color;
+				}
+		}
+	}
+}
+*/
 image* image::GaussFilter(){
 	image* sortie = new image(hauteur,largeur,valmax);
 	float** filter=new float*[3];
