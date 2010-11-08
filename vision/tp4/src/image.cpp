@@ -2,23 +2,30 @@
 
 using namespace std;
 
-int& image::operator()(int i,int j){
+double& image::operator()(int i,int j){
 	return buffer[i*largeur+j];
 }
 
-int image::operator()(int i,int j)const{
+double image::operator()(int i,int j)const{
 	return buffer[i*largeur+j];
+}
+
+void image::updateValmax(){
+	for(int i=0;i<hauteur*largeur;i++){
+		if(buffer[i]>valmax)valmax=buffer[i];
+	}
 }
 
 image::image(int hauteur, int largeur,int valmax){
-	this->buffer = new int[hauteur*largeur];
+	this->buffer = new double[hauteur*largeur];
 	this->hauteur=hauteur;
 	this->largeur=largeur;
 	this->valmax=valmax;
+	for(int i=0;i<hauteur*largeur;i++)buffer[i]=valmax;
 }
 
 image::image(const image & im){
-	this->buffer = new int[im.hauteur*im.largeur];
+	this->buffer = new double[im.hauteur*im.largeur];
 	this->hauteur=im.hauteur;
 	this->largeur=im.largeur;
 	this->valmax=im.valmax;
@@ -52,7 +59,7 @@ image::image(char* nomFichier){
 	hauteur = pm_getint( ifp );
 	valmax = pm_getint( ifp );
 
-	buffer = new int[hauteur*largeur];
+	buffer = new double[hauteur*largeur];
 
 	/*Lecture*/
 	for(int i=0; i < hauteur; i++){
@@ -84,7 +91,8 @@ int image::EcrireImagePGM(char* nomFichier)const{
 		for(int j=0; j < largeur ; j++){
 			//cerr<<(i,j)<<" ";
 			// exit(-1);
-			os<<(*this)(i,j);
+			int pix=(int)((*this)(i,j)+0.5);
+			os<<pix;
 			//cerr<<(*this)(i,j)<<" ";
 			os<<std::endl;
 			//sprintf(str,"%u ",(*this)(i,j));
@@ -111,8 +119,8 @@ void image::recadre(int a,int b){
 
 	for(int i=1;i<hauteur;i++){
 		for(int j=1;j<largeur;j++){
-			(*this)(i,j)=((float)(*this)(i,j)-(float)min)/
-				((float)max-(float)min)*(b-a)+a;
+			(*this)(i,j)=(((double)(*this)(i,j)-(double)min)/
+			              ((double)max-(double)min))*(b-a)+a;
 		}
 	}
 
@@ -123,14 +131,14 @@ void image::recadre(int a,int b){
  *On applique le filtre filter de dimensions p*p sur la positions (pix_i,pix_j)
  *à partir de l'image courante sur l'image de sortie passée en paramètre.
  */
-void image::ApplyFilter(int p,float** filter,int pix_i,int pix_j,image & sortie){
+void image::ApplyFilter(int p,double** filter,int pix_i,int pix_j,image & sortie){
 	int pos = (p-1)/2;
 	int k,l;
-	float val=0;
+	double val=0;
 	sortie(pix_i,pix_j)=0;
 	for(k=pix_i-pos;k<=pix_i+pos;k++){
 		for(l=pix_j-pos;l<=pix_j+pos;l++){
-			val+=(float)(*this)(k,l)*filter[k+pos-pix_i][l+pos-pix_j];
+			val+=(double)(*this)(k,l)*filter[k+pos-pix_i][l+pos-pix_j];
 		}
 	}
 	sortie(pix_i,pix_j)=val;
@@ -150,16 +158,19 @@ image* image::HarrisFilter(double alpha){
 
 	Ix2g->EcrireImagePGM("Ix2g.pgm");
 	Iy2g->EcrireImagePGM("Iy2g.pgm");
-	Ixyg->EcrireImagePGM("Ixyg.pgm");
+	image temp(*Ixyg);
+	temp.recadre(0,255);
+	temp.EcrireImagePGM("Ixyg.pgm");
 
 	delete gauss;delete Ix2;delete Iy2;delete Ixy;
 
 	image* sortie=new image(hauteur,largeur,0);
-	for(int i=1;i<hauteur;i++){
-		for(int j=1;j<largeur;j++){
+	for(int i=1;i<hauteur-1;i++){
+		for(int j=1;j<largeur-1;j++){
 			(*sortie)(i,j)=(*Ix2g)(i,j)*(*Iy2g)(i,j)-(*Ixyg)(i,j)*(*Ixyg)(i,j)-
 				alpha*((*Ix2g)(i,j)+(*Iy2g)(i,j))*((*Ix2g)(i,j)+(*Iy2g)(i,j));
-			if((*sortie)(i,j)<valmax)valmax=(*sortie)(i,j);
+			//if((*sortie)(i,j)<0)(*sortie)(i,j)=0;
+			if((*sortie)(i,j)>sortie->valmax)sortie->valmax=(*sortie)(i,j);
 		}
 	}
 
@@ -167,19 +178,33 @@ image* image::HarrisFilter(double alpha){
 }
 
 void image::elim_neg(){
-	for(int i=1;i<hauteur-1;i++){
-		for(int j=1;j<largeur-1;j++){
+	for(int i=0;i<hauteur;i++){
+		for(int j=0;j<largeur;j++){
 			if((*this)(i,j)<0)(*this)(i,j)=0;
 		}
 	}
 }
 
+bool image::maxLoc(int i,int j){
+	int pixC = (*this)(i,j);
+	if((*this)(i,j-1)<pixC && (*this)(i+1,j-1)<=pixC
+	   && (*this)(i+1,j)<=pixC && (*this)(i+1,j+1)<=pixC
+	   && (*this)(i,j+1)<=pixC && (*this)(i-1,j+1)<pixC
+	   && (*this)(i-1,j)<pixC && (*this)(i-1,j-1)<pixC){
+		return true;
+	}
+	return false;
+}
+
 std::list<pixel> image::best_interest_points(int n){
+	elim_neg();
 	list<pixel> lpixel;
 	for(int i=1;i<hauteur-1;i++){
 		for(int j=1;j<largeur-1;j++){
-			pixel p(i,j,(*this)(i,j));
-			lpixel.push_back(p);
+			if(maxLoc(i,j)){
+				pixel p(i,j,(*this)(i,j));
+				lpixel.push_back(p);
+			}
 		}
 	}
 
@@ -194,8 +219,16 @@ std::list<pixel> image::best_interest_points(int n){
 
 	return lpixsortie;
 }
-/*
-void image::croix(int i,int j,int color){
+
+void image::drawPts(const std::list<pixel> & Lpix, int col){
+	std::list<pixel>::const_iterator it=Lpix.begin();
+	for(it;it!=Lpix.end();it++){
+		drawCross(it->_i,it->_j,col);
+	}
+}
+
+
+void image::drawCross(int i,int j,int color){
 	int epais=5;
 	int grand=5;
 
@@ -207,15 +240,24 @@ void image::croix(int i,int j,int color){
 				}
 		}
 	}
+
+	//l'horizontale
+	for(int jj=j-grand;jj<=j+grand;jj++){
+		for(int ii=i-epais;ii<=i+epais;ii++){
+			if(ii>=0 && ii<hauteur && jj<largeur && jj>=0){
+					(*this)(i,j)=color;
+				}
+		}
+	}
 }
-*/
+
 image* image::GaussFilter(){
-	image* sortie = new image(hauteur,largeur,valmax);
-	float** filter=new float*[3];
+	image* sortie = new image(hauteur,largeur,0);
+	double** filter=new double*[3];
 	int i;
 	int j;
 
-	for(i=0;i<3;i++)filter[i]=new float[3];
+	for(i=0;i<3;i++)filter[i]=new double[3];
 	filter[0][0]=filter[0][2]=filter[2][0]=filter[2][2]=1.0/16;
 	filter[0][1]=filter[1][0]=filter[1][2]=filter[2][1]=2.0/16;
 	filter[1][1]=4.0/16;
@@ -223,21 +265,23 @@ image* image::GaussFilter(){
 	for(i=1;i<hauteur-1;i++){
 		for(j=1;j<largeur-1;j++){
 			ApplyFilter(3,filter,i,j,(*sortie));
+			if(sortie->valmax<(*sortie)(i,j))sortie->valmax=(*sortie)(i,j);
 		}
 	}
 	for(i=0;i<3;i++)delete [] filter[i];
 	delete [] filter;
 
+
 	return sortie;
 }
 
 image* image::contourX(){
-	image* sortie = new image(hauteur,largeur,valmax);
-	float** filter=new float*[3];
+	image* sortie = new image(hauteur,largeur,0);
+	double** filter=new double*[3];
 	int i;
 	int j;
 
-	for(i=0;i<3;i++)filter[i]=new float[3];
+	for(i=0;i<3;i++)filter[i]=new double[3];
 	filter[0][0]=filter[2][0]=-1.0;
 	filter[0][2]=filter[2][2]=1.0;
 	filter[1][0]=-2.0;
@@ -252,6 +296,7 @@ image* image::contourX(){
 	for(i=0;i<3;i++)delete [] filter[i];
 	delete [] filter;
 
+	sortie->updateValmax();
 	return sortie;
 }
 
@@ -263,6 +308,7 @@ image* image::contourX2(){
 		}
 	}
 
+	sortie->updateValmax();
 	return sortie;
 }
 
@@ -293,11 +339,12 @@ image* image::contourY2(){
 		}
 	}
 
+	sortie->updateValmax();
 	return sortie;
 }
 
 image* image::contourXY(){
-	image* sortie = new image(hauteur,largeur,valmax);
+	image* sortie = new image(hauteur,largeur,0);
 	image* sortieX=contourX();
 	image* sortieY=contourY();
 	for(int i=1;i<hauteur-1;i++){
@@ -305,16 +352,18 @@ image* image::contourXY(){
 			(*sortie)(i,j)=(*sortieX)(i,j)*(*sortieY)(i,j);
 		}
 	}
+
+	sortie->updateValmax();
 	return sortie;
 }
 
 image* image::contourY(){
-	image* sortie = new image(hauteur,largeur,valmax);
-	float** filter=new float*[3];
+	image* sortie = new image(hauteur,largeur,0);
+	double** filter=new double*[3];
 	int i;
 	int j;
 
-	for(i=0;i<3;i++)filter[i]=new float[3];
+	for(i=0;i<3;i++)filter[i]=new double[3];
 	filter[0][0]=filter[0][2]=-1.0;
 	filter[2][0]=filter[2][2]=1.0;
 	filter[0][1]=-2.0;
@@ -329,6 +378,7 @@ image* image::contourY(){
 	for(i=0;i<3;i++)delete [] filter[i];
 	delete [] filter;
 
+	sortie->updateValmax();
 	return sortie;
 }
 

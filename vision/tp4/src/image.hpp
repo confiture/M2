@@ -20,6 +20,8 @@ public:
 
   image(const image & im);
 
+  void updateValmax();
+
   /**
    *Destructeur.
    */
@@ -27,16 +29,15 @@ public:
     delete [] buffer;
   }
 
-
   int EcrireImagePGM(char* nomFichier)const;
 
-  int& operator()(int i,int j);
+  double& operator()(int i,int j);
 
-  int operator()(int i,int j)const;
+  double operator()(int i,int j)const;
 
   image LireImagePGM(char* nomFichier);
 
-  void ApplyFilter(int p,float** filter,int pix_i,int pix_j,image & sortie);
+  void ApplyFilter(int p,double** filter,int pix_i,int pix_j,image & sortie);
 
   image* contourX();
 
@@ -60,10 +61,14 @@ public:
 
   void recadre(int a,int b);
 
-  void croix(int i,int j,int color);
+  bool maxLoc(int i,int j);
+
+  void drawCross(int i,int j,int color);
+
+  void drawPts(const std::list<pixel> & Lpix,int col);
 
 private:
   int largeur, hauteur, valmax;
-  int* buffer;
+  double* buffer;
 
 };
