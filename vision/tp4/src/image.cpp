@@ -106,9 +106,9 @@ int image::EcrireImagePGM(char* nomFichier)const{
 }
 
 
-void image::recadre(int a,int b){
-	int min;
-	int max;
+void image::recadre(double a,double b){
+	double min;
+	double max;
 	min=max=(*this)(1,1);
 	for(int i=1;i<hauteur-1;i++){
 		for(int j=1;j<largeur-1;j++){
@@ -120,7 +120,7 @@ void image::recadre(int a,int b){
 	for(int i=1;i<hauteur;i++){
 		for(int j=1;j<largeur;j++){
 			(*this)(i,j)=(((double)(*this)(i,j)-(double)min)/
-			              ((double)max-(double)min))*(b-a)+a;
+			              ((double)max-(double)min))*(b-a)+(double)a;
 		}
 	}
 
@@ -156,10 +156,14 @@ image* image::HarrisFilter(double alpha){
 	image* Iy2g=Iy2->GaussFilter();
 	image* Ixyg=Ixy->GaussFilter();
 
-	Ix2g->EcrireImagePGM("Ix2g.pgm");
-	Iy2g->EcrireImagePGM("Iy2g.pgm");
+	image tempix2g(*Ix2g);
+	image tempiy2g(*Iy2g);
 	image temp(*Ixyg);
+	tempix2g.recadre(0,255);
+	tempiy2g.recadre(0,255);
 	temp.recadre(0,255);
+	tempix2g.EcrireImagePGM("Ix2g.pgm");
+	tempiy2g.EcrireImagePGM("Iy2g.pgm");
 	temp.EcrireImagePGM("Ixyg.pgm");
 
 	delete gauss;delete Ix2;delete Iy2;delete Ixy;
@@ -167,8 +171,7 @@ image* image::HarrisFilter(double alpha){
 	image* sortie=new image(hauteur,largeur,0);
 	for(int i=1;i<hauteur-1;i++){
 		for(int j=1;j<largeur-1;j++){
-			(*sortie)(i,j)=(*Ix2g)(i,j)*(*Iy2g)(i,j)-(*Ixyg)(i,j)*(*Ixyg)(i,j)-
-				alpha*((*Ix2g)(i,j)+(*Iy2g)(i,j))*((*Ix2g)(i,j)+(*Iy2g)(i,j));
+			(*sortie)(i,j)=(*Ix2g)(i,j)*(*Iy2g)(i,j)-(*Ixyg)(i,j)*(*Ixyg)(i,j)-alpha*((*Ix2g)(i,j)+(*Iy2g)(i,j))*((*Ix2g)(i,j)+(*Iy2g)(i,j));
 			//if((*sortie)(i,j)<0)(*sortie)(i,j)=0;
 			if((*sortie)(i,j)>sortie->valmax)sortie->valmax=(*sortie)(i,j);
 		}
@@ -196,25 +199,27 @@ bool image::maxLoc(int i,int j){
 	return false;
 }
 
-std::list<pixel> image::best_interest_points(int n){
-	elim_neg();
+std::list<pixel> image::best_interest_points(int n)const{
+	image im(*this);
+	im.elim_neg();
+
 	list<pixel> lpixel;
-	for(int i=1;i<hauteur-1;i++){
-		for(int j=1;j<largeur-1;j++){
-			if(maxLoc(i,j)){
-				pixel p(i,j,(*this)(i,j));
+	for(int i=1;i<im.hauteur-1;i++){
+		for(int j=1;j<im.largeur-1;j++){
+			if(im.maxLoc(i,j)){
+				pixel p(i,j,im(i,j));
 				lpixel.push_back(p);
 			}
 		}
 	}
 
-	reverse(lpixel.begin(),lpixel.end());
+	lpixel.sort();
 
 	list<pixel> lpixsortie;
-	std::list<pixel>::iterator it=lpixel.begin();
+	std::list<pixel>::iterator it=lpixel.end();
 	for(int i=0;i<n;i++){
 		lpixsortie.push_back(*it);
-		it++;
+		it--;
 	}
 
 	return lpixsortie;
@@ -229,14 +234,14 @@ void image::drawPts(const std::list<pixel> & Lpix, int col){
 
 
 void image::drawCross(int i,int j,int color){
-	int epais=5;
-	int grand=5;
+	int epais=0.5;
+	int grand=2;
 
 	//la verticale
 	for(int ii=i-grand;ii<=i+grand;ii++){
 		for(int jj=j-epais;jj<=j+epais;jj++){
 			if(ii>=0 && ii<hauteur && jj<largeur && jj>=0){
-					(*this)(i,j)=color;
+					(*this)(ii,jj)=color;
 				}
 		}
 	}
@@ -245,7 +250,7 @@ void image::drawCross(int i,int j,int color){
 	for(int jj=j-grand;jj<=j+grand;jj++){
 		for(int ii=i-epais;ii<=i+epais;ii++){
 			if(ii>=0 && ii<hauteur && jj<largeur && jj>=0){
-					(*this)(i,j)=color;
+					(*this)(ii,jj)=color;
 				}
 		}
 	}
@@ -382,4 +387,44 @@ image* image::contourY(){
 	return sortie;
 }
 
+
+double image::ssd(int i1,int j1,const image & comp,int i2,int j2,int n, int p){
+	double res=0;
+	for(int i=-n;i<=n;i++){
+		for(int j=-p;j<=p;j++){
+			res+=((*this)(i1+i,j1+j)-comp(i2+i,j2+j))*((*this)(i1+i,j1+j)-comp(i2+i,j2+j));
+		}
+	}
+
+	return res;
+}
+
+void image::matchPoints(const image & comp,int nbpoints,int winn,int winp,
+                        double (*score)(int,int,const image &,int,int,int,int))const{
+	double currentScore;
+	pixel minPix;
+
+	std::list<pixel> thisBest=best_interest_points(nbpoints);
+	std::list<pixel> compBest=comp.best_interest_points(nbpoints);
+
+	std::list<pixel>::iterator thisIt=thisBest.begin();
+	std::list<pixel>::iterator thisItEnd=thisBest.end();
+	std::list<pixel>::iterator compItEnd=compBest.end();
+
+	for(thisIt;thisIt!=thisItEnd;thisIt++){
+		double minScore=1000000;
+		std::list<pixel>::iterator compIt=compBest.begin();
+		for(compIt;compIt!=compItEnd;compIt++){
+			minScore=numeric_limits<double>::infinity();
+			currentScore=score(thisIt->_i,thisIt->_j,comp,compIt->_i,compIt->_j,winn,winp);
+			if(currentScore<minScore){
+				minScore=currentScore;
+				minPix._i=compIt->_i;minPix._j=compIt->_j;
+				minPix._val=minScore;
+			}
+		}
+		std::cout<<thisIt->_i<<" "<<thisIt->_j<<"-->"<<minPix._i<<" "<<minPix._j<<" "
+		         <<minPix._val<<std::endl;
+	}
+}
 

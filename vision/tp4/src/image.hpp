@@ -8,6 +8,7 @@
 #include <fstream>
 #include <streambuf>
 #include <algorithm>
+#include <limits>
 #include "pixel.hpp"
 #include <list>
 
@@ -55,17 +56,22 @@ public:
 
   void elim_neg();
 
-  std::list<pixel> best_interest_points(int n);
+  std::list<pixel> best_interest_points(int n)const;
 
   image* GaussFilter();
 
-  void recadre(int a,int b);
+  void recadre(double a,double b);
 
   bool maxLoc(int i,int j);
 
   void drawCross(int i,int j,int color);
 
   void drawPts(const std::list<pixel> & Lpix,int col);
+
+  double ssd(int i1,int j1,const image & comp,int i2,int j2,int n, int p);
+
+  void matchPoints(const image & comp,int nbpoints,int winn,int winp,
+                   double (*score)(int,int,const image &,int,int,int,int))const;
 
 private:
   int largeur, hauteur, valmax;

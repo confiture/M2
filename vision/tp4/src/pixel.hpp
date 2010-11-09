@@ -7,6 +7,8 @@ public:
 		_val=val;
 	}
 
+	inline pixel(){}
+
 	inline friend bool operator<(const pixel & p1,const pixel & p2){
 		return p1._val<p2._val;
 	}

@@ -23,13 +23,25 @@ void nMeilPts(char* char0,char * char1,char * char2,double alpha){
   im.EcrireImagePGM(char2);
 }
 
+void debil(char * fic,char * fic2){
+  image im(fic);
+  image* gaussien =im.GaussFilter();
+  gaussien->EcrireImagePGM(fic2);
+}
+
 int main(int argc, char* argv[]){
 
   double alpha;
   sscanf(argv[2],"%f",&alpha);
-  exHarris(argv[1],alpha,argv[3]);
+  //exHarris(argv[1],alpha,argv[3]);
 
-  //nMeilPts(argv[1],argv[3],argv[4],alpha);
+  nMeilPts(argv[1],argv[3],argv[4],alpha);
+
+
+  //////////////////////////////////
+  //////////////////////////////////
+  //////////////////////////////////
+  //debil(argv[1],argv[2]);
 
   return 0;
 }
