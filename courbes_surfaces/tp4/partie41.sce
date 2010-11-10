@@ -3,7 +3,7 @@
 /////////////////////////////////////////////////////////
 function prog41()
   
-//// 1 - définition de la NURBS
+//// 1 - dï¿½finition de la NURBS
 cas = 1; // NURBS lue dans un fichier
 //cas = 0; // NURBS definie dans le programme
 select cas
@@ -14,8 +14,8 @@ case 1 // lecture dans un fichier
   Y = T(:,:,2);
   Z = T(:,:,3);
   omega = T(:,:,4);
-else // définition de la NURBS dans le programme    
-  // tableau de la coordonnée 1 des points de controle
+else // dï¿½finition de la NURBS dans le programme    
+  // tableau de la coordonnï¿½e 1 des points de controle
   X =  [
       0   1   2   3   4;...
       0   1   2   3   4;...
@@ -24,7 +24,7 @@ else // définition de la NURBS dans le programme
       0   1   2   3   4;...
       0   1   2   3   4;...
       0   1   2   3   4];  
-  // tableau de la coordonnée 2 des points de controle
+  // tableau de la coordonnï¿½e 2 des points de controle
   Y =  [
       0   0   0   0   0;...
       1   1   1   1   1;...
@@ -33,7 +33,7 @@ else // définition de la NURBS dans le programme
       4   4   4   4   4;...
       5   5   5   5   5;...
       6   6   6   6   6];  
-  // tableau de la coordonnée 3 des points de controle
+  // tableau de la coordonnï¿½e 3 des points de controle
   Z =  [
       0   0   0   0   0;...
       0   0   0   0   0;...
@@ -52,10 +52,10 @@ else // définition de la NURBS dans le programme
       1   1   1   1   1;...
       1   1   1   1   1];
       
-  // noeuds, degré suivant la dimension 1
+  // noeuds, degrï¿½ suivant la dimension 1
   u = [0 1 2 3 4]; du = 3; 
 
-  // noeuds, degré suivant la dimension 2
+  // noeuds, degrï¿½ suivant la dimension 2
   v = [0 1 2 3];   dv = 2; nv = length(v)-1;
 
 end // select cas
@@ -65,14 +65,14 @@ ordre_u = du+1; nu = length(u)-1;
 // ordre et nombre d'intervalles suivant la dimension 2
 ordre_v = dv+1; nv = length(v)-1;
 
-//// 2 - conversion de la NURBS en Bézier
+//// 2 - conversion de la NURBS en Bï¿½zier
 
 // ************************************ 
 // ******** PARTIE A COMPLETER ******** 
 // ************************************ 
 
 
-//// 3 - écriture des fichiers
+//// 3 - ï¿½criture des fichiers
 
 // le polyedre de controle de la NURBS
 f=mopen("nurbs.mesh","w");
@@ -82,14 +82,14 @@ mclose(f)
 // DECOMMENTER LES LIGNES SUIVANTES AVANT ENDFUNCTION 
 
 //// la liste de patch de Bezier
-//f=mopen("nurbs_bezier.list","w");
-//mfprintf(f, "{\n LIST\n");
+f=mopen("nurbs_bezier.list","w");
+mfprintf(f, "{\n LIST\n");
 //
 //for i=1:nu
 //for j=1:nv
 //  
-//  // récupération des points de controle en coordonnees homogènes
-//  // de la Bézier (i,j) : 4 matrices B1,B2,B3,B4 
+//  // rï¿½cupï¿½ration des points de controle en coordonnees homogï¿½nes
+//  // de la Bï¿½zier (i,j) : 4 matrices B1,B2,B3,B4 
 //  // de dimensions ordre_u x ordre_v
 //  
 //// ************************************ 
@@ -100,6 +100,11 @@ mclose(f)
 //end
 //end
 //
+for i=1:nu
+  
+
+
+
 //mfprintf(f, "}\n");
 //mclose(f);
 
@@ -107,15 +112,15 @@ endfunction
 //----------------------------------------------
 
 /////////////////////////////////////////////////////////
-// ecriture d'un objet MESH - polyèdre grille rectangulaire
-// Entrée : X,Y,Z = tableau des coordonnées des points
-//          fid : identificateur d'un fichier ouvert en écriture avec mopen
+// ecriture d'un objet MESH - polyï¿½dre grille rectangulaire
+// Entrï¿½e : X,Y,Z = tableau des coordonnï¿½es des points
+//          fid : identificateur d'un fichier ouvert en ï¿½criture avec mopen
 function write_MESH(fid,X,Y,Z)
 
 nu = size(X,1);
 nv = size(X,2);
 
-// début de l'objet composite
+// dï¿½but de l'objet composite
 mfprintf(fid,"{\n");
 
 mfprintf(fid, 'MESH\n%d %d\n', nv, nu);
@@ -133,14 +138,14 @@ endfunction
 //----------------------------------------------
 
 /////////////////////////////////////////////////////////
-// ecriture d'un patch de Bézier rationnel dans un fichier
+// ecriture d'un patch de Bï¿½zier rationnel dans un fichier
 // au format Geomview
 // Entree = P1,P2,P3,P4 : tableaux des coordonnees des points 
-//          en coordonnées homogènes du patch de Bézier
+//          en coordonnï¿½es homogï¿½nes du patch de Bï¿½zier
 //            P1,P2,P3,P4 matrices de dimensions Nu par Nv
 //            avec Nu et Nv compris entre 2 et 7
-//            (degrés compris entre 1 et 6)
-//          fid : identificateur d'un fichier ouvert en écriture avec
+//            (degrï¿½s compris entre 1 et 6)
+//          fid : identificateur d'un fichier ouvert en ï¿½criture avec
 //            mopen
 function write_BEZ4(fid, P1,P2,P3,P4)
 
@@ -168,22 +173,22 @@ endfunction
 //----------------------------------------------
 
 /////////////////////////////////////////////////////////
-// Passage de la forme NURBS à la forme Bézier - Cas d'une courbe ouverte
-// Entrée : D = tableau des points de controle DeBoor (1 point par colonne)
+// Passage de la forme NURBS ï¿½ la forme Bï¿½zier - Cas d'une courbe ouverte
+// Entrï¿½e : D = tableau des points de controle DeBoor (1 point par colonne)
 //          tau = vecteur des noeuds 
 //          k = l'ordre de la BSpline
-// Sortie : PC = tableau des différents polygones de controle
+// Sortie : PC = tableau des diffï¿½rents polygones de controle
 // 
-// k : entier > 1, d = k-1 (degré de la Bspline)
-// tau : tableau de n+1 réels (n nombre d'intervalles)
+// k : entier > 1, d = k-1 (degrï¿½ de la Bspline)
+// tau : tableau de n+1 rï¿½els (n nombre d'intervalles)
 // D : tableau de p=n+d points (p colonnes)
 // PC : tableau de q=k*n points
 //   PC(:,1+(i-1)*k:i*k) contient les d+1 points de controle 
-//    de la i-eme Bézier (1 <= i <= n)
+//    de la i-eme Bï¿½zier (1 <= i <= n)
 function PC = NURBS1DToBezier(D,tau,k)
 
-// FORME BEZIER : on sature chaque noeud avec la multiplicité = k
-// afin d''obtenir la forme Bézier composite de la B-spline
+// FORME BEZIER : on sature chaque noeud avec la multiplicitï¿½ = k
+// afin d''obtenir la forme Bï¿½zier composite de la B-spline
 
 // calcul du vecteur nodal - cas courbe ouverte
 // saturation des noeuds de bord
@@ -206,19 +211,19 @@ endfunction
 /////////////////////////////////////////////////////////
 // Modification de la structure NURBS par insertion de noeuds
 // Entree : D = tableau des points de controle (1 point par colonne)
-//          vectnoeuds = le vecteur nodal (avec noeuds de bord saturés)
+//          vectnoeuds = le vecteur nodal (avec noeuds de bord saturï¿½s)
 //          ordre = ordre de la Bspline
-//          x = noeuds à insérer
-// Sortie : D2 = tableau des points de controle résultant
-//          vectnoeuds = le vecteur nodal résultant
-// ordre : entier > 0, d = ordre-1 : degré de la BSpline
-// vectnoeuds : tableau de q=n+2*d+1 réels avec 
+//          x = noeuds ï¿½ insï¿½rer
+// Sortie : D2 = tableau des points de controle rï¿½sultant
+//          vectnoeuds = le vecteur nodal rï¿½sultant
+// ordre : entier > 0, d = ordre-1 : degrï¿½ de la BSpline
+// vectnoeuds : tableau de q=n+2*d+1 rï¿½els avec 
 //   vectnoeuds(1) = ... = vectnoeuds(d+1) <= vectnoeuds(d+2)<= ...
 //    ... <= vectnoeuds(n+d+1) = ... = vectnoeuds(n+2*d+1)
 // D : tableau de p = n+d points
-// x : réel tel que vectnoeuds(d+1) < x < vectnoeuds(n+d+1)
+// x : rï¿½el tel que vectnoeuds(d+1) < x < vectnoeuds(n+d+1)
 // D2 : tableau de p+1 points
-// vectnoeuds2 : tableau de q+1 réels  
+// vectnoeuds2 : tableau de q+1 rï¿½els  
 function [D2,vectnoeuds2] = InsertionNoeud(D,vectnoeuds,ordre,x)
 
 if x<=vectnoeuds(1) 
@@ -252,7 +257,7 @@ for i = r - ordre + 1 + j : r
     A(:,ii) = cf1 * A(:,ii) + cf2 * A(:,ii+1);
 end
 
-// mise à jour du polygone et du vecteur des noeuds
+// mise ï¿½ jour du polygone et du vecteur des noeuds
 D2 = [D(:,1:r-ordre+1)  A(:,1:ordre-1)  D(:,r:size(D,2))];
 vectnoeuds2 = [vectnoeuds(1:r)  x  vectnoeuds(r+1:size(vectnoeuds,2))];
 
@@ -260,35 +265,35 @@ endfunction
 //----------------------------------------------
 
 /////////////////////////////////////////////////////////
-// lecture d'un fichier contenant la définition d'une NURBS
-// Entrée : nom_f = le nom du fichier texte à lire
+// lecture d'un fichier contenant la dï¿½finition d'une NURBS
+// Entrï¿½e : nom_f = le nom du fichier texte ï¿½ lire
 // Sortie : T = hyper-matrice de dimensions M x N x 4
-//            le point de controle D(k,l) est donné par [T(k,l,1),T(k,l,2),T(k,l,3)]
-//            le poids correspondant w(k,l) est donné par T(k,l,4)
+//            le point de controle D(k,l) est donnï¿½ par [T(k,l,1),T(k,l,2),T(k,l,3)]
+//            le poids correspondant w(k,l) est donnï¿½ par T(k,l,4)
 //          u,v = vecteurs de noeuds de dimensions respectives nu+1 et nv+1
-//          du,dv = degrés en u et v
+//          du,dv = degrï¿½s en u et v
 //             on aura M = nu+du et N = nv+dv
 //
-// Le fichier d'entrée doit avoir la structure suivante
-// - le degré du en u sur une ligne
-// - le degré dv en v sur une ligne
+// Le fichier d'entrï¿½e doit avoir la structure suivante
+// - le degrï¿½ du en u sur une ligne
+// - le degrï¿½ dv en v sur une ligne
 // - le nombre nu+1 de noeuds en u sur une ligne
 // - les nu+1 valeurs des noeuds u(i) par ordre croissant sur une seule ligne
 // - le nombre nv+1 de noeuds en v sur une ligne
 // - les nv+1 valeurs des noeuds v(j) par ordre croissant sur une seule ligne
-// - les coordonnées X des points de controle dans l'ordre suivant avec
+// - les coordonnï¿½es X des points de controle dans l'ordre suivant avec
 //   M lignes de N valeurs :
 //     X(1,1) X(1,2) ... X(1,N)
 //     X(2,1) X(2,2) ... X(2,N)
 //      ...    ...        ...
 //     X(M,1) X(M,2) ... X(M,N)
-// - les coordonnées Y des points de controle dans l'ordre suivant avec
+// - les coordonnï¿½es Y des points de controle dans l'ordre suivant avec
 //   M lignes de N valeurs :
 //     Y(1,1) Y(1,2) ... Y(1,N)
 //     Y(2,1) Y(2,2) ... Y(2,N)
 //      ...    ...        ...
 //     Y(M,1) Y(M,2) ... Y(M,N)
-// - les coordonnées Z des points de controle dans l'ordre suivant avec
+// - les coordonnï¿½es Z des points de controle dans l'ordre suivant avec
 //   M lignes de N valeurs :
 //     Z(1,1) Z(1,2) ... Z(1,N)
 //     Z(2,1) Z(2,2) ... Z(2,N)
@@ -304,7 +309,7 @@ endfunction
 // et n'est pas pris en compte
 function [T,u,v,du,dv]=lire_fichier_NURBS(nom_f)
   
-  // construction d'un format de lecture pour lire n réels
+  // construction d'un format de lecture pour lire n rï¿½els
   function fmt=format_reels(n)
     fmt = '%f';
     for i=2:n
@@ -313,10 +318,10 @@ function [T,u,v,du,dv]=lire_fichier_NURBS(nom_f)
   endfunction
   
   // teste de quel type est la chaine de caractere s
-  // res = 0 : s correspond à une fin de fichier
+  // res = 0 : s correspond ï¿½ une fin de fichier
   // res = 1 : s est une ligne de commentaire ou ligne vide
-  // res = 2 : s est une ligne commençant par une valeur numérique
-  // res = 3 : s est une ligne ne commençant pas par un caractère numérique
+  // res = 2 : s est une ligne commenï¿½ant par une valeur numï¿½rique
+  // res = 3 : s est une ligne ne commenï¿½ant pas par un caractï¿½re numï¿½rique
   function res=type_ligne(s)
     
     // si s vide : fin de fichier
@@ -337,7 +342,7 @@ function [T,u,v,du,dv]=lire_fichier_NURBS(nom_f)
       res=1; return;
     end
     
-    // test si le premier caractere significatif de s est numérique
+    // test si le premier caractere significatif de s est numï¿½rique
     res = 3;
     for i=1:length(code_s)
       c = code_s(i);
@@ -345,7 +350,7 @@ function [T,u,v,du,dv]=lire_fichier_NURBS(nom_f)
       if c==32 | c==9
         continue
       end
-      // caractere numérique : [09]+-.
+      // caractere numï¿½rique : [09]+-.
       if c==43 | c==45 | c==46 | (c>=48 & c<=57)
         res=2; return;
       else
@@ -356,7 +361,7 @@ function [T,u,v,du,dv]=lire_fichier_NURBS(nom_f)
   
   
   // lecture dans le fichier f de la ligne significative suivante
-  // ligne non vide, ne commençant pas par # et dont le premier
+  // ligne non vide, ne commenï¿½ant pas par # et dont le premier
   // caractere significatif est un caractere numerique
   function s=lire_ligne_significative(f)
     res=1;
@@ -379,11 +384,11 @@ function [T,u,v,du,dv]=lire_fichier_NURBS(nom_f)
     error(msg);
   end
   
-  // lecture du degré en u
+  // lecture du degrï¿½ en u
   s=lire_ligne_significative(f);
   du = msscanf(1,s,"%d");
   if du<1 | du>6
-    error('le degré en u doit etre entre 1 et 6');
+    error('le degrï¿½ en u doit etre entre 1 et 6');
   end
   
   // lecture du nombre de noeuds en u 
@@ -397,16 +402,16 @@ function [T,u,v,du,dv]=lire_fichier_NURBS(nom_f)
   // lecture des nu+1 noeuds u(i)
   s=lire_ligne_significative(f);
   u = msscanf(1,s,format_reels(nu+1));
-  // teste si u est formée de valeurs croissantes
+  // teste si u est formï¿½e de valeurs croissantes
   if (min(diff(u))<0)
     error('le vecteur de noeuds u(i) n''est pas croissant');
   end
   
-  // lecture du degré en v
+  // lecture du degrï¿½ en v
   s=lire_ligne_significative(f);
   dv = msscanf(1,s,"%d");
   if dv<1 | dv>6
-    error('le degré en v doit etre entre 1 et 6');
+    error('le degrï¿½ en v doit etre entre 1 et 6');
   end
   
   // lecture du nombre de noeuds en v 
@@ -420,7 +425,7 @@ function [T,u,v,du,dv]=lire_fichier_NURBS(nom_f)
   // lecture des nv+1 noeuds v(j)
   s=lire_ligne_significative(f);
   v = msscanf(1,s,format_reels(nv+1));
-  // teste si v est formée de valeurs croissantes
+  // teste si v est formï¿½e de valeurs croissantes
   if (min(diff(v))<0)
     error('le vecteur de noeuds v(i) n''est pas croissant');
   end
@@ -473,5 +478,41 @@ function [T,u,v,du,dv]=lire_fichier_NURBS(nom_f)
   
 endfunction
 //----------------------------------------------
+
+////////////////////////////////////////////////////////////////
+//Prend en entrÃ©e le polygone de controle D, le vecteur des 
+//noeuds t, le rang k le ne noeud Ã  insÃ©rer.
+//Retourne le polygone de contrÃ´le X, correspondant au polygone
+//D.                                                            //
+//////////////////////////////////////////////////////////////////
+function [X,t_ins]=insert_node(D,t,k,nod)
+	//recherche de l'intervalle [tau_i ; tau_i+1]
+	i=1
+	while(nod>=t(i))
+		i=i+1;
+          end
+	r=i-1
+	
+	lambda=(nod-t(r-k+2:r))./(t(r+1:r+k-1)-t(r-k+2:r))
+	
+	//initialisation de A0
+	A=D(:,r+1-k:r)
+	
+	//calcul A1
+	A=[(1-lambda);(1-lambda)].*(A(:,1:k-1))+[lambda;lambda].*(A(:,2:k))
+	
+	X=[D(:,1:r-k+1) A D(:,r:size(D,2))]
+	
+	i=1
+	t_ins=zeros(1,size(t,2)+1)
+	
+	while (t(i)<nod)
+		t_ins(i)=t(i)
+		i=i+1
+	end
+	t_ins(i)=nod
+	
+	t_ins(i+1:$)=t(i:$)
+endfunction
 
 
