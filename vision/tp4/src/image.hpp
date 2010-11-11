@@ -18,16 +18,16 @@ class image{
 public:
 
   image(int hauteur, int largeur,int valmax);
-  
+
   image(char* nomFichier);
 
   image(const image & im);
 
-  // Fusion de l'image im1 avec l'image im2 
+  // Fusion de l'image im1 avec l'image im2
   image(const image & im1, const image & im2);
-  
-  
- 
+
+
+
   void updateValmax();
 
   /**
@@ -38,11 +38,11 @@ public:
   }
 
   int getHauteur();
-  
+
   int getLargeur();
- 
+
   int getValmax();
-  
+
   int EcrireImagePGM(char* nomFichier)const;
 
   double& operator()(int i,int j);
@@ -93,7 +93,16 @@ public:
   double sigma(int i_pix,int j_pix, int n, int p)const;
 
   pixel** matchPoints(const image & comp,int nbpoints,int winn,int winp,
-                   double (image::*score)(int,int,const image &,int,int,int,int)const)const;
+                      double (image::*score)(int,int,const image &,int,int,int,int)const,bool sim=false)const;
+
+  pixel** dblMatchPoints(const image & comp,int nbpoints,int winn,int winp,
+                      double (image::*score)(int,int,const image &,int,int,int,int)const,bool sim=false)const;
+
+  image* drawMatchPoints(const image & comp,int nbpoints,int winn,int winp,
+                      double (image::*score)(int,int,const image &,int,int,int,int)const,bool sim=false)const;
+
+  image* drawDblMatchPoints(const image & comp,int nbpoints,int winn,int winp,
+                            double (image::*score)(int,int,const image &,int,int,int,int)const,bool sim)const;
 
 private:
   int largeur, hauteur, valmax;

@@ -21,7 +21,7 @@ double image::operator()(int i,int j)const{
 int image::getHauteur(){
 	return hauteur;
 }
-  
+
 int image::getLargeur(){
 	return largeur;
 }
@@ -58,29 +58,29 @@ image::image(const image & im){
 }
 
 image::image(const image & im1, const image & im2){
-  // Initialisation de la hauteur maximal et de la valmax
-	int max_hauteur = im1.hauteur;	
+	// Initialisation de la hauteur maximal et de la valmax
+	int max_hauteur = im1.hauteur;
 	if(max_hauteur<im2.hauteur){max_hauteur=im2.hauteur;}
 	double valmax = im1.valmax;
 	if(valmax<im2.valmax){valmax=im2.valmax;}
-	
+
 	this->buffer = new double[max_hauteur* (im1.largeur+im2.largeur)];
 	this->hauteur = max_hauteur;
 	this->largeur = im1.largeur + im2.largeur;
 	this->valmax=valmax;
-	
+
 	// Boucles sur la 1ère image
 	for(int i=0;i<im1.hauteur;i++){
 		for(int j=0;j<im1.largeur;j++){
 			(*this)(i,j) = im1(i,j);
-	      }
-	}	
+		}
+	}
 	// Boucles sur la 2ème image
 	for(int i=0;i<im2.hauteur;i++){
 		for(int j=0;j<im2.largeur;j++){
 			(*this)(i,j+im1.largeur) = im2(i,j);
 		}
-	}  
+	}
 }
 
 image::image(char* nomFichier){
@@ -306,6 +306,12 @@ void image::drawCross(int i,int j,int color){
 
 
 void image::drawLine(int xi,int yi,int xf,int yf,int color){
+	//if(xi==xf){
+	//	for(int j=yi;j<=yf;j++)(*this)(xi,j)=color;
+	//	return;
+	//}
+
+	/*
 	int x,y ;
 	double a,b ;
 	a =(double) (yf-yi)/(xf-xi) ;
@@ -313,6 +319,18 @@ void image::drawLine(int xi,int yi,int xf,int yf,int color){
 	for ( x = xi ; x <= xf ; x++ ) {
 		y =(int) (a * x + b) ;
 		(*this)(x,y)=color;
+	}
+	*/
+
+	double val;
+	double realVal;
+	double erreur;
+	double a=(double)(xf-xi)/(yf-yi);
+	double b=xi-a*yi;
+	//int x=xi;
+	for(int y=yi;y<=yf;y++){
+		val=a*y+b;
+		(*this)((int)val,y)=255;
 	}
 }
 
@@ -468,7 +486,7 @@ double image::moyenne(int i_pix,int j_pix, int n, int p)const{
 			nb_pix = nb_pix + 1;
 		}
 	}
-	moy = moy/nb_pix;
+	moy = moy/(double)nb_pix;
 	return moy;
 }
 
@@ -478,10 +496,10 @@ double image::sigma(int i_pix,int j_pix, int n, int p)const{
 	double moy = moyenne(i_pix,j_pix,n,p);
 	for(int i=-n;i<=n;i++){
 		for(int j=-p;j<=p;j++){
-			som+=(*this)(i_pix+i,j_pix+j) - moy*moy;
+			som+=((*this)(i_pix+i,j_pix+j)-moy)*((*this)(i_pix+i,j_pix+j)-moy);
 		}
 	}
-	double fact = 1 / ( (2*n+1)*(2*p+1) );
+	double fact = 1.0 / ( (2*n+1)*(2*p+1) );
 	res = sqrt(fact * som);
 	return res;
 }
@@ -497,21 +515,27 @@ double image::zncc(int i1,int j1,const image & comp,int i2,int j2,int n, int p)c
 
 	for(int i=-n;i<=n;i++){
 		for(int j=-p;j<=p;j++){
-			som=((*this)(i1+i,j1+j)-moy1) * ((comp(i2+i,j2+j)-moy2));
+			som+=((*this)(i1+i,j1+j)-moy1) * ((comp(i2+i,j2+j)-moy2));
 		}
 	}
-	res = (1/(sigma1*sigma2)) * som ;
+
+	// cout<<"======================"<<endl;
+// 	cout<<"som "<<som<<endl;
+// 	cout<<"sigma1 "<<sigma1<<endl;
+// 	cout<<"sigma2 "<<sigma2<<endl;
+// 	cout<<"======================"<<endl;
+	res = (1.0/(sigma1*sigma2)) * som ;
 	return res;
 }
 
 pixel** image::matchPoints(const image & comp,int nbpoints,int winn,int winp,
-                        double (image::*score)(int,int,const image &,int,int,int,int)const)const{
+                           double (image::*score)(int,int,const image &,int,int,int,int)const,bool sim)const{
 	pixel** corres=new pixel*[nbpoints];
 	for(int i=0;i<nbpoints;i++)corres[i]=new pixel[2];
 
 
 	double currentScore;
-	pixel minPix;
+	pixel Pix;
 
 	std::list<pixel> thisBest=best_interest_points(nbpoints,winn,winp);
 	std::list<pixel> compBest=comp.best_interest_points(nbpoints,winn,winp);
@@ -521,24 +545,100 @@ pixel** image::matchPoints(const image & comp,int nbpoints,int winn,int winp,
 	std::list<pixel>::iterator compItEnd=compBest.end();
 	int i=0;
 	for(thisIt;thisIt!=thisItEnd;thisIt++){
-		double minScore=numeric_limits<double>::infinity();
+		double extrScore;
+		if(sim){
+			extrScore=-numeric_limits<double>::infinity();
+			//extrScore=-10000000;
+		}
+		else{extrScore=numeric_limits<double>::infinity();}
+
 		std::list<pixel>::iterator compIt=compBest.begin();
 		for(compIt;compIt!=compItEnd;compIt++){
 
 			currentScore=(this->*score)(thisIt->_i,thisIt->_j,comp,compIt->_i,compIt->_j,winn,winp);
-			if(currentScore<minScore){
-				minScore=currentScore;
-				minPix._i=compIt->_i;minPix._j=compIt->_j;
-				minPix._val=minScore;
+			//cout<<"currentScore" <<currentScore<<endl;
+			if(currentScore<extrScore && !sim || currentScore>extrScore && sim){
+				extrScore=currentScore;
+				Pix._i=compIt->_i;Pix._j=compIt->_j;
+				Pix._val=(compIt->_val);
 			}
 		}
 
-		corres[i][1]=(*thisIt);
-		corres[i][2]=minPix;
-		//std::cout<<thisIt->_i<<" "<<thisIt->_j<<"-->"<<minPix._i<<" "<<minPix._j<<" "
-		//         <<minPix._val<<std::endl;
+		corres[i][0]=(*thisIt);
+		corres[i][1]=Pix;
+		std::cout<<thisIt->_i<<" "<<thisIt->_j<<" val "<<thisIt->_val<<"-->"<<Pix._i<<" "<<Pix._j<<" val"
+			" val "<<Pix._val<<" score "<<currentScore<<std::endl;
+
+		i++;
 	}
 
 	return corres;
+}
+
+pixel** image::dblMatchPoints(const image & comp,int nbpoints,int winn,int winp,
+                              double (image::*score)(int,int,const image &,int,int,int,int)const,bool sim)const{
+
+	pixel** corres1=matchPoints(comp,nbpoints,winn,winp,score,sim);
+	pixel** corres2=comp.matchPoints(*this,nbpoints,winn,winp,score,sim);
+
+	pixel** corres=new pixel*[nbpoints];
+
+	int k=0;
+	for(int i=0;i<nbpoints;i++){
+		for(int j=0;j<nbpoints;j++){
+			if(corres1[i][0].equalPos(corres2[j][1]) && corres2[j][0].equalPos(corres1[i][1])){
+				corres[k]=new pixel[2];
+				corres[k][0]=corres1[i][0];
+				corres[k][1]=corres1[i][1];
+				k++;
+				break;
+			}
+		}
+	}
+	corres[k]=NULL;
+
+	for(int i=0;i<nbpoints;i++){
+		delete[] corres1[i];
+		delete[] corres2[i];
+	}
+	delete[] corres1;
+	delete[] corres2;
+
+	return corres;
+}
+
+image* image::drawMatchPoints(const image & comp,int nbpoints,int winn,int winp,
+                           double (image::*score)(int,int,const image &,int,int,int,int)const,bool sim)const{
+
+	pixel** corres=matchPoints(comp,nbpoints,winn,winp,score,sim);
+
+	image* join=new image(*this,comp);
+
+	for(int i=0;i<nbpoints;i++){
+		join->drawLine(corres[i][0]._i,corres[i][0]._j,
+		               corres[i][1]._i,largeur+corres[i][1]._j,255);
+	}
+
+	return join;
+}
+
+image* image::drawDblMatchPoints(const image & comp,int nbpoints,int winn,int winp,
+                       double (image::*score)(int,int,const image &,int,int,int,int)const,bool sim)const{
+
+	pixel** corres=dblMatchPoints(comp,nbpoints,winn,winp,score,sim);
+
+	image* join=new image(*this,comp);
+
+	for(int i=0;i<nbpoints;i++){
+		if(corres[i]!=NULL){
+			join->drawLine(corres[i][0]._i,corres[i][0]._j,
+			               corres[i][1]._i,largeur+corres[i][1]._j,255);
+		}
+		else{
+			break;
+		}
+	}
+
+	return join;
 }
 
