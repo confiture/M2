@@ -1,7 +1,7 @@
 #include "image.hpp"
 
 using namespace std;
-
+//TEST//
 double& image::operator()(int i,int j){
 	return buffer[i*largeur+j];
 }
