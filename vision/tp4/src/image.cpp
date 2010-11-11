@@ -282,8 +282,8 @@ void image::drawPts(const std::list<pixel> & Lpix, int col){
 
 
 void image::drawCross(int i,int j,int color){
-	int epais=0.5;
-	int grand=2;
+	int epais=1;
+	int grand=5;
 
 	//la verticale
 	for(int ii=i-grand;ii<=i+grand;ii++){

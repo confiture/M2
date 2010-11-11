@@ -8,19 +8,19 @@ void exHarris(char* charfic,double alpha,char* sortiefic){
   delete sortie;
 }
 
-void nMeilPts(char* char0,char * char1,char * char2,double alpha){
+void nMeilPts(char* char0,char * char1,double alpha,int nb_interest_pts){
   image im(char0);
   image* sortie=im.HarrisFilter(alpha);;
 
-  std::list<pixel> Lpix=sortie->best_interest_points(50,1,1);
+  std::list<pixel> Lpix=sortie->best_interest_points(nb_interest_pts,1,1);
 
-  sortie->drawPts(Lpix,255);
+  //sortie->drawPts(Lpix,255);
 
-  sortie->recadre(0,255);
-  sortie->EcrireImagePGM(char1);
+  //sortie->recadre(0,255);
+  //sortie->EcrireImagePGM(char1);
 
   im.drawPts(Lpix,255);
-  im.EcrireImagePGM(char2);
+  im.EcrireImagePGM(char1);
 }
 
 void test_matchPoints(char * fic1,char* fic2,double alpha,int winn,int winp){
@@ -37,17 +37,20 @@ void debil(char * fic,char * fic2){
 
 int main(int argc, char* argv[]){
 
-  double alpha;
+   double alpha;
   sscanf(argv[2],"%f",&alpha);
+//   int nb_interest_pts = atoi(argv[3]);
+//   nMeilPts(argv[1],argv[4],alpha,nb_interest_pts);
+ 
+  
+  exHarris(argv[1],alpha,argv[3]);
 
-  //exHarris(argv[1],alpha,argv[3]);
-
-  //nMeilPts(argv[1],argv[3],argv[4],alpha);
-   image im1(argv[1]);
-   image im2(argv[2]);
-   image im(im1,im2);
-   //image sortie(im.getHauteur(),im.getLargeur(),im.getValmax());
-    im.EcrireImagePGM(argv[3]);
+  
+  
+   //image im1(argv[1]);
+   //image im2(argv[2]);
+   //image im(im1,im2);
+   // im.EcrireImagePGM(argv[3]);
   //test_matchPoints(argv[1],argv[3],alpha,atoi(argv[4]),atoi(argv[5]));
 
   //////////////////////////////////
