@@ -12,7 +12,7 @@ void nMeilPts(char* char0,char * char1,char * char2,double alpha){
   image im(char0);
   image* sortie=im.HarrisFilter(alpha);;
 
-  std::list<pixel> Lpix=sortie->best_interest_points(50);
+  std::list<pixel> Lpix=sortie->best_interest_points(50,1,1);
 
   sortie->drawPts(Lpix,255);
 
@@ -26,7 +26,7 @@ void nMeilPts(char* char0,char * char1,char * char2,double alpha){
 void test_matchPoints(char * fic1,char* fic2,double alpha,int winn,int winp){
   image im1(fic1);
   image comp(fic2);
-  im1.matchPoints(comp,50,winn,winp,&image::ssd);
+  im1.matchPoints(comp,50,winn,winp,&image::zncc);
 }
 
 void debil(char * fic,char * fic2){
@@ -37,8 +37,9 @@ void debil(char * fic,char * fic2){
 
 int main(int argc, char* argv[]){
 
- // double alpha;
- // sscanf(argv[2],"%f",&alpha);
+  double alpha;
+  sscanf(argv[2],"%f",&alpha);
+
   //exHarris(argv[1],alpha,argv[3]);
 
   //nMeilPts(argv[1],argv[3],argv[4],alpha);
@@ -48,7 +49,6 @@ int main(int argc, char* argv[]){
    //image sortie(im.getHauteur(),im.getLargeur(),im.getValmax());
     im.EcrireImagePGM(argv[3]);
   //test_matchPoints(argv[1],argv[3],alpha,atoi(argv[4]),atoi(argv[5]));
-
 
   //////////////////////////////////
   //////////////////////////////////

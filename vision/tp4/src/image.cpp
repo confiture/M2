@@ -3,10 +3,18 @@
 using namespace std;
 
 double& image::operator()(int i,int j){
+	assert(i>=0);
+	assert(i<hauteur);
+	assert(j>=0);
+	assert(j<largeur);
 	return buffer[i*largeur+j];
 }
 
 double image::operator()(int i,int j)const{
+	assert(i>=0);
+	assert(i<hauteur);
+	assert(j>=0);
+	assert(j<largeur);
 	return buffer[i*largeur+j];
 }
 
@@ -237,13 +245,13 @@ bool image::maxLoc(int i,int j){
 	return false;
 }
 
-std::list<pixel> image::best_interest_points(int n)const{
+std::list<pixel> image::best_interest_points(int n,int winn,int winp)const{
 	image im(*this);
 	im.elim_neg();
 
 	list<pixel> lpixel;
-	for(int i=1;i<im.hauteur-1;i++){
-		for(int j=1;j<im.largeur-1;j++){
+	for(int i=winn;i<im.hauteur-winn;i++){
+		for(int j=winp;j<im.largeur-winp;j++){
 			if(im.maxLoc(i,j)){
 				pixel p(i,j,im(i,j));
 				lpixel.push_back(p);
@@ -255,7 +263,9 @@ std::list<pixel> image::best_interest_points(int n)const{
 
 	list<pixel> lpixsortie;
 	std::list<pixel>::iterator it=lpixel.end();
+	it--;
 	for(int i=0;i<n;i++){
+		if(it==lpixel.begin())break;
 		lpixsortie.push_back(*it);
 		it--;
 	}
@@ -279,8 +289,8 @@ void image::drawCross(int i,int j,int color){
 	for(int ii=i-grand;ii<=i+grand;ii++){
 		for(int jj=j-epais;jj<=j+epais;jj++){
 			if(ii>=0 && ii<hauteur && jj<largeur && jj>=0){
-					(*this)(ii,jj)=color;
-				}
+				(*this)(ii,jj)=color;
+			}
 		}
 	}
 
@@ -288,9 +298,21 @@ void image::drawCross(int i,int j,int color){
 	for(int jj=j-grand;jj<=j+grand;jj++){
 		for(int ii=i-epais;ii<=i+epais;ii++){
 			if(ii>=0 && ii<hauteur && jj<largeur && jj>=0){
-					(*this)(ii,jj)=color;
-				}
+				(*this)(ii,jj)=color;
+			}
 		}
+	}
+}
+
+
+void image::drawLine(int xi,int yi,int xf,int yf,int color){
+	int x,y ;
+	double a,b ;
+	a =(double) (yf-yi)/(xf-xi) ;
+	b = yi - a * xi ;
+	for ( x = xi ; x <= xf ; x++ ) {
+		y =(int) (a * x + b) ;
+		(*this)(x,y)=color;
 	}
 }
 
@@ -437,7 +459,7 @@ double image::ssd(int i1,int j1,const image & comp,int i2,int j2,int n, int p)co
 	return res;
 }
 
-double image::moyenne(int i_pix,int j_pix, int n, int p){
+double image::moyenne(int i_pix,int j_pix, int n, int p)const{
 	double moy = 0 ;
 	int nb_pix = 0;
 	for(int i=-n;i<=n;i++){
@@ -450,7 +472,7 @@ double image::moyenne(int i_pix,int j_pix, int n, int p){
 	return moy;
 }
 
-double image::sigma(int i_pix,int j_pix, int n, int p){
+double image::sigma(int i_pix,int j_pix, int n, int p)const{
 	double som = 0;
 	double res = 0;
 	double moy = moyenne(i_pix,j_pix,n,p);
@@ -460,45 +482,49 @@ double image::sigma(int i_pix,int j_pix, int n, int p){
 		}
 	}
 	double fact = 1 / ( (2*n+1)*(2*p+1) );
-	res = sqrt(fact * som); 
+	res = sqrt(fact * som);
 	return res;
 }
- 
 
-double image::zncc(int i1,int j1,const image & comp,int i2,int j2,int n, int p){
+
+double image::zncc(int i1,int j1,const image & comp,int i2,int j2,int n, int p)const{
 	double som = 0;
 	double res = 0;
 	double moy1 = moyenne(i1,j1,n,p);
 	double moy2 = moyenne(i2,j2,n,p);
 	double sigma1 = sigma(i1,j1,n,p);
 	double sigma2 = sigma(i2,j2,n,p);
-	
+
 	for(int i=-n;i<=n;i++){
 		for(int j=-p;j<=p;j++){
-			som=((*this)(i1+i,j1+j)-moy1) * ((comp(i2+i,j2+j)-moy2)); 
+			som=((*this)(i1+i,j1+j)-moy1) * ((comp(i2+i,j2+j)-moy2));
 		}
 	}
 	res = (1/(sigma1*sigma2)) * som ;
 	return res;
 }
 
-void image::matchPoints(const image & comp,int nbpoints,int winn,int winp,
+pixel** image::matchPoints(const image & comp,int nbpoints,int winn,int winp,
                         double (image::*score)(int,int,const image &,int,int,int,int)const)const{
+	pixel** corres=new pixel*[nbpoints];
+	for(int i=0;i<nbpoints;i++)corres[i]=new pixel[2];
+
+
 	double currentScore;
 	pixel minPix;
 
-	std::list<pixel> thisBest=best_interest_points(nbpoints);
-	std::list<pixel> compBest=comp.best_interest_points(nbpoints);
+	std::list<pixel> thisBest=best_interest_points(nbpoints,winn,winp);
+	std::list<pixel> compBest=comp.best_interest_points(nbpoints,winn,winp);
 
 	std::list<pixel>::iterator thisIt=thisBest.begin();
 	std::list<pixel>::iterator thisItEnd=thisBest.end();
 	std::list<pixel>::iterator compItEnd=compBest.end();
-
+	int i=0;
 	for(thisIt;thisIt!=thisItEnd;thisIt++){
-		double minScore=1000000;
+		double minScore=numeric_limits<double>::infinity();
 		std::list<pixel>::iterator compIt=compBest.begin();
 		for(compIt;compIt!=compItEnd;compIt++){
-			minScore=numeric_limits<double>::infinity();
+
 			currentScore=(this->*score)(thisIt->_i,thisIt->_j,comp,compIt->_i,compIt->_j,winn,winp);
 			if(currentScore<minScore){
 				minScore=currentScore;
@@ -506,8 +532,13 @@ void image::matchPoints(const image & comp,int nbpoints,int winn,int winp,
 				minPix._val=minScore;
 			}
 		}
-		std::cout<<thisIt->_i<<" "<<thisIt->_j<<"-->"<<minPix._i<<" "<<minPix._j<<" "
-		         <<minPix._val<<std::endl;
+
+		corres[i][1]=(*thisIt);
+		corres[i][2]=minPix;
+		//std::cout<<thisIt->_i<<" "<<thisIt->_j<<"-->"<<minPix._i<<" "<<minPix._j<<" "
+		//         <<minPix._val<<std::endl;
 	}
+
+	return corres;
 }
 
