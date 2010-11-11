@@ -26,7 +26,7 @@ void nMeilPts(char* char0,char * char1,char * char2,double alpha){
 void test_matchPoints(char * fic1,char* fic2,double alpha,int winn,int winp){
   image im1(fic1);
   image comp(fic2);
-  im1.matchPoints(comp,50,winn,winp,&image::ssd);
+  im1.matchPoints(comp,50,winn,winp,&image::zncc);
 }
 
 void debil(char * fic,char * fic2){
