@@ -17,11 +17,16 @@ class image{
 public:
 
   image(int hauteur, int largeur,int valmax);
-
+  
   image(char* nomFichier);
 
   image(const image & im);
 
+  // Fusion de l'image im1 avec l'image im2 
+  image(const image & im1, const image & im2);
+  
+  
+ 
   void updateValmax();
 
   /**
@@ -31,6 +36,12 @@ public:
     delete [] buffer;
   }
 
+  int getHauteur();
+  
+  int getLargeur();
+ 
+  int getValmax();
+  
   int EcrireImagePGM(char* nomFichier)const;
 
   double& operator()(int i,int j);
@@ -76,6 +87,8 @@ public:
   double moyenne(int i_pix,int j_pix, int n, int p);
   
   double sigma(int i_pix,int j_pix, int n, int p);
+  
+
    
   void matchPoints(const image & comp,int nbpoints,int winn,int winp,
                    double (image::*score)(int,int,const image &,int,int,int,int)const)const;

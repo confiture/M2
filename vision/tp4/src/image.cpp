@@ -1,13 +1,25 @@
 #include "image.hpp"
 
 using namespace std;
-//TES
+
 double& image::operator()(int i,int j){
 	return buffer[i*largeur+j];
 }
 
 double image::operator()(int i,int j)const{
 	return buffer[i*largeur+j];
+}
+
+int image::getHauteur(){
+	return hauteur;
+}
+  
+int image::getLargeur(){
+	return largeur;
+}
+
+int image::getValmax(){
+	return valmax;
 }
 
 void image::updateValmax(){
@@ -35,6 +47,32 @@ image::image(const image & im){
 			(*this)(i,j)=im(i,j);
 		}
 	}
+}
+
+image::image(const image & im1, const image & im2){
+  // Initialisation de la hauteur maximal et de la valmax
+	int max_hauteur = im1.hauteur;	
+	if(max_hauteur<im2.hauteur){max_hauteur=im2.hauteur;}
+	double valmax = im1.valmax;
+	if(valmax<im2.valmax){valmax=im2.valmax;}
+	
+	this->buffer = new double[max_hauteur* (im1.largeur+im2.largeur)];
+	this->hauteur = max_hauteur;
+	this->largeur = im1.largeur + im2.largeur;
+	this->valmax=valmax;
+	
+	// Boucles sur la 1ère image
+	for(int i=0;i<im1.hauteur;i++){
+		for(int j=0;j<im1.largeur;j++){
+			(*this)(i,j) = im1(i,j);
+	      }
+	}	
+	// Boucles sur la 2ème image
+	for(int i=0;i<im2.hauteur;i++){
+		for(int j=0;j<im2.largeur;j++){
+			(*this)(i,j+im1.largeur) = im2(i,j);
+		}
+	}  
 }
 
 image::image(char* nomFichier){
