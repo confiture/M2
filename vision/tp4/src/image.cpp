@@ -388,7 +388,7 @@ image* image::contourY(){
 }
 
 
-double image::ssd(int i1,int j1,const image & comp,int i2,int j2,int n, int p){
+double image::ssd(int i1,int j1,const image & comp,int i2,int j2,int n, int p)const{
 	double res=0;
 	for(int i=-n;i<=n;i++){
 		for(int j=-p;j<=p;j++){
@@ -400,7 +400,7 @@ double image::ssd(int i1,int j1,const image & comp,int i2,int j2,int n, int p){
 }
 
 void image::matchPoints(const image & comp,int nbpoints,int winn,int winp,
-                        double (*score)(int,int,const image &,int,int,int,int))const{
+                        double (image::*score)(int,int,const image &,int,int,int,int)const)const{
 	double currentScore;
 	pixel minPix;
 
@@ -416,7 +416,7 @@ void image::matchPoints(const image & comp,int nbpoints,int winn,int winp,
 		std::list<pixel>::iterator compIt=compBest.begin();
 		for(compIt;compIt!=compItEnd;compIt++){
 			minScore=numeric_limits<double>::infinity();
-			currentScore=score(thisIt->_i,thisIt->_j,comp,compIt->_i,compIt->_j,winn,winp);
+			currentScore=(this->*score)(thisIt->_i,thisIt->_j,comp,compIt->_i,compIt->_j,winn,winp);
 			if(currentScore<minScore){
 				minScore=currentScore;
 				minPix._i=compIt->_i;minPix._j=compIt->_j;

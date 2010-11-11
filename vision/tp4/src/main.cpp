@@ -23,6 +23,12 @@ void nMeilPts(char* char0,char * char1,char * char2,double alpha){
   im.EcrireImagePGM(char2);
 }
 
+void test_matchPoints(char * fic1,char* fic2,double alpha,int winn,int winp){
+  image im1(fic1);
+  image comp(fic2);
+  im1.matchPoints(comp,50,winn,winp,&image::ssd);
+}
+
 void debil(char * fic,char * fic2){
   image im(fic);
   image* gaussien =im.GaussFilter();
@@ -35,7 +41,9 @@ int main(int argc, char* argv[]){
   sscanf(argv[2],"%f",&alpha);
   //exHarris(argv[1],alpha,argv[3]);
 
-  nMeilPts(argv[1],argv[3],argv[4],alpha);
+  //nMeilPts(argv[1],argv[3],argv[4],alpha);
+
+  test_matchPoints(argv[1],argv[3],alpha,atoi(argv[4]),atoi(argv[5]));
 
 
   //////////////////////////////////

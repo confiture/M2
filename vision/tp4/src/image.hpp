@@ -68,10 +68,10 @@ public:
 
   void drawPts(const std::list<pixel> & Lpix,int col);
 
-  double ssd(int i1,int j1,const image & comp,int i2,int j2,int n, int p);
+  double ssd(int i1,int j1,const image & comp,int i2,int j2,int n, int p)const;
 
   void matchPoints(const image & comp,int nbpoints,int winn,int winp,
-                   double (*score)(int,int,const image &,int,int,int,int))const;
+                   double (image::*score)(int,int,const image &,int,int,int,int)const)const;
 
 private:
   int largeur, hauteur, valmax;
