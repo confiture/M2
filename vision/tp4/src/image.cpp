@@ -1,7 +1,7 @@
 #include "image.hpp"
 
 using namespace std;
-//TEST//
+//TES
 double& image::operator()(int i,int j){
 	return buffer[i*largeur+j];
 }
@@ -396,6 +396,51 @@ double image::ssd(int i1,int j1,const image & comp,int i2,int j2,int n, int p)co
 		}
 	}
 
+	return res;
+}
+
+double image::moyenne(int i_pix,int j_pix, int n, int p){
+	double moy = 0 ;
+	int nb_pix = 0;
+	for(int i=-n;i<=n;i++){
+		for(int j=-p;j<=p;j++){
+			moy+=(*this)(i_pix+i,j_pix+j);
+			nb_pix = nb_pix + 1;
+		}
+	}
+	moy = moy/nb_pix;
+	return moy;
+}
+
+double image::sigma(int i_pix,int j_pix, int n, int p){
+	double som = 0;
+	double res = 0;
+	double moy = moyenne(i_pix,j_pix,n,p);
+	for(int i=-n;i<=n;i++){
+		for(int j=-p;j<=p;j++){
+			som+=(*this)(i_pix+i,j_pix+j) - moy*moy;
+		}
+	}
+	double fact = 1 / ( (2*n+1)*(2*p+1) );
+	res = sqrt(fact * som); 
+	return res;
+}
+ 
+
+double image::zncc(int i1,int j1,const image & comp,int i2,int j2,int n, int p){
+	double som = 0;
+	double res = 0;
+	double moy1 = moyenne(i1,j1,n,p);
+	double moy2 = moyenne(i2,j2,n,p);
+	double sigma1 = sigma(i1,j1,n,p);
+	double sigma2 = sigma(i2,j2,n,p);
+	
+	for(int i=-n;i<=n;i++){
+		for(int j=-p;j<=p;j++){
+			som=((*this)(i1+i,j1+j)-moy1) * ((comp(i2+i,j2+j)-moy2)); 
+		}
+	}
+	res = (1/(sigma1*sigma2)) * som ;
 	return res;
 }
 

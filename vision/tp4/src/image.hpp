@@ -11,6 +11,7 @@
 #include <limits>
 #include "pixel.hpp"
 #include <list>
+#include <cmath>
 
 class image{
 public:
@@ -70,6 +71,12 @@ public:
 
   double ssd(int i1,int j1,const image & comp,int i2,int j2,int n, int p)const;
 
+  double zncc(int i1,int j1,const image & comp,int i2,int j2,int n, int p);
+  
+  double moyenne(int i_pix,int j_pix, int n, int p);
+  
+  double sigma(int i_pix,int j_pix, int n, int p);
+   
   void matchPoints(const image & comp,int nbpoints,int winn,int winp,
                    double (image::*score)(int,int,const image &,int,int,int,int)const)const;
 
