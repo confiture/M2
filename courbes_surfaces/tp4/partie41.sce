@@ -82,29 +82,52 @@ mclose(f)
 // DECOMMENTER LES LIGNES SUIVANTES AVANT ENDFUNCTION 
 
 //// la liste de patch de Bezier
-f=mopen("nurbs_bezier.list","w");
-mfprintf(f, "{\n LIST\n");
-//
-//for i=1:nu
-//for j=1:nv
+//f=mopen("nurbs_bezier.list","w");
+//mfprintf(f, "{\n LIST\n");
+
+//saturation des vecteurs des noeuds
+for i=1:ordre_u
+  u=[u(1) u u($)]
+end
+for j=1:ordre_v
+  v=[v(1) v v($)]
+end
+
+for i=1:nu
+  for j=1:nv
 //  
 //  // r�cup�ration des points de controle en coordonnees homog�nes
 //  // de la B�zier (i,j) : 4 matrices B1,B2,B3,B4 
 //  // de dimensions ordre_u x ordre_v
-//  
-//// ************************************ 
-//// ******** PARTIE A COMPLETER ******** 
-//// ************************************ 
-//
-//  write_BEZ4(f, B1, B2, B3, B4);
-//end
-//end
-//
+  t_ins;
+  X=X
+	t_ins=t
+	for i=1+k:size(t,2)-k
+		for satn=2:k
+			[X,t_ins]=insert_node(X,t_ins,k,t(i))//on insère k-1 fois chaque noeud  
+                                                             //sauf pour les noeuds aux extrémités                                                               
+		end
+	end
+
+
+
 for i=1:nu
   
 
 
 
+
+
+
+
+
+
+
+//
+//  write_BEZ4(f, B1, B2, B3, B4);
+//end
+//end
+//
 //mfprintf(f, "}\n");
 //mclose(f);
 
@@ -479,18 +502,21 @@ function [T,u,v,du,dv]=lire_fichier_NURBS(nom_f)
 endfunction
 //----------------------------------------------
 
-////////////////////////////////////////////////////////////////
+
+
+///////////////////////////////////////////////////////////////////////////////
 //Prend en entrée le polygone de controle D, le vecteur des 
-//noeuds t, le rang k le ne noeud à insérer.
-//Retourne le polygone de contrôle X, correspondant au polygone
-//D.                                                            //
-//////////////////////////////////////////////////////////////////
+//noeuds t saturé aux extrémités, l'odre k de la courbe spline et 
+//le noeuds nod à insérer.
+//Retourne le polygone de contrôle X avec le noeud nod inséré et t_ins, le
+//nouveau vecteur des noeuds
+///////////////////////////////////////////////////////////////////////////////
 function [X,t_ins]=insert_node(D,t,k,nod)
 	//recherche de l'intervalle [tau_i ; tau_i+1]
 	i=1
 	while(nod>=t(i))
 		i=i+1;
-          end
+        end
 	r=i-1
 	
 	lambda=(nod-t(r-k+2:r))./(t(r+1:r+k-1)-t(r-k+2:r))
@@ -514,5 +540,4 @@ function [X,t_ins]=insert_node(D,t,k,nod)
 	
 	t_ins(i+1:$)=t(i:$)
 endfunction
-
 

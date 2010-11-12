@@ -26,8 +26,10 @@ function prog31()
 n=3;// degr�
 X = [3 3 2 0  3 2 0  2 0  0];
 Y = [0 2 3 3  0 2 3  0 2  0];
+//Y = [0 2 3 6  0 2 3  0 2  0];
 Z = [0 0 0 0  2 2 2  3 3  3];
-W = [1 1 1 1  1 1 1  1 1  1];
+//W = [1 1 1 1  1 1 1  1 1  1];
+W = [1 1 1 1  1 5 1  1 1  1];
 
 //------------ 2 ------------    
 // la triangulation du poly�dre de controle
@@ -57,7 +59,7 @@ end
 
 //------------ 3 ------------    
 // ecriture du fichier contenant le polyedre de controle
-fid = mopen("beztri-polyedre.off","w");
+fid = mopen("beztri-polyedre2.off","w");
 write_OFF(fid,S,T,[1 0.8 0.6]);
 mclose(fid);
 
@@ -71,14 +73,34 @@ mclose(fid);
 // [Pbar1(k,l),Pbar2(k,l),Pbar3(k,l)] au produit 
 // du point de controle P(k,l) par le poids omega(k,l) 
 
-nbpts=3
+nbpts=4
 incr=1
-for i=1:n
-  P=S(:,incr:incr+nbpts)'
-  for j=1:n-
+for i=1:n+1
+  
+  P=[]
+  P(1,:)=S(incr:incr+nbpts-1,1)'
+  P(2,:)=S(incr:incr+nbpts-1,2)'
+  P(3,:)=S(incr:incr+nbpts-1,3)'
+  P(4,:)=W(incr:incr+nbpts-1)
+  
+  disp(P)
+  //on passe en coordonnées homogènes
+  P(1,:)=P(1,:).*P(4,:)
+  P(2,:)=P(2,:).*P(4,:)
+  P(3,:)=P(3,:).*P(4,:)
+  disp("===================")
+  disp(P)
+  
+  //on élève le degré
+  for j=1:i-1
     P=elevation_degre(P)
   end
-  Pbar
+
+  
+  Pbar1(i,:)=P(1,:)
+  Pbar2(i,:)=P(2,:)
+  Pbar3(i,:)=P(3,:)
+  Pbar4(i,:)=P(4,:)
   
   incr=incr+nbpts
   nbpts=nbpts-1
@@ -91,7 +113,7 @@ end
 
 // DECOMMENTER LES LIGNES SUIVANTES AVANT ENDFUNCTION 
 
-fid = mopen("bezrect.bez","w");
+fid = mopen("bezrect2.bez","w");
 mfprintf(fid, "BEZ%d%d4\n",n,n);
 for i=1:n+1
   for j=1:n+1

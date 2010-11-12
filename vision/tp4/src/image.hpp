@@ -11,6 +11,8 @@
 #include <limits>
 #include "pixel.hpp"
 #include <list>
+#include <cmath>
+#include <cassert>
 
 class image{
 public:
@@ -21,6 +23,11 @@ public:
 
   image(const image & im);
 
+  // Fusion de l'image im1 avec l'image im2
+  image(const image & im1, const image & im2);
+
+
+
   void updateValmax();
 
   /**
@@ -29,6 +36,12 @@ public:
   inline ~image(){
     delete [] buffer;
   }
+
+  int getHauteur();
+
+  int getLargeur();
+
+  int getValmax();
 
   int EcrireImagePGM(char* nomFichier)const;
 
@@ -56,7 +69,7 @@ public:
 
   void elim_neg();
 
-  std::list<pixel> best_interest_points(int n)const;
+  std::list<pixel> best_interest_points(int n,int winn,int winm)const;
 
   image* GaussFilter();
 
@@ -68,10 +81,28 @@ public:
 
   void drawPts(const std::list<pixel> & Lpix,int col);
 
-  double ssd(int i1,int j1,const image & comp,int i2,int j2,int n, int p);
+  void drawLine(int xi,int yi,int xf,int yf,int color);
 
-  void matchPoints(const image & comp,int nbpoints,int winn,int winp,
-                   double (*score)(int,int,const image &,int,int,int,int))const;
+  double ssd(int i1,int j1,const image & comp,int i2,int j2,int n, int p)const;
+
+
+  double zncc(int i1,int j1,const image & comp,int i2,int j2,int n, int p)const;
+
+  double moyenne(int i_pix,int j_pix, int n, int p)const;
+
+  double sigma(int i_pix,int j_pix, int n, int p)const;
+
+  pixel** matchPoints(const image & comp,int nbpoints,int winn,int winp,
+                      double (image::*score)(int,int,const image &,int,int,int,int)const,bool sim=false)const;
+
+  pixel** dblMatchPoints(const image & comp,int nbpoints,int winn,int winp,
+                      double (image::*score)(int,int,const image &,int,int,int,int)const,bool sim=false)const;
+
+  image* drawMatchPoints(const image & comp,int nbpoints,int winn,int winp,
+                      double (image::*score)(int,int,const image &,int,int,int,int)const,bool sim=false)const;
+
+  image* drawDblMatchPoints(const image & comp,int nbpoints,int winn,int winp,
+                            double (image::*score)(int,int,const image &,int,int,int,int)const,bool sim)const;
 
 private:
   int largeur, hauteur, valmax;

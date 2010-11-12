@@ -1,7 +1,7 @@
 class pixel{
 public:
 
-	inline pixel(int i,int j,int val){
+	inline pixel(int i,int j,double val){
 		_i=i;
 		_j=j;
 		_val=val;
@@ -13,9 +13,19 @@ public:
 		return p1._val<p2._val;
 	}
 
+	inline pixel& operator=(const pixel & pix){
+		_i=pix._i;
+		_j=pix._j;
+		_val=pix._val;
+	}
+
+	inline bool equalPos(const pixel & pix){
+		return _i==pix._i && _j==pix._j;
+	}
+
 	int _i;
 	int _j;
-	int _val;
+	double _val;
 
 private:
 
