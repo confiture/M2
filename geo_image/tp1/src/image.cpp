@@ -248,3 +248,21 @@ void image::dispCompConn(char* fic)const{
 	sortie.EcrireImagePGM(fic);
 }
 
+void image::dilatation(image elem_struct){
+  
+  for(int i=0;i<hauteur;i++){
+		for(int j=0;j<largeur;j++){
+
+  
+}
+
+
+void image::appartient
+
+void image::max(image elem_struct){
+  if(elem_struct(i,j)=255){
+  }
+
+
+}
+
