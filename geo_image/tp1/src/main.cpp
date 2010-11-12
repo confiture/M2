@@ -6,7 +6,7 @@ using namespace std;
   //im.seuiller(100);
   //im.negatif();
   //im.EcrireImagePGM("negatif.pgm");
-  im.dispCompConn("compConn.pgm");
-  
+  //im.dispCompConn("compConn.pgm");
+  im.writePgmItems("objets",50);
 return 0;
 }

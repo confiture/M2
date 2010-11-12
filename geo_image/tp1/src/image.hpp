@@ -4,13 +4,20 @@
 #include <stdio.h>
 #include <cstdio>
 #include "Util.h"
+#include "item.hpp"
 #include <iostream>
 #include <fstream>
 #include <streambuf>
 #include <vector>
 #include <set>
+#include <list>
+#include <string>
+#include <sstream>
+
 class image{
 public:
+
+	image(){}
 
 	image(int hauteur, int largeur,int valmax=0);
 
@@ -18,12 +25,20 @@ public:
 
 	image(const image &);
 
+	image(const image &,int i1,int i2,int j1,int j2);
+
 	/**
 	 *Destructeur.
 	 */
 	inline ~image(){
 		delete [] buffer;
 	}
+
+	inline int getHauteur(){return hauteur;}
+
+	inline int getLargeur(){return largeur;}
+
+	inline int getValmax(){return valmax;}
 
 	int EcrireImagePGM(char* nomFichier)const;
 
@@ -39,7 +54,11 @@ public:
 
 	int** composante_connnex(int conn)const;
 
+	int nbConnCom(int seuil);
+
 	void dispCompConn(char* fic)const;
+
+	void writePgmItems(char * itemsName,int seuil);
 
 private:
 	int largeur, hauteur, valmax;

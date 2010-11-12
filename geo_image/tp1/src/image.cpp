@@ -3,10 +3,18 @@
 using namespace std;
 
 int& image::operator()(int i,int j){
+	assert(i<hauteur);
+	assert(i>=0);
+	assert(j<largeur);
+	assert(j>=0);
 	return buffer[i*largeur+j];
 }
 
 int image::operator()(int i,int j)const{
+	assert(i<hauteur);
+	assert(i>=0);
+	assert(j<largeur);
+	assert(j>=0);
 	return buffer[i*largeur+j];
 }
 
@@ -64,6 +72,18 @@ image::image(const image & im){
 	}
 }
 
+image::image(const image & im,int i1,int i2,int j1,int j2){
+	valmax=im.valmax;
+	hauteur=i2-i1+1;
+	largeur=j2-j1+1;
+	buffer=new int[hauteur*largeur];
+	for(int i=i1;i<=i2;i++){
+		for(int j=j1;j<=j2;j++){
+			(*this)(i-i1,j-j1)=im(i,j);
+		}
+	}
+}
+
 int image::EcrireImagePGM(char* nomFichier)const{
 	/* Ouverture */
 	filebuf fb;
@@ -83,7 +103,6 @@ int image::EcrireImagePGM(char* nomFichier)const{
 	}
 	fb.close();
 	return 1;
-
 }
 
 int image::seuiller(int seuil){
@@ -262,15 +281,6 @@ void image::dispCompConn(char* fic)const{
 
 	for(int i=0;i<hauteur;i++){
 		for(int j=0;j<largeur;j++){
-			/*
-			if(conn[i][j]!=0){
-				sortie(i,j)=255;
-			}
-			else{
-				sortie(i,j)=0;
-			}
-			*/
-
 			if(conn[i][j]!=0){sortie(i,j)=100+conn[i][j];groupes.insert(conn[i][j]);}
 			else{sortie(i,j)=0;}
 			//std::cout<<conn[i][j]<<endl;
@@ -281,3 +291,70 @@ void image::dispCompConn(char* fic)const{
 	cout<<"nombre d'objet "<<groupes.size()<<endl;
 }
 
+int image::nbConnCom(int seuil){
+	set<int> groupes;
+	image im_s(*this);
+	im_s.seuiller(seuil);
+
+	int** conn=im_s.composante_connnex(4);
+
+	for(int i=0;i<hauteur;i++){
+		for(int j=0;j<largeur;j++){
+			if(conn[i][j]!=0){groupes.insert(conn[i][j]);}
+		}
+	}
+
+	return groupes.size();
+}
+
+void image::writePgmItems(char * itemsName,int seuil){
+	string name(itemsName);
+	set<int> groupes;
+	image im_s(*this);
+	im_s.seuiller(seuil);
+	image neg(*this);
+	neg.negatif();
+
+	int** conn=im_s.composante_connnex(4);
+
+	for(int i=0;i<hauteur;i++){
+		for(int j=0;j<largeur;j++){
+			if(conn[i][j]!=0){groupes.insert(conn[i][j]);}
+		}
+	}
+
+	int k=0;
+	std::set<int>::iterator it=groupes.begin();
+	std::set<int>::iterator endIt=groupes.end();
+	for(it;it!=endIt;it++){
+		int i1=hauteur+1;
+		int i2=-1;
+		int j1=largeur+1;
+		int j2=-1;
+		for(int i=0;i<hauteur;i++){
+			for(int j=0;j<largeur;j++){
+				if(conn[i][j]==(*it)){
+					if(i1>i)i1=i;
+					if(i2<i)i2=i;
+					if(j1>j)j1=j;
+					if(j2<j)j2=j;
+				}
+			}
+		}
+
+		image temp((*this),i1-1,i2+1,j1-1,j2+1);
+		image tempNeg(neg,i1-1,i2+1,j1-1,j2+1);
+		item objet;
+		objet.pIm=&temp;
+		objet.epaisseur=666;
+		objet.nbTrous=tempNeg.nbConnCom(seuil);
+
+		string name(itemsName);
+		ostringstream ss;
+		ss<<k;
+		name+=ss.str();
+		name+=".pgm";
+		objet.writePgmItem(name.c_str());
+		k++;
+	}
+}
