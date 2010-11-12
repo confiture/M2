@@ -281,21 +281,41 @@ void image::dispCompConn(char* fic)const{
 	cout<<"nombre d'objet "<<groupes.size()<<endl;
 }
 
-void image::dilatation(image elem_struct){
-  
-  for(int i=0;i<hauteur;i++){
-		for(int j=0;j<largeur;j++){
 
-  
+
+image image::duplique_elemStruc_bord(image elem_struct) const{
+    image sortie(hauteur+2*elem_struct.hauteur,largeur+2*elem_struct.largeur,0);
+    
+    // On se place sur la premiere ligne de l'image courante
+    for(int k=0;k<(*this).hauteur;k++){
+      // On traite le 1er bord (bord gauche de l'image)
+	  for(int i=elem_struct.hauteur;i<sortie.hauteur-elem_struct.hauteur;i++){
+		for(int j=0;j<elem_struct.largeur;j++){
+		      sortie(i,j) = (*this)(k,0);
+		}
+	  }
+    // On traite le 2ème bord (bord droite de l'image)
+	  for(int i=elem_struct.hauteur;i<sortie.hauteur-elem_struct.hauteur;i++){
+		for(int j=sortie.largeur-elem_struct.largeur-1;j<sortie.largeur;j++){
+		      sortie(i,j) = (*this)(k,hauteur-1);
+		}
+	  }
+    }
+ 
+ // On traite le 3 ème bord (bord du haut de l'image)
+    for(int i=0;i<elem_struct.hauteur;i++){
+	  for(int j=0;j<sortie.largeur;j++){
+		     sortie(i,j) = sortie(elem_struct.hauteur,j);
+	  }
+    }
+    
+ // On traite le 4 ème bord (bord du bas de l'image)
+    for(int i=sortie.hauteur-elem_struct.hauteur;i<sortie.hauteur;i++){
+	  for(int j=0;j<sortie.largeur;j++){
+		     sortie(i,j) = sortie(sortie.hauteur-elem_struct.hauteur,j);
+	  }
+    }
+    return sortie;
 }
 
-
-void image::appartient
-
-void image::max(image elem_struct){
-  if(elem_struct(i,j)=255){
-  }
-
-
-}
 

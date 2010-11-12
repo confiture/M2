@@ -40,6 +40,8 @@ public:
 	int** composante_connnex(int conn)const;
 
 	void dispCompConn(char* fic)const;
+	
+	image duplique_elemStruc_bord(image elem_struct)const;
 
 private:
 	int largeur, hauteur, valmax;
