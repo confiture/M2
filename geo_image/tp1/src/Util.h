@@ -31,3 +31,15 @@ void updateEquiv(T & vec,int taille,int a,int b){
     if(vec[i]==max)vec[i]=min;
   }
 }
+
+template<class T>
+T max(T** tab,int n,int m){
+  T max=tab[0][0];
+  for(int i=0;i<n;i++){
+    for(int j=0;j<m;j++){
+      if(max<tab[i][j])max=tab[i][j];
+    }
+  }
+
+  return max;
+}
