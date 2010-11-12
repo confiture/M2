@@ -40,7 +40,7 @@ public:
 
 	inline int getValmax(){return valmax;}
 
-	int EcrireImagePGM(char* nomFichier)const;
+	int EcrireImagePGM(const char* nomFichier)const;
 
 	int& operator()(int i,int j);
 

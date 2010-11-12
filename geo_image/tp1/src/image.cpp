@@ -84,7 +84,7 @@ image::image(const image & im,int i1,int i2,int j1,int j2){
 	}
 }
 
-int image::EcrireImagePGM(char* nomFichier)const{
+int image::EcrireImagePGM(const char* nomFichier)const{
 	/* Ouverture */
 	filebuf fb;
 	fb.open(nomFichier,ios::out);
@@ -304,6 +304,9 @@ int image::nbConnCom(int seuil){
 		}
 	}
 
+	for(int i=0;i<hauteur;i++)delete[] conn[i];
+	delete[] conn;
+
 	return groupes.size();
 }
 
@@ -355,6 +358,10 @@ void image::writePgmItems(char * itemsName,int seuil){
 		name+=ss.str();
 		name+=".pgm";
 		objet.writePgmItem(name.c_str());
+		string strneg("neg");
+		strneg+=name;
+		const char * tt=strneg.c_str();
+		tempNeg.EcrireImagePGM(tt);
 		k++;
 	}
 }
