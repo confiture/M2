@@ -8,7 +8,7 @@
 #include <fstream>
 #include <streambuf>
 #include <vector>
-
+#include <set>
 class image{
 public:
 
