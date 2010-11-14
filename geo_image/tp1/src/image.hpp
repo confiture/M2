@@ -57,6 +57,8 @@ public:
 	int nbConnCom(int seuil);
 
 	void dispCompConn(char* fic)const;
+	
+	image duplique_elemStruc_bord(image elem_struct)const;
 
 	void writePgmItems(char * itemsName,int seuil);
 
