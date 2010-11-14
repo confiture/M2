@@ -83,13 +83,10 @@ for i=1:n+1
   P(3,:)=S(incr:incr+nbpts-1,3)'
   P(4,:)=W(incr:incr+nbpts-1)
   
-  disp(P)
   //on passe en coordonnées homogènes
   P(1,:)=P(1,:).*P(4,:)
   P(2,:)=P(2,:).*P(4,:)
   P(3,:)=P(3,:).*P(4,:)
-  disp("===================")
-  disp(P)
   
   //on élève le degré
   for j=1:i-1
