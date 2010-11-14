@@ -256,9 +256,9 @@ std::list<pixel> image::best_interest_points(int n,int winn,int winp)const{
 	list<pixel> lpixel;
 	for(int i=winn;i<im.hauteur-winn;i++){
 		for(int j=winp;j<im.largeur-winp;j++){
-			cout<<i<<" "<<j<<endl;
+			//cout<<i<<" "<<j<<endl;
 			if(im.maxLoc(i,j)){
-				cout<<"maxloc"<<endl;
+				//cout<<"maxloc"<<endl;
 				pixel p(i,j,im(i,j));
 				lpixel.push_back(p);
 			}
@@ -289,12 +289,12 @@ void image::drawPts(const std::list<pixel> & Lpix, int col){
 
 void image::drawCross(int i,int j,int color){
 	int epais=1;
-	int grand=2;
+	int grand=4;
 //int epais=5;
 //int grand=15;
 	//la verticale
-	cout<<"i "<<i<<endl;
-	cout<<"j "<<j<<endl;
+	//cout<<"i "<<i<<endl;
+	//cout<<"j "<<j<<endl;
 	for(int ii=i-grand;ii<=i+grand;ii++){
 		for(int jj=j-epais;jj<=j+epais;jj++){
 			if(ii>=0 && ii<hauteur && jj<largeur && jj>=0){

@@ -19,7 +19,7 @@ void nMeilPts(char* char0,char * char1,double alpha,int nb_interest_pts){
   //sortie->recadre(0,255);
   //sortie->EcrireImagePGM(char1);
 
-  im.drawPts(Lpix,0);
+  im.drawPts(Lpix,255);
   im.EcrireImagePGM(char1);
 }
 
