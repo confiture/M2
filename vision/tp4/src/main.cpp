@@ -47,14 +47,13 @@ void test_drawDblMatchPoints(double alpha,int winn,int winp,char * fic1,char* fi
 
 
 int main(int argc, char* argv[]){
+  double alpha;
+  sscanf(argv[2],"%f",&alpha);
+   int nb_interest_pts = atoi(argv[3]);
+   nMeilPts(argv[1],argv[4],alpha,nb_interest_pts);
+//
+//
 
-// <<<<<<< HEAD
-//    double alpha;
-//   sscanf(argv[2],"%f",&alpha);
-// //   int nb_interest_pts = atoi(argv[3]);
-// //   nMeilPts(argv[1],argv[4],alpha,nb_interest_pts);
-//
-//
 //   exHarris(argv[1],alpha,argv[3]);
 //
 //
@@ -65,8 +64,8 @@ int main(int argc, char* argv[]){
 //    // im.EcrireImagePGM(argv[3]);
 //   //test_matchPoints(argv[1],argv[3],alpha,atoi(argv[4]),atoi(argv[5]));
 // =======
-  double alpha;
-  sscanf(argv[1],"%f",&alpha);
+  //double alpha;
+  //sscanf(argv[1],"%f",&alpha);
 
   //exHarris(argv[1],alpha,argv[3]);
 
@@ -78,7 +77,7 @@ int main(int argc, char* argv[]){
    //im.EcrireImagePGM(argv[3]);
   //test_matchPoints(alpha,atoi(argv[2]),atoi(argv[3]),argv[4],argv[5]);
 
-  test_drawMatchPoints(alpha,atoi(argv[2]),atoi(argv[3]),argv[4],argv[5],argv[6]);
+//  test_drawMatchPoints(alpha,atoi(argv[2]),atoi(argv[3]),argv[4],argv[5],argv[6]);
 
 
   //////////////////////////////////

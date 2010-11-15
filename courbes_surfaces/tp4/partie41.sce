@@ -1,3 +1,5 @@
+exec('util.sce')
+exec('nurbs.sce')
 /////////////////////////////////////////////////////////
 // conversion d'une surface NURBS en patch de Bezier
 /////////////////////////////////////////////////////////
@@ -82,54 +84,158 @@ mclose(f)
 // DECOMMENTER LES LIGNES SUIVANTES AVANT ENDFUNCTION 
 
 //// la liste de patch de Bezier
-//f=mopen("nurbs_bezier.list","w");
-//mfprintf(f, "{\n LIST\n");
-
-//saturation des vecteurs des noeuds
-for i=1:ordre_u
-  u=[u(1) u u($)]
-end
-for j=1:ordre_v
-  v=[v(1) v v($)]
-end
-
-for i=1:nu
-  for j=1:nv
+f=mopen("nurbs_bezier.list","w");
+mfprintf(f, "{\n LIST\n");
 //  
 //  // r�cup�ration des points de controle en coordonnees homog�nes
 //  // de la B�zier (i,j) : 4 matrices B1,B2,B3,B4 
 //  // de dimensions ordre_u x ordre_v
-  t_ins;
-  X=X
-	t_ins=t
-	for i=1+k:size(t,2)-k
-		for satn=2:k
-			[X,t_ins]=insert_node(X,t_ins,k,t(i))//on insère k-1 fois chaque noeud  
-                                                             //sauf pour les noeuds aux extrémités                                                               
-		end
-	end
+X=X.*omega
+Y=Y.*omega
+Z=Z.*omega
 
+disp(X)
+disp("=========")
+//on augmente le degré en u
+for i=1:size(X,2)
+  //[B1temp(:,i)' ; B2temp(:,i)' ; B3temp(:,i)' ; B4temp(:,i)'] = NURBS1DToBezier([X(:,i)' ; Y(:,i)' ; Z(:,i)' ; omega(:,i)'],u,ordre_u)
+  Btemp= NURBS1DToBezier([X(:,i)' ; Y(:,i)' ; Z(:,i)' ; omega(:,i)'],u,ordre_u)
+  Btemp1(:,i)=Btemp(1,:)'
+  Btemp2(:,i)=Btemp(2,:)'
+  Btemp3(:,i)=Btemp(3,:)'
+  Btemp4(:,i)=Btemp(4,:)'
+end
 
+disp(Btemp1)
+disp("=========")
+
+Btemp=[]
+//on augmente le degré en v
+for i=1:size(Btemp1,1)
+  Btemp = NURBS1DToBezier([Btemp1(i,:) ; Btemp2(i,:) ; Btemp3(i,:) ; Btemp4(i,:)],v,ordre_v)
+  B1(i,:)=Btemp(1,:)
+  B2(i,:)=Btemp(2,:)
+  B3(i,:)=Btemp(3,:)
+  B4(i,:)=Btemp(4,:)
+end
+disp(B1)
+
+disp(nu)
+disp(nv)
+disp(ordre_u)
+disp(ordre_v)
+for i=1:nu
+  for j=1:nv
+    write_BEZ4(f, B1((i-1)*ordre_u+1:i*ordre_u,(j-1)*ordre_v+1:j*ordre_v), B2((i-1)*ordre_u+1:i*ordre_u,(j-1)*ordre_v+1:j*ordre_v),B3((i-1)*ordre_u+1:i*ordre_u,(j-1)*ordre_v+1:j*ordre_v), B4((i-1)*ordre_u+1:i*ordre_u,(j-1)*ordre_v+1:j*ordre_v));
+    disp(i)
+  end
+end
+
+mfprintf(f, "}\n");
+mclose(f);
+
+endfunction
+
+function [D,tau]=cercleUniteNurbs()    
+    D=[1. 1. 0.5522847 0. -0.5522847 -1. -1. -1. -0.5522847 -2.220D-16 0.5522847 1. 1.;
+    0. 0.5522847 1. 1. 1. 0.5522847 1.110D-16  -0.5522847  -1. -1. -1. -0.5522847 -2.776D-16;
+    1 1 1 1 1 1 1 1 1 1 1 1 1]
+    tau=[0 1 2 3 4 5 6 7 8 9 10]
+endfunction
+  
+  
+  
+//la surface de révolution avec une nurbs de degré 3  
+function [X,Y,Z,W,u,v]=surfaceRevolution()
+  L=inputpoly_rat()
+  disp("=========L=============")
+  disp(L)
+  nbNds=size(L,2)-2
+  disp("========tau===========")
+  tau=inputnoeuds(nbNds,10,90,10)
+  disp(tau)
+  [cercle,tau_cercle]=cercleUniteNurbs()
+  
+  X=zeros(size(cercle,2),size(L,2))
+  Y=zeros(size(cercle,2),size(L,2))
+  Z=zeros(size(cercle,2),size(L,2))
+  W=zeros(size(cercle,2),size(L,2))
+  for i=1:size(cercle,2)
+    for j=1:size(L,2)
+      X(i,j)=L(1,j)*cercle(1,i)
+      Y(i,j)=L(1,j)*cercle(2,i)
+      Z(i,j)=L(2,j)
+      W(i,j)=L(3,j)*cercle(3,i)
+    end
+  end
+  
+  u=tau_cercle
+  v=tau
+endfunction
+
+  
+  
+function ecrisSurfaceRevol()
+  [X,Y,Z,omega,u,v]=surfaceRevolution()    
+      
+  // noeuds, degr� suivant la dimension 1
+  du = 3; nu=length(u)-1
+  dv = 3; nv = length(v)-1;
+
+// ordre et nombre d'intervalles suivant la dimension 1
+ordre_u = du+1; nu = length(u)-1;
+// ordre et nombre d'intervalles suivant la dimension 2
+ordre_v = dv+1; nv = length(v)-1;
+
+//// 3 - �criture des fichiers
+
+// le polyedre de controle de la NURBS
+f=mopen("nurbs.mesh","w");
+write_MESH(f, X, Y, Z);
+mclose(f)
+
+// DECOMMENTER LES LIGNES SUIVANTES AVANT ENDFUNCTION 
+
+//// la liste de patch de Bezier
+f=mopen("nurbs_bezier.list","w");
+mfprintf(f, "{\n LIST\n");
+
+//  
+//  // r�cup�ration des points de controle en coordonnees homog�nes
+//  // de la B�zier (i,j) : 4 matrices B1,B2,B3,B4 
+//  // de dimensions ordre_u x ordre_v
+X=X.*omega
+Y=Y.*omega
+Z=Z.*omega
+
+//on augmente le degré en u
+for i=1:size(X,2)
+  //[B1temp(:,i)' ; B2temp(:,i)' ; B3temp(:,i)' ; B4temp(:,i)'] = NURBS1DToBezier([X(:,i)' ; Y(:,i)' ; Z(:,i)' ; omega(:,i)'],u,ordre_u)
+  Btemp= NURBS1DToBezier([X(:,i)' ; Y(:,i)' ; Z(:,i)' ; omega(:,i)'],u,ordre_u)
+  Btemp1(:,i)=Btemp(1,:)'
+  Btemp2(:,i)=Btemp(2,:)'
+  Btemp3(:,i)=Btemp(3,:)'
+  Btemp4(:,i)=Btemp(4,:)'
+end
+
+Btemp=[]
+//on augmente le degré en v
+for i=1:size(Btemp1,1)
+  Btemp = NURBS1DToBezier([Btemp1(i,:) ; Btemp2(i,:) ; Btemp3(i,:) ; Btemp4(i,:)],v,ordre_v)
+  B1(i,:)=Btemp(1,:)
+  B2(i,:)=Btemp(2,:)
+  B3(i,:)=Btemp(3,:)
+  B4(i,:)=Btemp(4,:)
+end
 
 for i=1:nu
-  
+  for j=1:nv
+    write_BEZ4(f, B1((i-1)*ordre_u+1:i*ordre_u,(j-1)*ordre_v+1:j*ordre_v), B2((i-1)*ordre_u+1:i*ordre_u,(j-1)*ordre_v+1:j*ordre_v),B3((i-1)*ordre_u+1:i*ordre_u,(j-1)*ordre_v+1:j*ordre_v), B4((i-1)*ordre_u+1:i*ordre_u,(j-1)*ordre_v+1:j*ordre_v));
+  end
+end
 
-
-
-
-
-
-
-
-
-
-//
-//  write_BEZ4(f, B1, B2, B3, B4);
-//end
-//end
-//
-//mfprintf(f, "}\n");
-//mclose(f);
+mfprintf(f, "}\n");
+mclose(f);
 
 endfunction
 //----------------------------------------------
