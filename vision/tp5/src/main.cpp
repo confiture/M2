@@ -50,10 +50,6 @@ void testDepth(int winn,int winp,char * fic1,char * fic2,char * ficSortie){
 
 int main(int argc, char* argv[]){
 
-  double alpha;
-  sscanf(argv[2],"%f",&alpha);
-  int nb_interest_pts = atoi(argv[3]);
-  test_drawMatchPoints(alpha,atoi(argv[2]),atoi(argv[3]),argv[4],argv[5],argv[6]);
-
+  testDepth(atoi(argv[1]),atoi(argv[2]),argv[3],argv[4],argv[5]);
   return 0;
 }

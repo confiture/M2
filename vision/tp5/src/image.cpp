@@ -659,6 +659,8 @@ image* image::makeDepth(const image & comp,int winn,int winp,
 	double currentScore;
 	int jCorres;
 
+	(*this).EcrireImagePGM("temp1.pgm");
+	comp.EcrireImagePGM("temp2.pgm");
 	for(int i=winn;i<hauteur-winn;i++){
 		if(sim){
 			extrScore=-numeric_limits<double>::infinity();
@@ -675,7 +677,8 @@ image* image::makeDepth(const image & comp,int winn,int winp,
 					jCorres=jj;
 				}
 			}
-			(*sortie)(i,j)=1.0/((*this)(i,j)-comp(i,jCorres));
+
+			(*sortie)(i,j)=1.0/(j-jCorres);
 		}
 	}
 
