@@ -678,10 +678,21 @@ image* image::makeDepth(const image & comp,int winn,int winp,
 				}
 			}
 
-			if(j==jCorres){(*sortie)(i,j)=255;}
-			else{(*sortie)(i,j)=1.0/(j-jCorres);}
+			if(j==jCorres){(*sortie)(i,j)=-1;}
+			else{(*sortie)(i,j)=1.0/(absf(j-jCorres));assert((*sortie)(i,j)>0);}
 		}
 	}
+
+	sortie->updateValmax();
+	//std::cout<<"valmax "<<sortie->valmax<<endl;
+	double incr=sortie->valmax*0.02;
+	for(int i=0;i<hauteur;i++){
+		for(int j=0;j<largeur;j++){
+			if((*sortie)(i,j)==-1)(*sortie)(i,j)=sortie->valmax+incr;
+			//assert((*sortie)(i,j)>=0);
+		}
+	}
+	sortie->valmax=sortie->valmax+incr;
 
 	return sortie;
 }
