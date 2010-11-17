@@ -7,7 +7,7 @@ using namespace std;
   //im.negatif();
   //im.EcrireImagePGM("negatif.pgm");
   //im.dispCompConn("compConn.pgm");
-  im.writePgmItems("objets",50);
+  im.writePgmItems("objets",30);
  // im.dispCompConn("compConn.pgm");
 
   //image sortie=im.duplique_elemStruc_bord("elem_structurant.pgm");
