@@ -283,7 +283,7 @@ int** image::connexite4()const{
 		}
 	}
 
-	finalUpdateEquiv(equiv,id);
+	//finalUpdateEquiv(equiv,id);
 
 	std::cout<<"corres[97][0] equiv a "<<equiv[corres[97][0]]<<std::endl;
 	std::cout<<"corres[98][0] equiv a "<<equiv[corres[98][0]]<<std::endl;
@@ -350,8 +350,13 @@ int** image::connexite8()const{
 							updateEquiv(equiv,id,equiv[corres[i][j]],equiv[corres[i+1][j+1]]);
 						}
 					}
+
+					if((*this)(i+1,j)!=0){corres[i+1][j]=equiv[corres[i][j]];}
+					if((*this)(i,j+1)!=0){corres[i][j+1]=equiv[corres[i][j]];}
+					if((*this)(i+1,j-1)!=0){corres[i+1][j-1]=equiv[corres[i][j]];}
+					if((*this)(i+1,j+1)!=0){corres[i+1][j+1]=equiv[corres[i][j]];}
 				}
-				//un des voisins n'est pas noir et aucun voisin n'appartient à un groupe
+				//un des voisins est blanc et aucun voisin n'appartient à un groupe
 				else{
 					//si le point courant ne fait pas partie d'un groupe on le crée
 					if(corres[i][j]==-1){
@@ -428,6 +433,9 @@ int** image::connexite8()const{
 						updateEquiv(equiv,id,equiv[corres[i][j]],equiv[corres[i+1][j+1]]);
 					}
 				}
+
+				if((*this)(i+1,j)!=0){corres[i+1][j]=equiv[corres[i][j]];}
+				if((*this)(i+1,j+1)!=0){corres[i+1][j+1]=equiv[corres[i][j]];}
 			}
 			//aucun n'appartient à un groupe
 			else{
@@ -503,6 +511,8 @@ int** image::connexite8()const{
 				else{
 					updateEquiv(equiv,id,equiv[corres[i][j]],equiv[corres[i+1][j-1]]);
 				}
+				if((*this)(i+1,j)!=0){corres[i+1][j]=equiv[corres[i][j]];}
+				if((*this)(i+1,j-1)!=0){corres[i+1][j-1]=equiv[corres[i][j]];}
 			}
 			//le voisin d'en bas n'appartient pas à un groupe
 			else{

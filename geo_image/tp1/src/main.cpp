@@ -7,7 +7,7 @@ void test_trous(const char * fic){
   neg.EcrireImagePGM("negatifInit.pgm");
 
   neg.seuiller(neg.getValmax()-50);
-  int** conn=neg.connexite4();
+  int** conn=neg.connexite8();
 
   int n=im.getHauteur();
   int m=im.getLargeur();
