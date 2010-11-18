@@ -541,6 +541,8 @@ int image::nbConnCom(int nconn,int seuil){
 	for(int i=0;i<hauteur;i++)delete[] conn[i];
 	delete[] conn;
 
+	im_s.EcrireImagePGM("seuillage.pgm");
+
 	return groupes.size();
 }
 
@@ -580,11 +582,13 @@ void image::writePgmItems(char * itemsName,int seuil){
 		}
 
 		image temp((*this),i1-1,i2+1,j1-1,j2+1);
-		image tempNeg(neg,i1-1,i2+1,j1-1,j2+1);
+		//image tempNeg(neg,i1-1,i2+1,j1-1,j2+1);
+		image tempNeg((*this),i1-1,i2+1,j1-1,j2+1);
+		tempNeg.negatif();
 		item objet;
 		objet.pIm=&temp;
 		objet.epaisseur=666;
-		objet.nbTrous=tempNeg.nbConnCom(8,seuil);
+		objet.nbTrous=tempNeg.nbConnCom(8,tempNeg.valmax-seuil)-1;
 
 		string name(itemsName);
 		ostringstream ss;
@@ -596,7 +600,12 @@ void image::writePgmItems(char * itemsName,int seuil){
 		strneg+=name;
 		const char * tt=strneg.c_str();
 		//tempNeg.EcrireImagePGM(tt);
-		tempNeg.dispCompConn(tt);
+		//tempNeg.dispCompConn(tt);
+
+		image tempNegSeuil(tempNeg);
+		tempNegSeuil.seuiller(tempNeg.valmax-seuil);
+		//tempNegSeuil.EcrireImagePGM(tt);
+
 		k++;
 	}
 }
