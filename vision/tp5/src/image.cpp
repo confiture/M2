@@ -678,7 +678,9 @@ image* image::makeDepth(const image & comp,int winn,int winp,
 				}
 			}
 
-			(*sortie)(i,j)=1.0/(j-jCorres);
+			if(j==jCorres){(*sortie)(i,j)=255;}
+			else{(*sortie)(i,j)=1.0/(j-jCorres);}
+			
 		}
 	}
 
