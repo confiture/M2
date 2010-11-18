@@ -1,7 +1,5 @@
 #include "image.hpp"
 
-
-
 // Cette fonction permet de creer une image représentant l'élément structurant qui sera
 // donc un carre de taille 'taille'
 image creerImCarre(int taille){
@@ -19,6 +17,35 @@ void test_DupStructCarre(char* fichier_entree ,char* fichier_sortie,int taille_c
   image elem_structurant = creerImCarre(taille_carre);
   image* sortie=im.duplique_elemStruc_bord(elem_structurant);
   sortie->EcrireImagePGM(fichier_sortie);
+
+void test_trous(const char * fic){
+  image im(fic);
+  image neg(im);
+  neg.negatif();
+  neg.EcrireImagePGM("negatifInit.pgm");
+
+  neg.seuiller(neg.getValmax()-50);
+  int** conn=neg.connexite8();
+
+  int n=im.getHauteur();
+  int m=im.getLargeur();
+  image sortie(n,m,255);
+  for(int i=0;i<n;i++){
+    for(int j=0;j<m;j++){
+      sortie(i,j)=conn[i][j];
+    }
+  }
+  sortie.recadre(0,200);
+
+  for(int i=0;i<n;i++){
+    for(int j=0;j<m;j++){
+      if(sortie(i,j)!=0)sortie(i,j)+=50;
+    }
+  }
+
+  //sortie.EcrireImagePGM("objetsBlancs.pgm");
+  //sortie.seuiller(1);
+  sortie.EcrireImagePGM("sortiePareil.pgm");
 }
 
 int main(int argc, char* argv[]){
@@ -32,12 +59,5 @@ using namespace std;
 
   
   
-  //im.seuiller(100);
-  //im.negatif();
-  //im.EcrireImagePGM("negatif.pgm");
-  //im.dispCompConn("compConn.pgm");
-  //im.writePgmItems("tests.pgm",50);
- // im.dispCompConn("compConn.pgm");
-
 return 0;
 }

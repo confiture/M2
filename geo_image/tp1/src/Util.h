@@ -2,6 +2,7 @@
 /* E.B.  12/98                   */
 #include <cassert>
 #include <iostream>
+#include <stack>
 typedef unsigned char bit;
 typedef unsigned char gray;
 
@@ -32,6 +33,27 @@ void updateEquiv(T & vec,int taille,int a,int b){
     if(vec[i]==max)vec[i]=min;
   }
 }
+
+template<class T>
+void finalUpdateEquiv(T & vec,int taille){
+  std::stack<int> tagged;
+  int j;
+  for(int i=0;i<taille;i++){
+    j=i;
+    while(vec[j]!=j){
+      j=vec[j];
+      tagged.push(j);
+    }
+    vec[i]=j;
+
+    while(!tagged.empty()){
+      vec[tagged.top()]=j;
+      tagged.pop();
+    }
+
+  }
+}
+
 
 template<class T>
 T max(T** tab,int n,int m){

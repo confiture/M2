@@ -25,7 +25,7 @@ image::image(int hauteur, int largeur,int valmax){
 	this->buffer=new int[hauteur*largeur];
 }
 
-image::image(char* nomFichier){
+image::image(const char* nomFichier){
 	/* Ouverture */
 	FILE* ifp = fopen(nomFichier,"r");
 
@@ -84,6 +84,27 @@ image::image(const image & im,int i1,int i2,int j1,int j2){
 	}
 }
 
+void image::recadre(double a,double b){
+	double min;
+	double max;
+	min=max=(*this)(1,1);
+	for(int i=1;i<hauteur-1;i++){
+		for(int j=1;j<largeur-1;j++){
+			if(min>(*this)(i,j))min=(*this)(i,j);
+			if(max<(*this)(i,j))max=(*this)(i,j);
+		}
+	}
+
+	for(int i=1;i<hauteur;i++){
+		for(int j=1;j<largeur;j++){
+			(*this)(i,j)=(((double)(*this)(i,j)-(double)min)/
+			              ((double)max-(double)min))*(b-a)+(double)a;
+		}
+	}
+
+	valmax=b;
+}
+
 int image::EcrireImagePGM(const char* nomFichier)const{
 	/* Ouverture */
 	filebuf fb;
@@ -98,8 +119,9 @@ int image::EcrireImagePGM(const char* nomFichier)const{
 	for(int i=0; i < hauteur; i++){
 		for(int j=0; j < largeur ; j++){
 			os<<(*this)(i,j);
-			os<<endl;
+			os<<" ";
 		}
+		os<<endl;
 	}
 	fb.close();
 	return 1;
@@ -149,31 +171,38 @@ int** image::connexite4()const{
 			if((*this)(i,j)==255){
 				//voisins noirs
 				if((*this)(i+1,j)==0 && (*this)(i,j+1)==0){
+					if(i==97 && j==0)std::cout<<"ici 1"<<endl;
 					if(corres[i][j]==-1){
 						corres[i][j]=id;
 						equiv.push_back(id);
 						id++;
 					}
 				}
-				//un des voisins n'est pas noir et appartient à un groupe
+				//un des voisins est blanc et appartient à un groupe
 				else if(corres[i+1][j]!=-1 || corres[i][j+1]!=-1){
-					if(corres[i+1][j]!=-1){
+					if(i==97 && j==0)std::cout<<"ici 2"<<endl;
+					if(corres[i+1][j]==255){
 						if(corres[i][j]==-1){corres[i][j]=equiv[corres[i+1][j]];}
 						else{
 							updateEquiv(equiv,id,equiv[corres[i][j]],equiv[corres[i+1][j]]);
 						}
 					}
-					if(corres[i][j+1]!=-1){
+					if(corres[i][j+1]!=255){
 						if(corres[i][j]==-1){corres[i][j]=equiv[corres[i][j+1]];}
 						else{
 							updateEquiv(equiv,id,equiv[corres[i][j]],equiv[corres[i][j+1]]);
 						}
 					}
+
+					if((*this)(i+1,j)!=0){corres[i+1][j]=equiv[corres[i][j]];}
+					if((*this)(i,j+1)!=0){corres[i][j+1]=equiv[corres[i][j]];}
 				}
 				//aucun n'appartient à un groupe
 				else{
+					if(i==97 && j==0)std::cout<<"ici 3"<<endl;
 					//si le point courant ne fait pas partie d'un groupe on le crée
 					if(corres[i][j]==-1){
+						if(i==97 && j==0)cout<<"c'est le gros caca"<<endl;
 						corres[i][j]=id;
 						equiv.push_back(id);
 						id++;
@@ -254,11 +283,18 @@ int** image::connexite4()const{
 		}
 	}
 
+	//finalUpdateEquiv(equiv,id);
+
+	std::cout<<"corres[97][0] equiv a "<<equiv[corres[97][0]]<<std::endl;
+	std::cout<<"corres[98][0] equiv a "<<equiv[corres[98][0]]<<std::endl;
+	//std::cout<<"corres[99][2] equiv a "<<equiv[corres[99][1]]<<std::endl;
 
 	//mise à jour des groupes grâce au tableau des équivalences
 	for(int i=0;i<hauteur;i++){
 		for(int j=0;j<largeur;j++){
 			//cout<<equiv[corres[i][j]]<<endl;
+			//std::cout<<" i "<<i<<" j "<<j<<"corres[i][j]"<<corres[i][j]<<endl;
+			//if(corres[i][j]==1)exit(-1);
 			if(corres[i][j]!=-1){corres[i][j]=equiv[corres[i][j]]+1;} // +1 pour rammener -1 à 0
 			else{corres[i][j]=0;}
 		}
@@ -314,8 +350,13 @@ int** image::connexite8()const{
 							updateEquiv(equiv,id,equiv[corres[i][j]],equiv[corres[i+1][j+1]]);
 						}
 					}
+
+					if((*this)(i+1,j)!=0){corres[i+1][j]=equiv[corres[i][j]];}
+					if((*this)(i,j+1)!=0){corres[i][j+1]=equiv[corres[i][j]];}
+					if((*this)(i+1,j-1)!=0){corres[i+1][j-1]=equiv[corres[i][j]];}
+					if((*this)(i+1,j+1)!=0){corres[i+1][j+1]=equiv[corres[i][j]];}
 				}
-				//un des voisins n'est pas noir et aucun voisin n'appartient à un groupe
+				//un des voisins est blanc et aucun voisin n'appartient à un groupe
 				else{
 					//si le point courant ne fait pas partie d'un groupe on le crée
 					if(corres[i][j]==-1){
@@ -392,6 +433,9 @@ int** image::connexite8()const{
 						updateEquiv(equiv,id,equiv[corres[i][j]],equiv[corres[i+1][j+1]]);
 					}
 				}
+
+				if((*this)(i+1,j)!=0){corres[i+1][j]=equiv[corres[i][j]];}
+				if((*this)(i+1,j+1)!=0){corres[i+1][j+1]=equiv[corres[i][j]];}
 			}
 			//aucun n'appartient à un groupe
 			else{
@@ -467,6 +511,8 @@ int** image::connexite8()const{
 				else{
 					updateEquiv(equiv,id,equiv[corres[i][j]],equiv[corres[i+1][j-1]]);
 				}
+				if((*this)(i+1,j)!=0){corres[i+1][j]=equiv[corres[i][j]];}
+				if((*this)(i+1,j-1)!=0){corres[i+1][j-1]=equiv[corres[i][j]];}
 			}
 			//le voisin d'en bas n'appartient pas à un groupe
 			else{
@@ -541,8 +587,6 @@ int image::nbConnCom(int nconn,int seuil){
 	for(int i=0;i<hauteur;i++)delete[] conn[i];
 	delete[] conn;
 
-	im_s.EcrireImagePGM("seuillage.pgm");
-
 	return groupes.size();
 }
 
@@ -582,8 +626,8 @@ void image::writePgmItems(char * itemsName,int seuil){
 		}
 
 		image temp((*this),i1-1,i2+1,j1-1,j2+1);
-		//image tempNeg(neg,i1-1,i2+1,j1-1,j2+1);
-		image tempNeg((*this),i1-1,i2+1,j1-1,j2+1);
+		image tempNeg(neg,i1-1,i2+1,j1-1,j2+1);
+		//image tempNeg((*this),i1-1,i2+1,j1-1,j2+1);
 		tempNeg.negatif();
 		item objet;
 		objet.pIm=&temp;
