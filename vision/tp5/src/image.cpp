@@ -662,14 +662,14 @@ image* image::makeDepth(const image & comp,int winn,int winp,
 	(*this).EcrireImagePGM("temp1.pgm");
 	comp.EcrireImagePGM("temp2.pgm");
 	for(int i=winn;i<hauteur-winn;i++){
-		for(int j=winp;j<largeur-winp;j++){
-			if(sim){
-				extrScore=-numeric_limits<double>::infinity();
-			}
-			else{
-				extrScore=numeric_limits<double>::infinity();
-			}
+		if(sim){
+			extrScore=-numeric_limits<double>::infinity();
+		}
+		else{
+			extrScore=numeric_limits<double>::infinity();
+		}
 
+		for(int j=winp;j<largeur-winp;j++){
 			for(int jj=winp;jj<largeur-winp;jj++){
 				currentScore=(this->*score)(i,j,comp,i,jj,winn,winp);
 				if(currentScore<extrScore && !sim || currentScore>extrScore && sim){
