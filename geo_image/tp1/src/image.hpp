@@ -52,12 +52,14 @@ public:
 
 	int negatif();
 
-	int** composante_connnex(int conn)const;
+	int** connexite4()const;
 
-	int nbConnCom(int seuil);
+	int** connexite8()const;
 
-	void dispCompConn(char* fic)const;
-	
+	int nbConnCom(int nconn,int seuil);
+
+	void dispCompConn(const char* fic)const;
+
 	image duplique_elemStruc_bord(image elem_struct)const;
 
 	void writePgmItems(char * itemsName,int seuil);
