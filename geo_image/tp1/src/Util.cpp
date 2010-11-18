@@ -102,6 +102,12 @@ float max(float a,float b){
 	return b;
 }
 
+int max(int a,int b){
+	if(a>b)return a;
+	return b;
+}
+
+
 float mod2PI(float theta){
 	const float PI = 3.141592;
 	while(theta<=0){

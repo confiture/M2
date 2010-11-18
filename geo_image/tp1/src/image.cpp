@@ -611,37 +611,83 @@ void image::writePgmItems(char * itemsName,int seuil){
 }
 
 
-image image::duplique_elemStruc_bord(image elem_struct) const{
-    image sortie(hauteur+2*elem_struct.hauteur,largeur+2*elem_struct.largeur,0);
 
+image* image::duplique_elemStruc_bord(image elem_struct) const{
+    image* sortie=new image(hauteur+2*elem_struct.hauteur,largeur+2*elem_struct.largeur,0);
+    //cout<<"hauteur avant"<<hauteur<<" largeur avant"<<largeur<<endl;
+    //cout<<"hauteur"<<sortie.hauteur<<" largeur"<<sortie.largeur<<endl;
     // On se place sur la premiere ligne de l'image courante
     for(int k=0;k<(*this).hauteur;k++){
       // On traite le 1er bord (bord gauche de l'image)
-	  for(int i=elem_struct.hauteur;i<sortie.hauteur-elem_struct.hauteur;i++){
+      int n=0;
+      
+	  for(int i=elem_struct.hauteur;i<hauteur+elem_struct.hauteur;i++){
 		for(int j=0;j<elem_struct.largeur;j++){
-		      sortie(i,j) = (*this)(k,0);
+		      (*sortie)(i,j) = (*this)(k,0);	      
 		}
 	  }
+	  
     // On traite le 2ème bord (bord droite de l'image)
-	  for(int i=elem_struct.hauteur;i<sortie.hauteur-elem_struct.hauteur;i++){
-		for(int j=sortie.largeur-elem_struct.largeur-1;j<sortie.largeur;j++){
-		      sortie(i,j) = (*this)(k,hauteur-1);
+	  for(int i=elem_struct.hauteur;i<hauteur+elem_struct.hauteur;i++){
+		for(int j=sortie->largeur-elem_struct.largeur-1;j<sortie->largeur;j++){
+		      (*sortie)(i,j) = (*this)(k,hauteur-1);
 		}
 	  }
     }
 
  // On traite le 3 ème bord (bord du haut de l'image)
     for(int i=0;i<elem_struct.hauteur;i++){
-	  for(int j=0;j<sortie.largeur;j++){
-		     sortie(i,j) = sortie(elem_struct.hauteur,j);
+	  for(int j=0;j<sortie->largeur;j++){
+		     (*sortie)(i,j) = (*sortie)(elem_struct.hauteur,j);
 	  }
     }
 
  // On traite le 4 ème bord (bord du bas de l'image)
-    for(int i=sortie.hauteur-elem_struct.hauteur;i<sortie.hauteur;i++){
-	  for(int j=0;j<sortie.largeur;j++){
-		     sortie(i,j) = sortie(sortie.hauteur-elem_struct.hauteur,j);
+    for(int i=sortie->hauteur-elem_struct.hauteur;i<sortie->hauteur;i++){
+	  for(int j=0;j<sortie->largeur;j++){
+		     (*sortie)(i,j) = (*sortie)(sortie->hauteur-elem_struct.hauteur-1,j);
 	  }
     }
+ 
+ // On remplie l'intérieur de l'image
+    for(int i=0;i<hauteur;i++){
+	    for(int j=0;j<hauteur;j++){
+		  (*sortie)(i+elem_struct.hauteur,j+elem_struct.largeur) = (*this)(i,j);
+	    }
+    }
+    sortie->valmax = valmax;
+    
     return sortie;
+}
+
+
+image* image::dilatation(image elem_struct) const{
+   image* sortie=(*this).duplique_elemStruc_bord(elem_struct);
+    
+   // On traite les bords
+   int ind = (int)(elem_struct.hauteur/2.0+0.5);
+
+   // boucle sur toute l'image
+   for(int i=ind;i<sortie->hauteur-ind;i++){
+	for(int j=ind;j<sortie->largeur-ind;j++){
+		 // boucle sur l'image de l'élément structurant
+		 cout<<"ici 1"<<endl;
+		 int maximum=(*sortie)(i,j);
+		 cout<<"non 1"<<endl;
+		 
+		 int m=0;
+		 for(int k=i-ind;k<ind+i-1;k++){
+		      int n=0;
+		      for(int l=j-ind;l<ind+j-1;l++){
+			  cout<<"ici 2"<<endl;
+			  maximum = max(maximum,(*sortie)(k,l)*elem_struct(m,n) );
+			  cout<<"non 2"<<endl;
+			  n=n+1;
+		      }
+		 m=m+1;
+		 }
+	  (*sortie)(i,j) = maximum ;	
+	}
+   }
+return sortie;
 }

@@ -60,7 +60,9 @@ public:
 
 	void dispCompConn(const char* fic)const;
 
-	image duplique_elemStruc_bord(image elem_struct)const;
+	image* duplique_elemStruc_bord(image elem_struct)const;
+	
+	image* dilatation(image elem_struct)const;
 
 	void writePgmItems(char * itemsName,int seuil);
 
