@@ -21,7 +21,7 @@ public:
 
 	image(int hauteur, int largeur,int valmax=0);
 
-	image(char* nomFichier);
+	image(const char* nomFichier);
 
 	image(const image &);
 
@@ -39,6 +39,8 @@ public:
 	inline int getLargeur(){return largeur;}
 
 	inline int getValmax(){return valmax;}
+
+	void recadre(double a,double b);
 
 	int EcrireImagePGM(const char* nomFichier)const;
 
