@@ -65,6 +65,11 @@ using namespace std;
   sortie->EcrireImagePGM("erosionCarre7.pgm");
   
 // Test ouverture  
+  image im("objets.pgm");
+  image elem_structurant = creerImCarre(5);
+  image* sortie=im.ouverture(elem_structurant);
+  sortie->EcrireImagePGM("erosionCarre7.pgm");
+  
   
 return 0;
 }
