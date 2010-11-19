@@ -10,5 +10,5 @@
 *.pgm
 *.bmp
 *.gif
-
+bin/
 
