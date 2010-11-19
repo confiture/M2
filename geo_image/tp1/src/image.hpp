@@ -21,7 +21,7 @@ public:
 
 	image(int hauteur, int largeur,int valmax=0);
 
-	image(char* nomFichier);
+	image(const char* nomFichier);
 
 	image(const image &);
 
@@ -40,6 +40,8 @@ public:
 
 	inline int getValmax(){return valmax;}
 
+	void recadre(double a,double b);
+
 	int EcrireImagePGM(const char* nomFichier)const;
 
 	int& operator()(int i,int j);
@@ -52,13 +54,17 @@ public:
 
 	int negatif();
 
-	int** composante_connnex(int conn)const;
+	int** connexite4()const;
 
-	int nbConnCom(int seuil);
+	int** connexite8()const;
 
-	void dispCompConn(char* fic)const;
+	int nbConnCom(int nconn,int seuil);
+
+	void dispCompConn(const char* fic)const;
+
+	image* duplique_elemStruc_bord(image elem_struct)const;
 	
-	image duplique_elemStruc_bord(image elem_struct)const;
+	image* dilatation(image elem_struct)const;
 
 	void writePgmItems(char * itemsName,int seuil);
 
