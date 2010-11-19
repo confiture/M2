@@ -707,7 +707,7 @@ image* image::duplique_elemStruc_bord(image elem_struct) const{
 
 image* image::dilatation(image elem_struct) const{
    image* sortie=(*this).duplique_elemStruc_bord(elem_struct);
-    
+   image copie(*sortie);
    // On traite les bords
    int ind = (int)(elem_struct.hauteur/2.0+0.5);
 
@@ -715,17 +715,12 @@ image* image::dilatation(image elem_struct) const{
    for(int i=ind;i<sortie->hauteur-ind;i++){
 	for(int j=ind;j<sortie->largeur-ind;j++){
 		 // boucle sur l'image de l'élément structurant
-		 cout<<"ici 1"<<endl;
-		 int maximum=(*sortie)(i,j);
-		 cout<<"non 1"<<endl;
-		 
+		 int maximum=copie(i,j);		 
 		 int m=0;
 		 for(int k=i-ind;k<ind+i-1;k++){
 		      int n=0;
-		      for(int l=j-ind;l<ind+j-1;l++){
-			  cout<<"ici 2"<<endl;
-			  maximum = max(maximum,(*sortie)(k,l)*elem_struct(m,n) );
-			  cout<<"non 2"<<endl;
+		      for(int l=j-ind;l<ind+j-1;l++){l;
+			  maximum = max(maximum,copie(k,l)*elem_struct(m,n) );
 			  n=n+1;
 		      }
 		 m=m+1;
@@ -734,4 +729,38 @@ image* image::dilatation(image elem_struct) const{
 	}
    }
 return sortie;
+}
+
+
+image* image::erosion(image elem_struct) const{
+   image* sortie=(*this).duplique_elemStruc_bord(elem_struct);
+   // On fait une copie
+   image copie(*sortie);
+   // On traite les bords
+   int ind = (int)(elem_struct.hauteur/2.0+0.5);
+
+   // boucle sur toute l'image
+   for(int i=ind;i<sortie->hauteur-ind;i++){
+	for(int j=ind;j<sortie->largeur-ind;j++){
+		 // boucle sur l'image de l'élément structurant
+		 int minimum=copie(i,j);		 
+		 int m=0;
+		 for(int k=i-ind;k<ind+i-1;k++){
+		      int n=0;
+		      for(int l=j-ind;l<ind+j-1;l++){l;
+			  minimum = min(minimum,copie(k,l)*elem_struct(m,n) );
+			  n=n+1;
+		      }
+		 m=m+1;
+		 }
+	  (*sortie)(i,j) = minimum ;	
+	}
+   }
+return sortie;
+}
+
+image* image::ouverture(image elem_struct) const{
+ image* im_erosion=erosion(elem_structurant); 
+ image* sortie=im_erosion->dilatation(elem_struct);
+ return sortie; 
 }

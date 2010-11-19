@@ -65,9 +65,15 @@ public:
 	image* duplique_elemStruc_bord(image elem_struct)const;
 	
 	image* dilatation(image elem_struct)const;
-
+	
+	image* erosion(image elem_struct) const;
+	
+	image* ouverture(image elem_struct) const;
+	
 	void writePgmItems(char * itemsName,int seuil);
 
+	
+	
 private:
 	int largeur, hauteur, valmax;
 	int* buffer;

@@ -17,7 +17,7 @@ void test_DupStructCarre(char* fichier_entree ,char* fichier_sortie,int taille_c
   image elem_structurant = creerImCarre(taille_carre);
   image* sortie=im.duplique_elemStruc_bord(elem_structurant);
   sortie->EcrireImagePGM(fichier_sortie);
-
+}
 void test_trous(const char * fic){
   image im(fic);
   image neg(im);
@@ -51,13 +51,20 @@ void test_trous(const char * fic){
 int main(int argc, char* argv[]){
 using namespace std;
 
-  //test_DupStructCarre("objets.pgm","imgDuplique10.pgm",10);
+
+// Test dilatation
+//   image im("objets.pgm");
+//   image elem_structurant = creerImCarre(5);
+//   image* sortie=im.dilatation(elem_structurant);
+//   sortie->EcrireImagePGM("dilatationCarre7.pgm");
+ 
+// Test erosion 
   image im("objets.pgm");
   image elem_structurant = creerImCarre(5);
-  image* sortie=im.dilatation(elem_structurant);
-  sortie->EcrireImagePGM("dilatation.pgm");
-
+  image* sortie=im.erosion(elem_structurant);
+  sortie->EcrireImagePGM("erosionCarre7.pgm");
   
+// Test ouverture  
   
 return 0;
 }
