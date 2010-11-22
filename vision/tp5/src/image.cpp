@@ -173,6 +173,22 @@ void image::recadre(double a,double b){
 	valmax=b;
 }
 
+
+double image::median(int p,int pix_i,int pix_j){
+	int pos = (p-1)/2;
+	int k,l;
+	double tab[p*p];
+
+	for(k=pix_i-pos;k<=pix_i+pos;k++){
+		for(l=pix_j-pos;l<=pix_j+pos;l++){
+			tab[(k-pix_i+pos)*p + (l+pos-pix_j)]=(*this)(k,l);
+		}
+	}
+
+	return medianTab(tab,p*p);
+}
+
+
 /**
  *On applique le filtre filter de dimensions p*p sur la positions (pix_i,pix_j)
  *à partir de l'image courante sur l'image de sortie passée en paramètre.
@@ -190,7 +206,21 @@ void image::ApplyFilter(int p,double** filter,int pix_i,int pix_j,image & sortie
 	sortie(pix_i,pix_j)=val;
 }
 
+image* image::medianFilter(int p){
+	int n=p/2;
+	image* sortie=new image(hauteur,largeur,0);
+	double max=0;
 
+	std::cout<<"n "<<n<<endl;
+	for(int i=n;i<hauteur-n;i++){
+		for(int j=n;j<largeur-n;j++){
+			(*sortie)(i,j)=this->median(p,i,j);
+			if(sortie->valmax<(*sortie)(i,j))sortie->valmax=(*sortie)(i,j);
+		}
+	}
+
+	return sortie;
+}
 
 image* image::HarrisFilter(double alpha){
 	image* gauss=GaussFilter();
@@ -508,7 +538,7 @@ double image::sigma(int i_pix,int j_pix, int n, int p)const{
 			som+=((*this)(i_pix+i,j_pix+j)-moy)*((*this)(i_pix+i,j_pix+j)-moy);
 		}
 	}
-	double fact = 1.0 / ( (2*n+1)*(2*p+1) );
+	double fact = 1.0 / ( (double)(2*n+1)*(2*p+1) );
 	res = sqrt(fact * som);
 	return res;
 }
@@ -518,9 +548,9 @@ double image::zncc(int i1,int j1,const image & comp,int i2,int j2,int n, int p)c
 	double som = 0;
 	double res = 0;
 	double moy1 = moyenne(i1,j1,n,p);
-	double moy2 = moyenne(i2,j2,n,p);
+	double moy2 = comp.moyenne(i2,j2,n,p);
 	double sigma1 = sigma(i1,j1,n,p);
-	double sigma2 = sigma(i2,j2,n,p);
+	double sigma2 = comp.sigma(i2,j2,n,p);
 
 	for(int i=-n;i<=n;i++){
 		for(int j=-p;j<=p;j++){
@@ -528,11 +558,6 @@ double image::zncc(int i1,int j1,const image & comp,int i2,int j2,int n, int p)c
 		}
 	}
 
-	// cout<<"======================"<<endl;
-// 	cout<<"som "<<som<<endl;
-// 	cout<<"sigma1 "<<sigma1<<endl;
-// 	cout<<"sigma2 "<<sigma2<<endl;
-// 	cout<<"======================"<<endl;
 	res = (1.0/(sigma1*sigma2)) * som ;
 	return res;
 }
@@ -662,14 +687,14 @@ image* image::makeDepth(const image & comp,int winn,int winp,
 	(*this).EcrireImagePGM("temp1.pgm");
 	comp.EcrireImagePGM("temp2.pgm");
 	for(int i=winn;i<hauteur-winn;i++){
-		if(sim){
-			extrScore=-numeric_limits<double>::infinity();
-		}
-		else{
-			extrScore=numeric_limits<double>::infinity();
-		}
-
 		for(int j=winp;j<largeur-winp;j++){
+			if(sim){
+				extrScore=-numeric_limits<double>::infinity();
+			}
+			else{
+				extrScore=numeric_limits<double>::infinity();
+			}
+
 			for(int jj=winp;jj<largeur-winp;jj++){
 				currentScore=(this->*score)(i,j,comp,i,jj,winn,winp);
 				if(currentScore<extrScore && !sim || currentScore>extrScore && sim){
@@ -678,21 +703,12 @@ image* image::makeDepth(const image & comp,int winn,int winp,
 				}
 			}
 
-			if(j==jCorres){(*sortie)(i,j)=-1;}
-			else{(*sortie)(i,j)=1.0/(absf(j-jCorres));assert((*sortie)(i,j)>0);}
+			if(j==jCorres){(*sortie)(i,j)=1.1;}
+			else{(*sortie)(i,j)=1.0/(absd(j-jCorres));assert((*sortie)(i,j)>0);}
 		}
 	}
 
-	sortie->updateValmax();
-	//std::cout<<"valmax "<<sortie->valmax<<endl;
-	double incr=sortie->valmax*0.02;
-	for(int i=0;i<hauteur;i++){
-		for(int j=0;j<largeur;j++){
-			if((*sortie)(i,j)==-1)(*sortie)(i,j)=sortie->valmax+incr;
-			//assert((*sortie)(i,j)>=0);
-		}
-	}
-	sortie->valmax=sortie->valmax+incr;
+	sortie->valmax=1.1;
 
 	return sortie;
 }

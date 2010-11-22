@@ -43,13 +43,21 @@ void testDepth(int winn,int winp,char * fic1,char * fic2,char * ficSortie){
   image im1(fic1);
   image im2(fic2);
 
-  image* imSortie=im1.makeDepth(im2,winn,winp,&image::ssd,false);
+  image* imSortie=im1.makeDepth(im2,winn,winp,&image::zncc,true);
   imSortie->recadre(0,255);
+  imSortie->EcrireImagePGM(ficSortie);
+}
+
+void test_medianFilter(int n,char * fic,char * ficSortie){
+  image im(fic);
+  image* imSortie=im.medianFilter(n);
   imSortie->EcrireImagePGM(ficSortie);
 }
 
 int main(int argc, char* argv[]){
 
-  testDepth(atoi(argv[1]),atoi(argv[2]),argv[3],argv[4],argv[5]);
+  //testDepth(atoi(argv[1]),atoi(argv[2]),argv[3],argv[4],argv[5]);
+  test_medianFilter(atoi(argv[1]),argv[2],argv[3]);
+
   return 0;
 }
