@@ -16,7 +16,7 @@ void test_trous(const char * fic){
   neg.EcrireImagePGM("negatifInit.pgm");
 
   neg.seuiller(neg.getValmax()-50);
-  int** conn=neg.connexite8();
+  int** conn=neg.binConnexite8();
 
   int n=im.getHauteur();
   int m=im.getLargeur();
@@ -43,7 +43,7 @@ int main(int argc, char* argv[]){
 using namespace std;
 
 
-  
+
   // Test dilatation
 //   image im("objets.pgm");
 //   image elem_structurant = image::elemCarre(5);
@@ -52,9 +52,9 @@ using namespace std;
       image im("objets.pgm");
       image* sortie=im.dilatation(image::cercle,11);
       sortie->EcrireImagePGM("test_cercle.pgm");
-     
+
      //image sortie= image::elemCercle(11);
-     //sortie.EcrireImagePGM("CERCLE.PGM"); 
+     //sortie.EcrireImagePGM("CERCLE.PGM");
   // Test erosion
 //   image im("objets.pgm");
 //   image elem_structurant = image::elemCarre(5);
@@ -83,4 +83,5 @@ using namespace std;
 
 
 return 0;
+
 }

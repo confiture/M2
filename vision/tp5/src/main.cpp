@@ -48,8 +48,16 @@ void testDepth(int winn,int winp,char * fic1,char * fic2,char * ficSortie){
   imSortie->EcrireImagePGM(ficSortie);
 }
 
+void test_medianFilter(int n,char * fic,char * ficSortie){
+  image im(fic);
+  image* imSortie=im.medianFilter(n);
+  imSortie->EcrireImagePGM(ficSortie);
+}
+
 int main(int argc, char* argv[]){
 
-  testDepth(atoi(argv[1]),atoi(argv[2]),argv[3],argv[4],argv[5]);
+  //testDepth(atoi(argv[1]),atoi(argv[2]),argv[3],argv[4],argv[5]);
+  test_medianFilter(atoi(argv[1]),argv[2],argv[3]);
+
   return 0;
 }
