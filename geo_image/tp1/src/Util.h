@@ -16,6 +16,7 @@ void pm_erreur(char *);
 float absf(float);
 float max(float,float);
 int max(int,int);
+int min(int,int);
 //gray max(gray,gray);
 float mod2PI(float);
 
