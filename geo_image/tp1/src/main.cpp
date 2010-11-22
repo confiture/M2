@@ -39,7 +39,7 @@ void test_trous(const char * fic){
   neg.EcrireImagePGM("negatifInit.pgm");
 
   neg.seuiller(neg.getValmax()-50);
-  int** conn=neg.connexite8();
+  int** conn=neg.binConnexite8();
 
   int n=im.getHauteur();
   int m=im.getLargeur();
@@ -71,7 +71,5 @@ using namespace std;
   image* sortie=im.dilatation(elem_structurant);
   sortie->EcrireImagePGM("dilatation.pgm");
 
-
-
-return 0;
+  return 0;
 }
