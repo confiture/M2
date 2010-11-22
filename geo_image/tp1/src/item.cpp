@@ -19,7 +19,7 @@ void item::writePgmItem(const char * fic){
 
 	for(int i=0; i < pIm->getHauteur(); i++){
 		for(int j=0; j < pIm->getLargeur(); j++){
-			os<<(*pIm)(i,j);
+			os<<image(i,j);
 			os<<endl;
 		}
 	}

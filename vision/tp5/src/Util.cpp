@@ -32,6 +32,13 @@ float absf(float x){
 	return -x;
 }
 
+
+double absd(double x){
+	if(x>=0)return x;
+	return -x;
+}
+
+
 float max(float a,float b){
 	if(a>b)return a;
 	return b;
@@ -102,4 +109,23 @@ void pm_erreur(char *texte)
 {
   fprintf(stderr, "\n%s \n\n", texte);
   exit(1);
+}
+
+double medianTab(double* tab_in,int dim){
+	double tab[dim];
+	int i;
+	int j;
+	int min_ind;
+	int temp;
+	for(i=0;i<dim;i++)tab[i]=tab_in[i];
+	for(i=0;i<(dim-1)/2+1;i++){
+		min_ind=i+1;
+		for(j=i+1;j<dim;j++){
+			if(tab[j]<tab[min_ind])min_ind=j;
+		}
+		temp=tab[min_ind];
+		tab[min_ind]=tab[i];
+		tab[i]=temp;
+	}
+	return tab[(dim-1)/2];
 }

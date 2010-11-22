@@ -53,6 +53,8 @@ public:
 
   void ApplyFilter(int p,double** filter,int pix_i,int pix_j,image & sortie);
 
+
+
   image* contourX();
 
   image* contourY();
@@ -73,6 +75,8 @@ public:
 
   image* GaussFilter();
 
+  image* medianFilter(int n);
+
   void recadre(double a,double b);
 
   bool maxLoc(int i,int j);
@@ -85,8 +89,9 @@ public:
 
   double ssd(int i1,int j1,const image & comp,int i2,int j2,int n, int p)const;
 
-
   double zncc(int i1,int j1,const image & comp,int i2,int j2,int n, int p)const;
+
+  double median(int p,int pix_i,int pix_j);
 
   double moyenne(int i_pix,int j_pix, int n, int p)const;
 

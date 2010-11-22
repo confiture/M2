@@ -5,20 +5,19 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <cstdio>
-#include <iostream>
 #include <fstream>
 #include <streambuf>
-
-class image;
+#include "image.hpp"
+//class image;
 
 class item{
 public:
-	void writePgmItem(const char * fic);
-
-	image * pIm;
+	image im;
 	int epaisseur;
 	int nbTrous;
-private:
+
+	void writePgmItem(const char * fic);
+
 };
 
 #endif
