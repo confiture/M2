@@ -100,6 +100,12 @@ public:
   pixel** matchPoints(const image & comp,int nbpoints,int winn,int winp,
                       double (image::*score)(int,int,const image &,int,int,int,int)const,bool sim=false)const;
 
+  int** matchProfPoints(const image & comp,int winn,int winp,
+                      double (image::*score)(int,int,const image &,int,int,int,int)const,bool sim=false)const;
+
+  image* dblMatchProfPoints(const image & comp,int winn,int winp,
+                      double (image::*score)(int,int,const image &,int,int,int,int)const,bool sim=false)const;
+
   pixel** dblMatchPoints(const image & comp,int nbpoints,int winn,int winp,
                       double (image::*score)(int,int,const image &,int,int,int,int)const,bool sim=false)const;
 
