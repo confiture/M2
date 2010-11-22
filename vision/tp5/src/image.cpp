@@ -518,9 +518,9 @@ double image::zncc(int i1,int j1,const image & comp,int i2,int j2,int n, int p)c
 	double som = 0;
 	double res = 0;
 	double moy1 = moyenne(i1,j1,n,p);
-	double moy2 = moyenne(i2,j2,n,p);
+	double moy2 = comp.moyenne(i2,j2,n,p);
 	double sigma1 = sigma(i1,j1,n,p);
-	double sigma2 = sigma(i2,j2,n,p);
+	double sigma2 = comp.sigma(i2,j2,n,p);
 
 	for(int i=-n;i<=n;i++){
 		for(int j=-p;j<=p;j++){
@@ -678,21 +678,12 @@ image* image::makeDepth(const image & comp,int winn,int winp,
 				}
 			}
 
-			if(j==jCorres){(*sortie)(i,j)=-1;}
+			if(j==jCorres){(*sortie)(i,j)=1.1;}
 			else{(*sortie)(i,j)=1.0/(absf(j-jCorres));assert((*sortie)(i,j)>0);}
 		}
 	}
 
-	sortie->updateValmax();
-	//std::cout<<"valmax "<<sortie->valmax<<endl;
-	double incr=sortie->valmax*0.02;
-	for(int i=0;i<hauteur;i++){
-		for(int j=0;j<largeur;j++){
-			if((*sortie)(i,j)==-1)(*sortie)(i,j)=sortie->valmax+incr;
-			//assert((*sortie)(i,j)>=0);
-		}
-	}
-	sortie->valmax=sortie->valmax+incr;
+	sortie->valmax=1.1;
 
 	return sortie;
 }
