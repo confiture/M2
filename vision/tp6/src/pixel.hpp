@@ -18,7 +18,6 @@ public:
 		valR=pix.valR;
 		valG=pix.valG;
 		valB=pix.valB;
-		
 		return (*this);
 	}
 
@@ -46,15 +45,26 @@ public:
 		return res;
 	}
 	
+	inline pixPPM operator/(int nb){
+		pixPPM res;
+		res.i = (double)i / nb+0.5;
+		res.j = (double)j / nb+0.5;
+		res.valR = valR / nb;
+		res.valG = valG / nb;
+		res.valB = valB / nb;
+	return res;	
+	}
+	
 	inline pixPPM moyenne(const std::list<pixPPM> & Lpix){
 	  std::list<pixPPM>::const_iterator it=Lpix.begin();
-	  pixPPM moy(0,0,0,0,0);
-	  int nb_pix = 1;
+	  pixPPM moy;
+	  pixPPM pix(0,0,0,0,0);
+	  int nb_pix = 0;
 	  for(it;it!=Lpix.end();it++){
-	    moy = moy+(*it);
+	    pix = pix+(*it);
 	    nb_pix++;
 	  }
-	
+	moy = pix/nb_pix;
 	return moy;
 	}
 	
