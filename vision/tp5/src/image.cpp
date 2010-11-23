@@ -714,3 +714,68 @@ image* image::makeDepth(const image & comp,int winn,int winp,
 
 	return sortie;
 }
+
+int** image::matchProfPoints(const image & comp,int winn,int winp,
+                        double (image::*score)(int,int,const image &,int,int,int,int)const,bool sim)const{
+
+	int** corres=new int*[hauteur];
+	for(int i=0;i<hauteur;i++)corres[i]=new int[largeur];
+
+	double extrScore;
+	double currentScore;
+	int jCorres;
+
+	(*this).EcrireImagePGM("temp1.pgm");
+	comp.EcrireImagePGM("temp2.pgm");
+	for(int i=winn;i<hauteur-winn;i++){
+		for(int j=winp;j<largeur-winp;j++){
+			if(sim){
+				extrScore=-numeric_limits<double>::infinity();
+			}
+			else{
+				extrScore=numeric_limits<double>::infinity();
+			}
+
+			for(int jj=winp;jj<largeur-winp;jj++){
+				currentScore=(this->*score)(i,j,comp,i,jj,winn,winp);
+				if(currentScore<extrScore && !sim || currentScore>extrScore && sim){
+					extrScore=currentScore;
+					jCorres=jj;
+				}
+			}
+
+			corres[i][j]=jCorres;
+		}
+	}
+
+	return corres;
+}
+
+image* image::dblMatchProfPoints(const image & comp,int winn,int winp,
+                         double (image::*score)(int,int,const image &,int,int,int,int)const,bool sim)const{
+
+	int** corresg=this->matchProfPoints(comp,winn,winp,score,sim);
+	int** corresd=comp.matchProfPoints((*this),winn,winp,score,sim);
+	image* sortie=new image(hauteur,largeur,0);
+
+	for(int i=0;i<hauteur;i++){
+		for(int j=0;j<largeur;j++){
+			if(corresd[i][corresg[i][j]]!=j){(*sortie)(i,j)=0;}
+			else{
+				if(j==corresg[i][j]){(*sortie)(i,j)=1.1;}
+				else{(*sortie)(i,j)=1.0/(absd(j-corresg[i][j]));assert((*sortie)(i,j)>0);}
+			}
+		}
+		std::cout<<i/((double)hauteur)*100<<"%"<<std::endl;
+		std::cout.flush();
+	}
+
+	for(int i=0;i<hauteur;i++){
+		delete[] corresd[i];
+		delete[] corresg[i];
+	}
+	delete[] corresd;
+	delete[] corresg;
+
+	return sortie;
+}
