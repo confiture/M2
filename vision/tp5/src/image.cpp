@@ -758,12 +758,14 @@ image* image::dblMatchProfPoints(const image & comp,int winn,int winp,
 
 	for(int i=0;i<hauteur;i++){
 		for(int j=0;j<largeur;j++){
-			if(corresd[i][corresg[i][j]]!=j){(*sortie)(i,j)=-1;}
+			if(corresd[i][corresg[i][j]]!=j){(*sortie)(i,j)=0;}
 			else{
 				if(j==corresg[i][j]){(*sortie)(i,j)=1.1;}
 				else{(*sortie)(i,j)=1.0/(absd(j-corresg[i][j]));assert((*sortie)(i,j)>0);}
 			}
 		}
+		std::cout<<i/((double)hauteur)*100<<"%"<<std::endl;
+		std::cout.flush();
 	}
 
 	for(int i=0;i<hauteur;i++){
