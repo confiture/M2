@@ -176,8 +176,9 @@ int image::EcrireImagePPM(const char* nomFichier)const{
 
 }
 
-std::list<pixPPM> image::initCentroids(int k){
-	std::list<pixPPM> centroids;
+pixPPM* image::initCentroids(int k){
+	pixPPM* centroids=new pixPPM[k];
+	int ind=0;
 	int kk;
 	if(k%2==1){kk=k+1;}
 	else{kk=k;}
@@ -190,8 +191,10 @@ std::list<pixPPM> image::initCentroids(int k){
 		cout<<posi<<endl;
 		pixPPM pix1(posi,j1,(*this)(posi,j1,R),(*this)(posi,j1,G),(*this)(posi,j1,B));
 		pixPPM pix2(posi,j2,(*this)(posi,j2,R),(*this)(posi,j2,G),(*this)(posi,j2,B));
-		centroids.push_back(pix1);
-		centroids.push_back(pix2);
+		centroids[ind]=pix1;
+		ind++;
+		centroids[ind]=pix2;
+		ind++;
 	}
 
 	if(k%2==1){
@@ -199,17 +202,23 @@ std::list<pixPPM> image::initCentroids(int k){
 		int posi=hauteur/(kk/2+1)*kk/2;
 		int j=largeur/2;
 		pixPPM pix(posi,j,(*this)(posi,j,R),(*this)(posi,j,G),(*this)(posi,j,B));
-		centroids.push_back(pix);
+		centroids[ind]=pix;
 	}
 	else{
 		std::cout<<"ici 3"<<endl;
 		int posi=hauteur/(kk/2+1)*kk/2;
 		pixPPM pix1(posi,j1,(*this)(posi,j1,R),(*this)(posi,j1,G),(*this)(posi,j1,B));
 		pixPPM pix2(posi,j2,(*this)(posi,j2,R),(*this)(posi,j2,G),(*this)(posi,j2,B));
-		centroids.push_back(pix1);
-		centroids.push_back(pix2);
+		centroids[ind]=pix1;
+		ind++;
+		centroids[ind]=pix2;
 	}
 
 	return centroids;
 }
 
+
+std::list<pixPPM> image::kMean(int k){
+	pixPPM* centroids=initCentroids(k);
+	return l;
+}

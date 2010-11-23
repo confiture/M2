@@ -47,7 +47,9 @@ public:
 
   double operator()(int i,int j,color c)const;
 
-  std::list<pixPPM> initCentroids(int k);
+  pixPPM* initCentroids(int k);
+
+  std::list<pixPPM> kMean(int k);
 
 private:
   int largeur, hauteur, valmax;
