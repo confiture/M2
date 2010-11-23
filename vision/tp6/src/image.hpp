@@ -47,6 +47,8 @@ public:
 
   double operator()(int i,int j,color c)const;
 
+  std::list<pixPPM> initCentroids(int k);
+
 private:
   int largeur, hauteur, valmax;
   double* bufferR;

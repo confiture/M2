@@ -176,3 +176,40 @@ int image::EcrireImagePPM(const char* nomFichier)const{
 
 }
 
+std::list<pixPPM> image::initCentroids(int k){
+	std::list<pixPPM> centroids;
+	int kk;
+	if(k%2==1){kk=k+1;}
+	else{kk=k;}
+
+	int j1=largeur/3;
+	int j2=2*largeur/3;
+	for(int i=0;i<kk/2-1;i++){
+		std::cout<<"ici 1"<<endl;
+		int posi=hauteur/(kk/2+1)*(i+1);
+		cout<<posi<<endl;
+		pixPPM pix1(posi,j1,(*this)(posi,j1,R),(*this)(posi,j1,G),(*this)(posi,j1,B));
+		pixPPM pix2(posi,j2,(*this)(posi,j2,R),(*this)(posi,j2,G),(*this)(posi,j2,B));
+		centroids.push_back(pix1);
+		centroids.push_back(pix2);
+	}
+
+	if(k%2==1){
+		std::cout<<"ici 2"<<endl;
+		int posi=hauteur/(kk/2+1)*kk/2;
+		int j=largeur/2;
+		pixPPM pix(posi,j,(*this)(posi,j,R),(*this)(posi,j,G),(*this)(posi,j,B));
+		centroids.push_back(pix);
+	}
+	else{
+		std::cout<<"ici 3"<<endl;
+		int posi=hauteur/(kk/2+1)*kk/2;
+		pixPPM pix1(posi,j1,(*this)(posi,j1,R),(*this)(posi,j1,G),(*this)(posi,j1,B));
+		pixPPM pix2(posi,j2,(*this)(posi,j2,R),(*this)(posi,j2,G),(*this)(posi,j2,B));
+		centroids.push_back(pix1);
+		centroids.push_back(pix2);
+	}
+
+	return centroids;
+}
+
