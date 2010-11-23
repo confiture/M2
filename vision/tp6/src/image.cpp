@@ -118,7 +118,6 @@ image::image(const char* nomFichier){
 	bufferG = new double[hauteur*largeur];
 	bufferB = new double[hauteur*largeur];
 
-
 	if(ich2=='6'){
 		/*Lecture*/
 		for(int i=0; i < hauteur; i++){

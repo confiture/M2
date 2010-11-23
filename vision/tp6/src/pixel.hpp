@@ -1,32 +1,31 @@
-class pixel{
+class pixPPM{
 public:
 
-	inline pixel(int i,int j,double val){
-		_i=i;
-		_j=j;
-		_val=val;
+	inline pixPPM(int i,int j,double valR,double valG,double valB){
+		this->i=i;
+		this->j=j;
+		this->valR=valR;
+		this->valG=valG;
+		this->valB=valB;
 	}
 
-	inline pixel(){}
+	inline pixPPM(){}
 
-	inline friend bool operator<(const pixel & p1,const pixel & p2){
-		return p1._val<p2._val;
+	inline pixPPM& operator=(const pixPPM & pix){
+		i=pix.i;
+		j=pix.j;
+		valR=pix.valR;
+		valG=pix.valG;
+		valB=pix.valB;
 	}
 
-	inline pixel& operator=(const pixel & pix){
-		_i=pix._i;
-		_j=pix._j;
-		_val=pix._val;
+	inline bool equalPos(const pixPPM & pix){
+		return i==pix.i && j==pix.j;
 	}
 
-	inline bool equalPos(const pixel & pix){
-		return _i==pix._i && _j==pix._j;
-	}
-
-	int _i;
-	int _j;
-	double _val;
-
-private:
-
+	int i;
+	int j;
+	double valR;
+	double valG;
+	double valB;
 };
