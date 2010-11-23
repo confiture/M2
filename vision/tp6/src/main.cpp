@@ -21,6 +21,7 @@ void testInitCentroids(const char* fic1){
 
 int main(int argc, char* argv[]){
   //testLecEcr(argv[1],argv[2]);
-  testInitCentroids(argv[1]);
+  testPixelAddition();
+
   return 0;
 }
