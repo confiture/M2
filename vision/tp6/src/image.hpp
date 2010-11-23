@@ -16,17 +16,13 @@
 
 class image{
 public:
+  enum color{R,G,B};
 
   image(int hauteur, int largeur,int valmax);
 
-  image(char* nomFichier);
+  image(const char* nomFichier);
 
   image(const image & im);
-
-  // Fusion de l'image im1 avec l'image im2
-  image(const image & im1, const image & im2);
-
-
 
   void updateValmax();
 
@@ -34,7 +30,9 @@ public:
    *Destructeur.
    */
   inline ~image(){
-    delete [] buffer;
+    delete [] bufferR;
+    delete [] bufferG;
+    delete [] bufferB;
   }
 
   int getHauteur();
@@ -43,77 +41,15 @@ public:
 
   int getValmax();
 
-  int EcrireImagePGM(char* nomFichier)const;
+  int EcrireImagePPM(const char* nomFichier)const;
 
-  double& operator()(int i,int j);
+  double& operator()(int i,int j,color c);
 
-  double operator()(int i,int j)const;
-
-  image LireImagePGM(char* nomFichier);
-
-  void ApplyFilter(int p,double** filter,int pix_i,int pix_j,image & sortie);
-
-
-
-  image* contourX();
-
-  image* contourY();
-
-  image* contourX2();
-  image* contourY2();
-  image* contourXY();
-
-  image* LissageGaussienX2();
-  image* LissageGaussienY2();
-  image* LissageGaussienXY();
-
-  image* HarrisFilter(double alpha);
-
-  void elim_neg();
-
-  std::list<pixel> best_interest_points(int n,int winn,int winm)const;
-
-  image* GaussFilter();
-
-  image* medianFilter(int n);
-
-  void recadre(double a,double b);
-
-  bool maxLoc(int i,int j);
-
-  void drawCross(int i,int j,int color);
-
-  void drawPts(const std::list<pixel> & Lpix,int col);
-
-  void drawLine(int xi,int yi,int xf,int yf,int color);
-
-  double ssd(int i1,int j1,const image & comp,int i2,int j2,int n, int p)const;
-
-  double zncc(int i1,int j1,const image & comp,int i2,int j2,int n, int p)const;
-
-  double median(int p,int pix_i,int pix_j);
-
-  double moyenne(int i_pix,int j_pix, int n, int p)const;
-
-  double sigma(int i_pix,int j_pix, int n, int p)const;
-
-  pixel** matchPoints(const image & comp,int nbpoints,int winn,int winp,
-                      double (image::*score)(int,int,const image &,int,int,int,int)const,bool sim=false)const;
-
-  pixel** dblMatchPoints(const image & comp,int nbpoints,int winn,int winp,
-                      double (image::*score)(int,int,const image &,int,int,int,int)const,bool sim=false)const;
-
-  image* drawMatchPoints(const image & comp,int nbpoints,int winn,int winp,
-                      double (image::*score)(int,int,const image &,int,int,int,int)const,bool sim=false)const;
-
-  image* drawDblMatchPoints(const image & comp,int nbpoints,int winn,int winp,
-                            double (image::*score)(int,int,const image &,int,int,int,int)const,bool sim)const;
-
-  image* makeDepth(const image & comp,int winn,int winp,
-                   double (image::*score)(int,int,const image &,int,int,int,int)const,bool sim)const;
+  double operator()(int i,int j,color c)const;
 
 private:
   int largeur, hauteur, valmax;
-  double* buffer;
-
+  double* bufferR;
+  double* bufferG;
+  double* bufferB;
 };
