@@ -62,8 +62,8 @@ function D=cornerCut(P,a,b)
   D(:,1)=P(:,1)
   D(:,2)=(P(:,1)+P(:,2))/2
   for j=1:n-2
-    D(:,2*j-1)=a*P(:,j)+b*P(:,j+1)
-    D(:,2*j)  =b*P(:,j)+a*P(:,j+1)
+    D(:,2*j-1)=a*P(:,j)+(1-a)*P(:,j+1)
+    D(:,2*j)  =b*P(:,j)+(1-b)*P(:,j+1)
   end
   D(:,2*n-3)=(P(:,n-1)+P(:,n))/2
   D(:,2*n-2)=P(:,n)
@@ -75,3 +75,36 @@ function D=cornerCutIter(P,a,b,k)
     D=cornerCut(D,a,b)
   end
 endfunction
+
+function D=chouFleur(P)
+  n=size(P,2)
+  for i=1:n-1
+    D(:,2*i-1)=P(:,i)
+    N=P(:,i+1)-P(:,i)
+    N=[-N(2,1) ; N(1,1)]/3
+    D(:,2*i)=(P(:,i)+P(:,i+1))/2+N
+  end
+  D(:,2*n-1)=D(:,n)
+endfunction
+    
+function D=chouFleurIter(P,k)
+  D=P
+  for i=1:k
+    D=chouFleur(D)
+  end
+endfunction
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
