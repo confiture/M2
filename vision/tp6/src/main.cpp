@@ -16,10 +16,20 @@ void testLecEcr(const char* fic1,const char* fic2){
  std::cout<<"B : "<<pixB.valB<<std::endl;
  }
  
+ void testPixelDivision(){
+ pixPPM pixA(3,3,200,200,200);
+ pixPPM pixB;
+ pixB = pixA/2;
+ std::cout<<"i : "<<pixB.i<<"; ";
+ std::cout<<"j : "<<pixB.j<<"; ";
+ std::cout<<"R : "<<pixB.valR<<"; ";
+ std::cout<<"G : "<<pixB.valG<<"; ";
+ std::cout<<"B : "<<pixB.valB<<std::endl;
+ }
 
 int main(int argc, char* argv[]){
   //testLecEcr(argv[1],argv[2]);
-  testPixelAddition();
-  
+  //testPixelAddition();
+  testPixelDivision();
   return 0;
 }
