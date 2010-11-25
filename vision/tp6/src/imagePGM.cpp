@@ -136,7 +136,7 @@ int imagePGM::EcrireImagePGM(const char* nomFichier)const{
 
 }
 
-std::list<pixPGM> imagePGM::initCentroids(int k){
+std::list<pixPGM> imagePGM::initCentroids(int k)const{
 	std::list<pixPGM> centroids;
 	int kk;
 	if(k%2==1){kk=k+1;}

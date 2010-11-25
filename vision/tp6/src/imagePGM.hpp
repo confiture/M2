@@ -43,7 +43,7 @@ public:
 
   double operator()(int i,int j)const;
 
-  std::list<pixPGM> initCentroids(int k);
+  std::list<pixPGM> initCentroids(int k)const;
 
 private:
   int largeur, hauteur, valmax;
