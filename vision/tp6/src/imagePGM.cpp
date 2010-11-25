@@ -2,7 +2,7 @@
 
 using namespace std;
 
-double& imagePGM::operator()(int i,int j,color c){
+double& imagePGM::operator()(int i,int j){
 	assert(i>=0);
 	assert(i<hauteur);
 	assert(j>=0);
@@ -11,7 +11,7 @@ double& imagePGM::operator()(int i,int j,color c){
 	return buffer[i*largeur+j];
 }
 
-double imagePGM::operator()(int i,int j,color c)const{
+double imagePGM::operator()(int i,int j)const{
 	assert(i>=0);
 	assert(i<hauteur);
 	assert(j>=0);

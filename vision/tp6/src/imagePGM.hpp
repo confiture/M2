@@ -9,7 +9,7 @@
 #include <streambuf>
 #include <algorithm>
 #include <limits>
-#include "pixel.hpp"
+#include "pixelPGM.hpp"
 #include <list>
 #include <cmath>
 #include <cassert>
@@ -28,9 +28,7 @@ public:
    *Destructeur.
    */
   inline ~imagePGM(){
-    delete [] bufferR;
-    delete [] bufferG;
-    delete [] bufferB;
+    delete [] buffer;
   }
 
   int getHauteur();
