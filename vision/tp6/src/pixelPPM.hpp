@@ -55,6 +55,11 @@ public:
 	return res;	
 	}
 	
+	inline double valmax(const pixPPM & pix){
+		
+	
+	}
+	
 	inline pixPPM moyenne(const std::list<pixPPM> & Lpix){
 	  std::list<pixPPM>::const_iterator it=Lpix.begin();
 	  pixPPM moy;

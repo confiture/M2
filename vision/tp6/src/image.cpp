@@ -176,6 +176,37 @@ int image::EcrireImagePPM(const char* nomFichier)const{
 
 }
 
+image::image(int k, std::list<pixPPM> * tab,const char* nomFichier){
+	 
+	/* Ouverture */
+	filebuf fb;
+	fb.open(nomFichier,ios::out);
+	ostream os(&fb);
+
+	/* Ecriture */
+	os<<"P3"<<endl;
+	os<<largeur<<" "<<hauteur<<endl;
+	os<<valmax<<endl;
+	
+			pixR=(int)((*this)(i,j,R)+0.5);
+			pixG=(int)((*this)(i,j,G)+0.5);
+			pixB=(int)((*this)(i,j,B)+0.5);
+			os<<pixR<<" "<<pixG<<" "<<pixB;;
+			os<<std::endl;
+		  std::list<pixPPM>::const_iterator it=Lpix.begin();
+	  pixPPM moy;
+	  pixPPM pix(0,0,0,0,0);
+	  int nb_pix = 0;
+	  for(it;it!=Lpix.end();it++){
+	    pix = pix+(*it);
+	    nb_pix++;
+	
+		
+	}
+
+
+}
+
 std::list<pixPPM> image::initCentroids(int k){
 	std::list<pixPPM> centroids;
 	int kk;

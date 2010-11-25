@@ -24,6 +24,8 @@ public:
 
   image(const image & im);
 
+  image(int k, std::list<pixPPM> * tab,const char* nomFichier);
+  
   void updateValmax();
 
   /**
