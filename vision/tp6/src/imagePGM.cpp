@@ -41,32 +41,24 @@ void imagePGM::updateValmax(){
 
 imagePGM::imagePGM(int hauteur, int largeur,int valmax){
 	this->buffer = new double[hauteur*largeur];
-	this->bufferG = new double[hauteur*largeur];
-	this->bufferB = new double[hauteur*largeur];
 	this->hauteur=hauteur;
 	this->largeur=largeur;
 	this->valmax=valmax;
 	for(int i=0;i<hauteur*largeur;i++)
 	{
 		buffer[i]=valmax;
-		bufferG[i]=valmax;
-		bufferB[i]=valmax;
 	}
 }
 
 imagePGM::imagePGM(const imagePGM & im){
 	this->buffer = new double[hauteur*largeur];
-	this->bufferG = new double[hauteur*largeur];
-	this->bufferB = new double[hauteur*largeur];
 	this->hauteur=im.hauteur;
 	this->largeur=im.largeur;
 	this->valmax=im.valmax;
 
 	for(int i=0;i<hauteur;i++){
 		for(int j=0;j<largeur;j++){
-			(*this)(i,j,R)=im(i,j,R);
-			(*this)(i,j,G)=im(i,j,G);
-			(*this)(i,j,B)=im(i,j,B);
+			(*this)(i,j)=im(i,j);
 		}
 	}
 }
@@ -144,8 +136,8 @@ int imagePGM::EcrireImagePGM(const char* nomFichier)const{
 
 }
 
-std::list<pixPPM> imagePGM::initCentroids(int k){
-	std::list<pixPPM> centroids;
+std::list<pixPGM> imagePGM::initCentroids(int k){
+	std::list<pixPGM> centroids;
 	int kk;
 	if(k%2==1){kk=k+1;}
 	else{kk=k;}
@@ -156,8 +148,8 @@ std::list<pixPPM> imagePGM::initCentroids(int k){
 		std::cout<<"ici 1"<<endl;
 		int posi=hauteur/(kk/2+1)*(i+1);
 		cout<<posi<<endl;
-		pixPPM pix1(posi,j1,(*this)(posi,j1,R),(*this)(posi,j1,G),(*this)(posi,j1,B));
-		pixPPM pix2(posi,j2,(*this)(posi,j2,R),(*this)(posi,j2,G),(*this)(posi,j2,B));
+		pixPGM pix1(posi,j1,(*this)(posi,j1));
+		pixPGM pix2(posi,j2,(*this)(posi,j2));
 		centroids.push_back(pix1);
 		centroids.push_back(pix2);
 	}
@@ -166,14 +158,14 @@ std::list<pixPPM> imagePGM::initCentroids(int k){
 		std::cout<<"ici 2"<<endl;
 		int posi=hauteur/(kk/2+1)*kk/2;
 		int j=largeur/2;
-		pixPPM pix(posi,j,(*this)(posi,j,R),(*this)(posi,j,G),(*this)(posi,j,B));
+		pixPGM pix(posi,j,(*this)(posi,j));
 		centroids.push_back(pix);
 	}
 	else{
 		std::cout<<"ici 3"<<endl;
 		int posi=hauteur/(kk/2+1)*kk/2;
-		pixPPM pix1(posi,j1,(*this)(posi,j1,R),(*this)(posi,j1,G),(*this)(posi,j1,B));
-		pixPPM pix2(posi,j2,(*this)(posi,j2,R),(*this)(posi,j2,G),(*this)(posi,j2,B));
+		pixPGM pix1(posi,j1,(*this)(posi,j1));
+		pixPGM pix2(posi,j2,(*this)(posi,j2));
 		centroids.push_back(pix1);
 		centroids.push_back(pix2);
 	}

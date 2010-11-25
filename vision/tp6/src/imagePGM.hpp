@@ -45,7 +45,7 @@ public:
 
   double operator()(int i,int j)const;
 
-  std::list<pixPPM> initCentroids(int k);
+  std::list<pixPGM> initCentroids(int k);
 
 private:
   int largeur, hauteur, valmax;
