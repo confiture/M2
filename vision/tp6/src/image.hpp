@@ -9,7 +9,7 @@
 #include <streambuf>
 #include <algorithm>
 #include <limits>
-#include "pixel.hpp"
+#include "pixelPPM.hpp"
 #include <list>
 #include <cmath>
 #include <cassert>
