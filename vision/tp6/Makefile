@@ -5,6 +5,7 @@ PRG_NAME=bin/tp6
 SOURCES=\
 	src/Util.cpp\
 	src/image.cpp\
+	src/imagePGM.cpp\
 	src/main.cpp
 
 # Where to search for the sources:
