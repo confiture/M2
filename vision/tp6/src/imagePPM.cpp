@@ -97,7 +97,7 @@ imagePPM::imagePPM(const char* nomFichier){
 	/* Ouverture */
 	FILE* ifp = fopen(nomFichier,"r");
 
-	/* Lecture du Magic number */
+	/* LelistPixcture du Magic number */
 	int ich1 = getc( ifp );
 	if ( ich1 == EOF )
 		std::cerr<<"EOF / read error reading magic number"<<std::endl;
@@ -145,6 +145,22 @@ imagePPM::imagePPM(const char* nomFichier){
 	}
 
 	fclose(ifp);
+}
+
+imagePPM::imagePPM(int k, std::list<pixPPM> * tab,int hauteur, int largeur){
+	bufferR = new double[hauteur*largeur];
+	bufferG = new double[hauteur*largeur];
+	bufferB = new double[hauteur*largeur];
+    for(int i=0;i<k;i++){
+	pixPPM moy = pixPPM::moyenne(tab[i]);
+	std::list<pixPPM>::const_iterator it=tab[i].begin();
+	 for(it;it!=tab[i].end();it++){
+			(*this)((*it).i,(*it).j,R)=moy.valR;
+			(*this)((*it).i,(*it).j,R)=moy.valG;
+			(*this)((*it).i,(*it).j,R)=moy.valB;	    	   
+	  }	       
+    }
+    
 }
 
 int imagePPM::EcrireImagePPM(const char* nomFichier)const{

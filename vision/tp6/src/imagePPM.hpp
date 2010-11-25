@@ -23,6 +23,8 @@ public:
   imagePPM(const char* nomFichier);
 
   imagePPM(const imagePPM & im);
+  
+  imagePPM(int k, std::list<pixPPM> * tab,int hauteur, int largeur);
 
   void updateValmax();
 
