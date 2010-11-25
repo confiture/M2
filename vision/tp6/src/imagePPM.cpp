@@ -148,19 +148,21 @@ imagePPM::imagePPM(const char* nomFichier){
 }
 
 imagePPM::imagePPM(int k, std::list<pixPPM> * tab,int hauteur, int largeur){
+	this->hauteur=hauteur;
+	this->largeur=largeur;
 	bufferR = new double[hauteur*largeur];
 	bufferG = new double[hauteur*largeur];
 	bufferB = new double[hauteur*largeur];
-    for(int i=0;i<k;i++){
-	pixPPM moy = pixPPM::moyenne(tab[i]);
-	std::list<pixPPM>::const_iterator it=tab[i].begin();
-	 for(it;it!=tab[i].end();it++){
+	for(int i=0;i<k;i++){
+		pixPPM moy = pixPPM::moyenne(tab[i]);
+		std::list<pixPPM>::const_iterator it=tab[i].begin();
+		for(it;it!=tab[i].end();it++){
 			(*this)((*it).i,(*it).j,R)=moy.valR;
-			(*this)((*it).i,(*it).j,R)=moy.valG;
-			(*this)((*it).i,(*it).j,R)=moy.valB;	    	   
-	  }	       
-    }
-    
+			(*this)((*it).i,(*it).j,G)=moy.valG;
+			(*this)((*it).i,(*it).j,B)=moy.valB;
+		}
+	}
+	std::cout<<"c'est juste"<<std::endl;
 }
 
 int imagePPM::EcrireImagePPM(const char* nomFichier)const{
