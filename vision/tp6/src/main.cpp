@@ -1,5 +1,6 @@
-#include "image.hpp"
-
+#include "imagePGM.hpp"
+#include "imagePPM.hpp"
+/*
 void testLecEcr(const char* fic1,const char* fic2){
   image im(fic1);
   im.EcrireImagePPM(fic2);
@@ -15,7 +16,7 @@ void testLecEcr(const char* fic1,const char* fic2){
  std::cout<<"G : "<<pixB.valG<<"; ";
  std::cout<<"B : "<<pixB.valB<<std::endl;
  }
- 
+
  void testPixelDivision(){
  pixPPM pixA(3,3,200,200,200);
  pixPPM pixB;
@@ -26,10 +27,10 @@ void testLecEcr(const char* fic1,const char* fic2){
  std::cout<<"G : "<<pixB.valG<<"; ";
  std::cout<<"B : "<<pixB.valB<<std::endl;
  }
-
+*/
 int main(int argc, char* argv[]){
   //testLecEcr(argv[1],argv[2]);
   //testPixelAddition();
-  testPixelDivision();
+  //testPixelDivision();
   return 0;
 }

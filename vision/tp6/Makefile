@@ -4,7 +4,7 @@ PRG_NAME=bin/tp6
 # Sources:
 SOURCES=\
 	src/Util.cpp\
-	src/image.cpp\
+	src/imagePPM.cpp\
 	src/imagePGM.cpp\
 	src/main.cpp
 

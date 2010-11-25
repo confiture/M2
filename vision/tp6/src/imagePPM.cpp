@@ -1,8 +1,8 @@
-#include "image.hpp"
+#include "imagePPM.hpp"
 
 using namespace std;
 
-double& image::operator()(int i,int j,color c){
+double& imagePPM::operator()(int i,int j,color c){
 	assert(i>=0);
 	assert(i<hauteur);
 	assert(j>=0);
@@ -21,7 +21,7 @@ double& image::operator()(int i,int j,color c){
 	}
 }
 
-double image::operator()(int i,int j,color c)const{
+double imagePPM::operator()(int i,int j,color c)const{
 	assert(i>=0);
 	assert(i<hauteur);
 	assert(j>=0);
@@ -40,19 +40,19 @@ double image::operator()(int i,int j,color c)const{
 	}
 }
 
-int image::getHauteur(){
+int imagePPM::getHauteur(){
 	return hauteur;
 }
 
-int image::getLargeur(){
+int imagePPM::getLargeur(){
 	return largeur;
 }
 
-int image::getValmax(){
+int imagePPM::getValmax(){
 	return valmax;
 }
 
-void image::updateValmax(){
+void imagePPM::updateValmax(){
 	valmax=bufferR[0];
 	for(int i=0;i<hauteur*largeur;i++){
 		if(bufferR[i]>valmax)valmax=bufferR[i];
@@ -61,7 +61,7 @@ void image::updateValmax(){
 	}
 }
 
-image::image(int hauteur, int largeur,int valmax){
+imagePPM::imagePPM(int hauteur, int largeur,int valmax){
 	this->bufferR = new double[hauteur*largeur];
 	this->bufferG = new double[hauteur*largeur];
 	this->bufferB = new double[hauteur*largeur];
@@ -76,7 +76,7 @@ image::image(int hauteur, int largeur,int valmax){
 	}
 }
 
-image::image(const image & im){
+imagePPM::imagePPM(const imagePPM & im){
 	this->bufferR = new double[hauteur*largeur];
 	this->bufferG = new double[hauteur*largeur];
 	this->bufferB = new double[hauteur*largeur];
@@ -93,7 +93,7 @@ image::image(const image & im){
 	}
 }
 
-image::image(const char* nomFichier){
+imagePPM::imagePPM(const char* nomFichier){
 	/* Ouverture */
 	FILE* ifp = fopen(nomFichier,"r");
 
@@ -147,7 +147,7 @@ image::image(const char* nomFichier){
 	fclose(ifp);
 }
 
-int image::EcrireImagePPM(const char* nomFichier)const{
+int imagePPM::EcrireImagePPM(const char* nomFichier)const{
 	int pixR;
 	int pixG;
 	int pixB;
@@ -176,12 +176,13 @@ int image::EcrireImagePPM(const char* nomFichier)const{
 
 }
 
-std::list<pixPPM> image::initCentroids(int k){
-	std::list<pixPPM> centroids;
+pixPPM* imagePPM::initCentroids(int k){
+	pixPPM* centroids=new pixPPM[k];;
 	int kk;
 	if(k%2==1){kk=k+1;}
 	else{kk=k;}
 
+	int ind=0;
 	int j1=largeur/3;
 	int j2=2*largeur/3;
 	for(int i=0;i<kk/2-1;i++){
@@ -190,8 +191,10 @@ std::list<pixPPM> image::initCentroids(int k){
 		cout<<posi<<endl;
 		pixPPM pix1(posi,j1,(*this)(posi,j1,R),(*this)(posi,j1,G),(*this)(posi,j1,B));
 		pixPPM pix2(posi,j2,(*this)(posi,j2,R),(*this)(posi,j2,G),(*this)(posi,j2,B));
-		centroids.push_back(pix1);
-		centroids.push_back(pix2);
+		centroids[ind]=pix1;
+		ind++;
+		centroids[ind]=pix2;
+		ind++;
 	}
 
 	if(k%2==1){
@@ -199,17 +202,21 @@ std::list<pixPPM> image::initCentroids(int k){
 		int posi=hauteur/(kk/2+1)*kk/2;
 		int j=largeur/2;
 		pixPPM pix(posi,j,(*this)(posi,j,R),(*this)(posi,j,G),(*this)(posi,j,B));
-		centroids.push_back(pix);
+		centroids[ind]=pix;
 	}
 	else{
 		std::cout<<"ici 3"<<endl;
 		int posi=hauteur/(kk/2+1)*kk/2;
 		pixPPM pix1(posi,j1,(*this)(posi,j1,R),(*this)(posi,j1,G),(*this)(posi,j1,B));
 		pixPPM pix2(posi,j2,(*this)(posi,j2,R),(*this)(posi,j2,G),(*this)(posi,j2,B));
-		centroids.push_back(pix1);
-		centroids.push_back(pix2);
+		centroids[ind]=pix1;
+		ind++;
+		centroids[ind]=pix2;
+		ind++;
 	}
 
 	return centroids;
 }
 
+
+//std::list<pixPPM>* imagePPM::kMean(int k)

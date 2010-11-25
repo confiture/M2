@@ -14,22 +14,22 @@
 #include <cmath>
 #include <cassert>
 
-class image{
+class imagePPM{
 public:
   enum color{R,G,B};
 
-  image(int hauteur, int largeur,int valmax);
+  imagePPM(int hauteur, int largeur,int valmax);
 
-  image(const char* nomFichier);
+  imagePPM(const char* nomFichier);
 
-  image(const image & im);
+  imagePPM(const imagePPM & im);
 
   void updateValmax();
 
   /**
    *Destructeur.
    */
-  inline ~image(){
+  inline ~imagePPM(){
     delete [] bufferR;
     delete [] bufferG;
     delete [] bufferB;
@@ -47,8 +47,9 @@ public:
 
   double operator()(int i,int j,color c)const;
 
-  std::list<pixPPM> initCentroids(int k);
+  pixPPM* initCentroids(int k);
 
+  std::list<pixPPM>* kMean(int k);
 private:
   int largeur, hauteur, valmax;
   double* bufferR;
