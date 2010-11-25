@@ -192,7 +192,7 @@ int imagePPM::EcrireImagePPM(const char* nomFichier)const{
 
 }
 
-pixPPM* imagePPM::initCentroids(int k){
+pixPPM* imagePPM::initCentroids(int k)const{
 	pixPPM* centroids=new pixPPM[k];;
 	int kk;
 	if(k%2==1){kk=k+1;}
@@ -235,4 +235,37 @@ pixPPM* imagePPM::initCentroids(int k){
 }
 
 
-//std::list<pixPPM>* imagePPM::kMean(int k)
+std::list<pixPPM>* imagePPM::kMean(int k,int niter)const{
+	std::list<pixPPM>* groups=new std::list<pixPPM>[k];
+	pixPPM* repres=initCentroids(k);
+
+	for(int iter=0;iter<niter;iter++){
+		for(int kind=0;kind<k;k++){
+			groups[kind].clear();
+		}
+
+		for(int i=0;i<hauteur;i++){
+			for(int j=0;j<largeur;j++){
+				pixPPM currentPix(i,j,(*this)(i,j,R),(*this)(i,j,G),(*this)(i,j,B));
+				int belongInd;//le numéro du représentant auquel appartiendra currentPix
+				int dist=numeric_limits<double>::infinity();
+				for(int kind=0;kind<k;k++){//on cherche le représentant de currentPix
+					int currentDist=pixPPM::distance2(currentPix,repres[kind]);
+					if(currentDist<dist){
+						belongInd=k;
+						dist=currentDist;
+					}
+				}
+
+				groups[belongInd].push_back(currentPix);
+			}
+		}
+
+		//on met les représentants à jour
+		for(int kind=0;kind<k;k++){
+			repres[kind]=pixPPM::moyenne(groups[kind]);
+		}
+	}
+
+	return groups;
+}

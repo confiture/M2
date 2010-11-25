@@ -24,8 +24,8 @@ public:
 	inline bool equalPos(const pixPPM & pix){
 		return i==pix.i && j==pix.j;
 	}
-	
-	inline double distance2(const pixPPM & pix_A, const pixPPM & pix_B){
+
+	inline static double distance2(const pixPPM & pix_A, const pixPPM & pix_B){
 	  double res_i = (pix_A.i-pix_B.i)*(pix_A.i-pix_B.i);
 	  double res_j = (pix_A.j-pix_B.j)*(pix_A.j-pix_B.j);
 	  double res_R = (pix_A.valR-pix_B.valR)*(pix_A.valR-pix_B.valR);
@@ -34,7 +34,7 @@ public:
 	  double res = res_i + res_j  + res_R + res_G + res_B;
 	  return res;
 	}
-	
+
 	inline  pixPPM operator+(const pixPPM & pix){
 		pixPPM res;
 		res.i = i + pix.i;
@@ -44,7 +44,7 @@ public:
 		res.valB = valB + pix.valB;
 		return res;
 	}
-	
+
 	inline pixPPM operator/(int nb){
 		pixPPM res;
 		res.i = (double)i / nb+0.5;
@@ -52,11 +52,9 @@ public:
 		res.valR = valR / nb;
 		res.valG = valG / nb;
 		res.valB = valB / nb;
-	return res;	
+	return res;
 	}
-	
-	
-	
+
 	inline static pixPPM moyenne(const std::list<pixPPM> & Lpix){
 	  std::list<pixPPM>::const_iterator it=Lpix.begin();
 	  pixPPM moy;
@@ -69,8 +67,8 @@ public:
 	moy = pix/nb_pix;
 	return moy;
 	}
-	
-	
+
+
 	int i;
 	int j;
 	double valR;
