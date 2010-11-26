@@ -15,14 +15,20 @@
 /* calcul d'histogramme des couleurs r,v sur l'image normalisee */
 float *histogram(int w, int h, int *image, char * filename)
 {
-  int i, j, lum;
+  int i, j, k,lum;
   float *hist;
 
   printf("computation of histogram %s\n", filename);
 
 
-  hist = (float *) malloc( 255 * 255 * sizeof(float));
- 
+  hist = (float *) malloc( 256 * 256 * sizeof(float));
+  /* Initialisation de hist */
+  for(i = 0;i<256;i++){
+	for(j=0;j<256;j++){
+	hist[i*256+j] = 0 ;
+	}	 
+   }
+
   /* First normalize the image by the luminance */
 
   for(i = 0; i < h ; i++)
@@ -32,25 +38,40 @@ float *histogram(int w, int h, int *image, char * filename)
 	/* For each pixel, normalize its R, G, B values by its luminance */
 
 	/* TO BE COMPLETED */
+                          //  R(i,j)   //		//  G(i,j)  //			//  B(i,j)  //
+	lum = image[i * w * 3 + j * 3 + 0] + image[i * w * 3 + j * 3 + 1] + image[i * w * 3 + j * 3 + 2];
 
-	lum = ... ;
-
-
+	// On divise par R(i,j), G(i,j) et B(i,j) par la luminance lum
+	for(k=0;k<w;k++){
+	image[i * w * 3 +j * 3 +k] = image[i * w * 3 +j * 3 +k] / lum;	
+	}
 	/* then update the histogram in RG space */
 
 	/* TO BE COMPLETED */
-
-	hist[ .... ;
+			//  R(i,j)   //			// G(i,j) 
+	hist[image[i * w * 3 + j * 3 + 0 ]*256 + image[i * w * 3 + j * 3 + 1 ] ] = hist[image[i * w * 3 + j * 3 + 0 ]*256 + image[i * w * 3 + j * 3 + 1 ]] + 1;
 	    
        }
 
   
-	/* normalize the histogram	 
-		 
+	/* normalize the histogram	 */
+	  int sum = 0;
+	  for(i = 0;i<256;i++){
+		for(j=0;j<256;j++){
+			sum += hist[i*256+j];
+		}
+	  }
+	
+       	for(i = 0;i<256;i++){
+		for(j=0;j<256;j++){
+			hist[i*256+j]=hist[i*256+j]/sum;
+		}
+	}
+ 
   /* save the histrogram as an image .pgm */
   
-  ...;		 
-  writePixmap(hist, 255, 255, 5, filename);
+  	 
+ int x = writePixmap(hist, 256, 256, 5, filename);
 	   
   return hist;
 }
