@@ -36,6 +36,17 @@ void test_kMean(int k,int niter,const char * fic1,const char* fic2){
   sortie.EcrireImagePPM(fic2);
 }
 
+void test_initCentroids(const char* fic){
+  imagePPM im1(fic);
+  pixPPM* repres=im1.initCentroids(5);
+
+  for(int i=0;i<5;i++){
+    std::cout<<repres[i].i<<" "<<repres[i].j<<" "<<repres[i].valR
+             <<" "<<repres[i].valG<<" "<<repres[i].valB<<std::endl;
+  }
+
+  std::cout<<std::endl;
+}
 
 int main(int argc, char* argv[]){
   //testLecEcr(argv[1],argv[2]);
@@ -43,5 +54,8 @@ int main(int argc, char* argv[]){
   //testPixelDivision();
 
   test_kMean(atoi(argv[1]),atoi(argv[2]),argv[3],argv[4]);
+
+  //test_initCentroids(argv[1]);
+
   return 0;
 }
