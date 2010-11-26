@@ -44,6 +44,9 @@ float *histogram(int w, int h, int *image, char * filename)
 	// On divise par R(i,j), G(i,j) et B(i,j) par la luminance lum
 	for(k=0;k<w;k++){
 	image[i * w * 3 +j * 3 +k] = image[i * w * 3 +j * 3 +k] / lum;	
+	printf("k %d\n",k);
+	printf("val %d\n", image[i*w*3+j*3+k]);
+	 printf("lum: %d\n", lum);
 	}
 	/* then update the histogram in RG space */
 
@@ -65,6 +68,7 @@ float *histogram(int w, int h, int *image, char * filename)
        	for(i = 0;i<256;i++){
 		for(j=0;j<256;j++){
 			hist[i*256+j]=hist[i*256+j]/sum;
+			 printf("sum: %d\n", sum);
 		}
 	}
  
@@ -138,13 +142,13 @@ void main(int argc, char** argv)
 
   /*TO BE COMPLETED */
 
-  ... ;
+ /* ... ;*/
      
   /* Calculation of face barycenter */
 
   /* TO BE COMPLETED */
  
-  ... ;
+  /*... ;*/
 
 
   /* save the final image results : the image of probability 
