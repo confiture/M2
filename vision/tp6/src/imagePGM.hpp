@@ -23,7 +23,7 @@ public:
   imagePGM(const imagePGM & im);
 
   imagePGM(int k, std::list<pixPGM> * tab,int hauteur, int largeur);
-  
+
   void updateValmax();
 
   /**
@@ -46,8 +46,10 @@ public:
   double operator()(int i,int j)const;
 
   pixPGM* initCentroids(int k)const;
-  
-  std::list<pixPGM>* kMean(int k,int niter)const;
+
+  pixPGM* randInitCentroids(int k,int seed)const;
+
+  std::list<pixPGM>* kMean(int k,pixPGM* repres,int niter)const;
 
 private:
   int largeur, hauteur, valmax;

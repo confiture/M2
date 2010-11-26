@@ -67,8 +67,6 @@ void test_initCentroids(const char* fic){
   std::cout<<std::endl;
 }
 
-
-
 int main(int argc, char* argv[]){
   typedef double (*distFunc)(const pixPPM&, const pixPPM&);
   distFunc df;
