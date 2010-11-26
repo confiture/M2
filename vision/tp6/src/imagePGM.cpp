@@ -106,7 +106,7 @@ imagePGM::imagePGM(const char* nomFichier){
 		std::cout<<"wrong format : P"<<ich2<<std::endl;
 		fclose(ifp);
 		exit(-1);
-	}      
+	}
 	std::cout<<"ICI 2"<<std::endl;
 
 	fclose(ifp);
@@ -117,16 +117,16 @@ imagePGM::imagePGM(int k, std::list<pixPGM> * tab,int hauteur, int largeur){
 	(*this).hauteur = hauteur;
 	(*this).largeur = largeur;
 	valmax=0;
-    for(int i=0;i<k;i++){
-	pixPGM moy = pixPGM::moyenne(tab[i]);
-	std::list<pixPGM>::const_iterator it=tab[i].begin();
-	 for(it;it!=tab[i].end();it++){
-			(*this)((*it).i,(*it).j)=moy.val;    	    
-	 }	       
-	 valmax=max(valmax,moy.val+0.5);
-	 std::cout<<"valmax :"<<valmax<<std::endl;
-    }
-    
+	for(int i=0;i<k;i++){
+		pixPGM moy = pixPGM::moyenne(tab[i]);
+		std::list<pixPGM>::const_iterator it=tab[i].begin();
+		for(it;it!=tab[i].end();it++){
+			(*this)((*it).i,(*it).j)=moy.val;
+		}
+		valmax=max(valmax,moy.val+0.5);
+		std::cout<<"valmax :"<<valmax<<std::endl;
+	}
+
 }
 
 int imagePGM::EcrireImagePGM(const char* nomFichier)const{
@@ -197,40 +197,51 @@ pixPGM* imagePGM::initCentroids(int k)const{
 	return centroids;
 }
 
+pixPGM* imagePGM::randInitCentroids(int k,int seed)const{
+	srand(seed);
+	pixPGM* repres=new pixPGM[k];
+	for(int j=0;j<k;j++){
+		int pixi=rand()%hauteur;
+		int pixj=rand()%largeur;
+		repres[j].i=pixi;
+		repres[j].j=pixj;
+		repres[j].val=(*this)(pixi,pixj);
+	}
 
+	return repres;
+}
 
-std::list<pixPGM>* imagePGM::kMean(int k,int niter)const{
+std::list<pixPGM>* imagePGM::kMean(int k,pixPGM* repres,int niter)const{
 	std::list<pixPGM>* groups=new std::list<pixPGM>[k];
-	pixPGM* repres=initCentroids(k);
-	
-// Boucle principale 	
+
+	// Boucle principale
 	for(int l=0;l<niter;l++){
-	for(int i=0;i<k;i++){
-	  groups[i].clear();
+		for(int i=0;i<k;i++){
+			groups[i].clear();
+		}
+		for(int i=0;i<hauteur;i++){
+			for(int j=0;j<largeur;j++){
+				pixPGM pix_courant(i,j,(*this)(i,j));
+				double dist_test=numeric_limits<double>::infinity();
+				int ind_pix_repres = 0;
+				for(int ind=0;ind<k;ind++){
+					double dist = pixPGM::distance2(repres[ind],pix_courant);
+					if(dist<dist_test){
+						dist_test=dist;
+						ind_pix_repres = ind;
+					}
+				}
+				groups[ind_pix_repres].push_back(pix_courant);
+			}
+		}
+
+		for(int i=0;i<k;i++){
+			pixPGM pixmoy = pixPGM::moyenne(groups[i]);
+			repres[i]=pixmoy;
+		}
+
 	}
-	for(int i=0;i<hauteur;i++){
-	   for(int j=0;j<largeur;j++){
-	      pixPGM pix_courant(i,j,(*this)(i,j));
-	      double dist_test=numeric_limits<double>::infinity();
-	      int ind_pix_repres = 0;
-	      for(int ind=0;ind<k;ind++){
-		  double dist = pixPGM::distance2(repres[ind],pix_courant);
-		  if(dist<dist_test){
-		    dist_test=dist;
-		    ind_pix_repres = ind;
-		  }		  
-	      }
-	      groups[ind_pix_repres].push_back(pix_courant);
-	  }
-	}
-	
-	for(int i=0;i<k;i++){
-	      pixPGM pixmoy = pixPGM::moyenne(groups[i]);
-	      repres[i]=pixmoy;
-	}
-	
-	}
-  
-  return groups;
+
+	return groups;
 }
 

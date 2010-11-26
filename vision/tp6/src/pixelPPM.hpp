@@ -28,13 +28,21 @@ public:
 	}
 
 	inline static double distance2(const pixPPM & pix_A, const pixPPM & pix_B){
-	  double res_i = (pix_A.i-pix_B.i)*(pix_A.i-pix_B.i);
-	  double res_j = (pix_A.j-pix_B.j)*(pix_A.j-pix_B.j);
-	  double res_R = (pix_A.valR-pix_B.valR)*(pix_A.valR-pix_B.valR);
-	  double res_G = (pix_A.valG-pix_B.valG)*(pix_A.valG-pix_B.valG);
-	  double res_B = (pix_A.valB-pix_B.valB)*(pix_A.valB-pix_B.valB);
-	  double res = res_i + res_j  + res_R + res_G + res_B;
-	  return res;
+		double res_R = (pix_A.valR-pix_B.valR)*(pix_A.valR-pix_B.valR);
+		double res_G = (pix_A.valG-pix_B.valG)*(pix_A.valG-pix_B.valG);
+		double res_B = (pix_A.valB-pix_B.valB)*(pix_A.valB-pix_B.valB);
+		double res   = res_R + res_G + res_B;
+		return res;
+	}
+
+	inline static double distComp(const pixPPM & pix_A, const pixPPM & pix_B){
+		double res_i = (pix_A.i-pix_B.i)*(pix_A.i-pix_B.i);
+		double res_j = (pix_A.j-pix_B.j)*(pix_A.j-pix_B.j);
+		double res_R = (pix_A.valR-pix_B.valR)*(pix_A.valR-pix_B.valR);
+		double res_G = (pix_A.valG-pix_B.valG)*(pix_A.valG-pix_B.valG);
+		double res_B = (pix_A.valB-pix_B.valB)*(pix_A.valB-pix_B.valB);
+		double res   = res_i + res_j + res_R + res_G + res_B;
+		return res;
 	}
 
 	inline  pixPPM operator+(const pixPPM & pix){
@@ -54,20 +62,20 @@ public:
 		res.valR = valR / nb;
 		res.valG = valG / nb;
 		res.valB = valB / nb;
-	return res;
+		return res;
 	}
 
 	inline static pixPPM moyenne(const std::list<pixPPM> & Lpix){
-	  std::list<pixPPM>::const_iterator it=Lpix.begin();
-	  pixPPM moy;
-	  pixPPM pix(0,0,0,0,0);
-	  int nb_pix = 0;
-	  for(it;it!=Lpix.end();it++){
-	    pix = pix+(*it);
-	    nb_pix++;
-	  }
-	moy = pix/nb_pix;
-	return moy;
+		std::list<pixPPM>::const_iterator it=Lpix.begin();
+		pixPPM moy;
+		pixPPM pix(0,0,0,0,0);
+		int nb_pix = 0;
+		for(it;it!=Lpix.end();it++){
+			pix = pix+(*it);
+			nb_pix++;
+		}
+		moy = pix/nb_pix;
+		return moy;
 	}
 
 	inline friend std::ostream& operator<<(std::ostream & os,const pixPPM & p){
