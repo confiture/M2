@@ -1,5 +1,8 @@
 #include "imagePGM.hpp"
 #include "imagePPM.hpp"
+#include <string>
+
+using namespace std;
 /*
 void testLecEcr(const char* fic1,const char* fic2){
   image im(fic1);
@@ -67,15 +70,118 @@ void test_initCentroids(const char* fic){
 
 
 int main(int argc, char* argv[]){
+  typedef double (*distFunc)(const pixPPM&, const pixPPM&);
+  distFunc df;
   //testLecEcr(argv[1],argv[2]);
   //testPixelAddition();
   //testPixelDivision();
 
   //kMean(atoi(argv[1]),atoi(argv[2]),argv[3],argv[4]);
-  kMeanTrace(atoi(argv[1]),atoi(argv[2]),argv[3]);
+  //kMeanTrace(atoi(argv[1]),atoi(argv[2]),argv[3]);
   //kMeanRand(atoi(argv[1]),atoi(argv[2]),3,argv[3],argv[4]);
 
   //test_initCentroids(argv[1]);
+  string niterStr("-n");
+  string ngroupStr("-g");
+  string randStr("-r");
+  string distStr("-d");
+  string traceStr("-tr");
+  string inputStr("-i");
+  string outputStr("-o");
+  char * fici=NULL;
+  char * fico="output";
+  int niter;
+  int ngroup;
+  int dist;
+  bool randomize=false;
+  int seed;
+  bool trace=false;
+
+  int argi=1;
+  while(argi<argc){
+    std::cout<<argi<<endl;
+    string currentArg(argv[argi]);
+    if(currentArg==niterStr){
+      argi++;
+      std::cout<<"ici 1"<<std::endl;
+      niter=atoi(argv[argi]);
+    }
+    else if(currentArg==ngroupStr){
+      argi++;
+      std::cout<<"ici 2"<<std::endl;
+      ngroup=atoi(argv[argi]);
+    }
+    else if(currentArg==randStr){
+      randomize=true;
+      argi++;
+      std::cout<<"ici 3"<<std::endl;
+      seed=atoi(argv[argi]);
+    }
+    else if(currentArg==distStr){
+      argi++;
+      std::cout<<"ici 4"<<std::endl;
+      dist=atoi(argv[argi]);
+      if(dist==3){
+        std::cout<<"pourquoi?"<<std::endl;
+        df=&pixPPM::distance2;
+        std::cout<<"ça"<<endl;
+      }
+      else if(dist==5){
+        df=&pixPPM::distComp;
+      }
+      else{
+        std::cout<<"error : unknown distance parameter -d "<<dist<<endl;
+        exit(-1);
+      }
+      std::cout<<"merde"<<endl;
+    }
+    else if(currentArg==traceStr){
+      std::cout<<"ici 5"<<std::endl;
+      trace=true;
+    }
+    else if(currentArg==inputStr){
+      std::cout<<"ici 6"<<std::endl;
+      argi++;
+      fici=argv[argi];
+    }
+    else if(currentArg==outputStr){
+      std::cout<<"ici 7"<<std::endl;
+      argi++;
+      fico=argv[argi];
+    }
+    else{
+      cout<<"error : unknown parameter "<<currentArg<<endl;
+    }
+
+    std::cout<<"argi "<<argi<<endl;
+
+    argi++;
+  }
+
+  std::cout<<"ICICICICIC"<<endl;
+
+  if(fici==NULL){
+    std::cout<<"error : enter an input file name"<<std::endl;
+    exit(-1);
+  }
+  imagePPM im(fici);
+
+  pixPPM* centroids;
+  if(randomize){
+    centroids=im.randInitCentroids(ngroup,seed);
+  }
+  else{
+    centroids=im.initCentroids(ngroup);
+  }
+
+  if(!trace){
+    std::list<pixPPM>* groupes=im.kMean(ngroup,centroids,niter,df);
+    imagePPM sortie(ngroup,groupes,im.getHauteur(),im.getLargeur());
+    sortie.EcrireImagePPM(fico);
+  }
+  else{
+    im.kMeanTrace(ngroup,centroids,niter,df,fico);
+  }
 
   return 0;
 }
