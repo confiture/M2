@@ -241,9 +241,10 @@ pixPPM* imagePPM::initCentroids(int k)const{
 }
 
 
-std::list<pixPPM>* imagePPM::kMean(int k,int niter,double (*distFun)(const pixPPM &,const pixPPM &))const{
+std::list<pixPPM>* imagePPM::kMean(int k,pixPPM* repres,int niter,
+                                   double (*distFun)(const pixPPM &,const pixPPM &))const{
+
 	std::list<pixPPM>* groups=new std::list<pixPPM>[k];
-	pixPPM* repres=randInitCentroids(k,k+2);
 
 	for(int iter=0;iter<niter;iter++){
 
@@ -280,6 +281,58 @@ std::list<pixPPM>* imagePPM::kMean(int k,int niter,double (*distFun)(const pixPP
 	}
 
 	return groups;
+}
+
+
+void imagePPM::kMeanTrace(int k,pixPPM* repres,int niter,double (*distFun)(const pixPPM &,const pixPPM &),
+                                   char * filePat)const{
+
+	std::list<pixPPM>* groups=new std::list<pixPPM>[k];
+
+	for(int iter=0;iter<niter;iter++){
+
+		for(int kind=0;kind<k;kind++){
+			groups[kind].clear();
+		}
+
+		for(int i=0;i<hauteur;i++){
+			for(int j=0;j<largeur;j++){
+				pixPPM currentPix(i,j,(*this)(i,j,R),(*this)(i,j,G),(*this)(i,j,B));
+				int belongInd;//le numéro du représentant auquel appartiendra currentPix
+				double dist=numeric_limits<double>::infinity();
+
+				for(int kind=0;kind<k;kind++){//on cherche le représentant de currentPix
+					double currentDist=(*distFun)(currentPix,repres[kind]);
+					if(currentDist<dist){
+						belongInd=kind;
+						dist=currentDist;
+						if(dist<0){
+							exit(-1);
+						}
+					}
+				}
+
+				groups[belongInd].push_back(currentPix);
+			}
+		}
+
+		//on écrit le nom la trace
+		std::string name(filePat);
+		ostringstream ss;
+		ss<<(iter+1);
+		name+=ss.str();
+		name+=".ppm";
+
+		//on écrit la trace
+		imagePPM im(k,groups,hauteur,largeur);
+		im.EcrireImagePPM(name.c_str());
+
+		//on met les représentants à jour
+		for(int kind=0;kind<k;kind++){
+			repres[kind]=pixPPM::moyenne(groups[kind]);
+			std::cout<<repres[kind];
+		}
+	}
 }
 
 

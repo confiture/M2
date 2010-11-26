@@ -29,12 +29,28 @@ void testLecEcr(const char* fic1,const char* fic2){
  }
 */
 
-void test_kMean(int k,int niter,const char * fic1,const char* fic2){
+void kMean(int k,int niter,const char * fic1,const char* fic2){
   imagePPM im1(fic1);
-  std::list<pixPPM>* groupes=im1.kMean(k,niter,pixPPM::distance2);
+  pixPPM* repres=im1.initCentroids(k);
+  std::list<pixPPM>* groupes=im1.kMean(k,repres,niter,pixPPM::distance2);
   imagePPM sortie(k,groupes,im1.getHauteur(),im1.getLargeur());
   sortie.EcrireImagePPM(fic2);
 }
+
+void kMeanRand(int k,int niter,int seed,const char * fic1,const char* fic2){
+  imagePPM im1(fic1);
+  pixPPM* repres=im1.randInitCentroids(k,seed);
+  std::list<pixPPM>* groupes=im1.kMean(k,repres,niter,pixPPM::distance2);
+  imagePPM sortie(k,groupes,im1.getHauteur(),im1.getLargeur());
+  sortie.EcrireImagePPM(fic2);
+}
+
+void kMeanTrace(int k,int niter,const char * fic1){
+  imagePPM im1(fic1);
+  pixPPM* repres=im1.initCentroids(k);
+  im1.kMeanTrace(k,repres,niter,pixPPM::distance2);
+}
+
 
 void test_initCentroids(const char* fic){
   imagePPM im1(fic);
@@ -48,12 +64,16 @@ void test_initCentroids(const char* fic){
   std::cout<<std::endl;
 }
 
+
+
 int main(int argc, char* argv[]){
   //testLecEcr(argv[1],argv[2]);
   //testPixelAddition();
   //testPixelDivision();
 
-  test_kMean(atoi(argv[1]),atoi(argv[2]),argv[3],argv[4]);
+  //kMean(atoi(argv[1]),atoi(argv[2]),argv[3],argv[4]);
+  kMeanTrace(atoi(argv[1]),atoi(argv[2]),argv[3]);
+  //kMeanRand(atoi(argv[1]),atoi(argv[2]),3,argv[3],argv[4]);
 
   //test_initCentroids(argv[1]);
 

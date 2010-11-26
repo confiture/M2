@@ -13,6 +13,8 @@
 #include <list>
 #include <cmath>
 #include <cassert>
+#include <string>
+#include <sstream>
 
 class imagePPM{
 public:
@@ -53,7 +55,12 @@ public:
 
   pixPPM* randInitCentroids(int k,int seed)const;
 
-  std::list<pixPPM>* kMean(int k,int niter,double (*distFun)(const pixPPM &,const pixPPM &))const;
+  std::list<pixPPM>* kMean(int k,pixPPM* repres,int niter,
+                           double (*distFun)(const pixPPM &,const pixPPM &))const;
+
+
+  void kMeanTrace(int k,pixPPM* repres,int niter,double (*distFun)(const pixPPM &,const pixPPM &),
+                                 char * filePat="trace")const;
 private:
   int largeur, hauteur, valmax;
   double* bufferR;
