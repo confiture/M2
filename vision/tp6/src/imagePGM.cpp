@@ -114,12 +114,17 @@ imagePGM::imagePGM(const char* nomFichier){
 
 imagePGM::imagePGM(int k, std::list<pixPGM> * tab,int hauteur, int largeur){
 	buffer = new double[hauteur*largeur];
+	(*this).hauteur = hauteur;
+	(*this).largeur = largeur;
+	valmax=0;
     for(int i=0;i<k;i++){
 	pixPGM moy = pixPGM::moyenne(tab[i]);
 	std::list<pixPGM>::const_iterator it=tab[i].begin();
 	 for(it;it!=tab[i].end();it++){
-			(*this)((*it).i,(*it).j)=moy.val;    	   
-	  }	       
+			(*this)((*it).i,(*it).j)=moy.val;    	    
+	 }	       
+	 valmax=max(valmax,moy.val+0.5);
+	 std::cout<<"valmax :"<<valmax<<std::endl;
     }
     
 }

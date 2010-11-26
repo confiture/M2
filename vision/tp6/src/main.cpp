@@ -31,10 +31,11 @@ void testLecEcr(const char* fic1,const char* fic2){
 
 void testkMean(const char* nomFichier1,int k,int niter,const char* nomFichier2){
       imagePGM im(nomFichier1);
-
+     // im.EcrireImagePGM(nomFichier2);
       std::list<pixPGM>* group;
       group = im.kMean(k,niter);
       imagePGM sortie(k,group,im.getHauteur(),im.getLargeur());
+      sortie.EcrireImagePGM(nomFichier2);
 }
 
 int main(int argc, char* argv[]){

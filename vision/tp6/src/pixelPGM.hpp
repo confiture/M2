@@ -25,7 +25,7 @@ public:
 	  double res_i = (pix_A.i-pix_B.i)*(pix_A.i-pix_B.i);
 	  double res_j = (pix_A.j-pix_B.j)*(pix_A.j-pix_B.j);
 	  double res_val = (pix_A.val-pix_B.val)*(pix_A.val-pix_B.val);
-	  double res = res_i + res_j  + res_val;
+	  double res = /*res_i + res_j  +*/ res_val;
 	  return res;
 	}
 
