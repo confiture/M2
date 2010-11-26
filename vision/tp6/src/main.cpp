@@ -31,7 +31,7 @@ void testLecEcr(const char* fic1,const char* fic2){
 
 void test_kMean(int k,int niter,const char * fic1,const char* fic2){
   imagePPM im1(fic1);
-  std::list<pixPPM>* groupes=im1.kMean(k,niter);
+  std::list<pixPPM>* groupes=im1.kMean(k,niter,pixPPM::distance2);
   imagePPM sortie(k,groupes,im1.getHauteur(),im1.getLargeur());
   sortie.EcrireImagePPM(fic2);
 }

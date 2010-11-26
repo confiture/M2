@@ -28,12 +28,10 @@ public:
 	}
 
 	inline static double distance2(const pixPPM & pix_A, const pixPPM & pix_B){
-	  double res_i = (pix_A.i-pix_B.i)*(pix_A.i-pix_B.i);
-	  double res_j = (pix_A.j-pix_B.j)*(pix_A.j-pix_B.j);
 	  double res_R = (pix_A.valR-pix_B.valR)*(pix_A.valR-pix_B.valR);
 	  double res_G = (pix_A.valG-pix_B.valG)*(pix_A.valG-pix_B.valG);
 	  double res_B = (pix_A.valB-pix_B.valB)*(pix_A.valB-pix_B.valB);
-	  double res = res_i + res_j  + res_R + res_G + res_B;
+	  double res = res_R + res_G + res_B;
 	  return res;
 	}
 

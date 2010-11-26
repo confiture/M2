@@ -153,13 +153,17 @@ imagePPM::imagePPM(int k, std::list<pixPPM> * tab,int hauteur, int largeur){
 	bufferR = new double[hauteur*largeur];
 	bufferG = new double[hauteur*largeur];
 	bufferB = new double[hauteur*largeur];
+	valmax=0;
 	for(int i=0;i<k;i++){
-		pixPPM moy = pixPPM::moyenne(tab[i]);
-		std::list<pixPPM>::const_iterator it=tab[i].begin();
-		for(it;it!=tab[i].end();it++){
-			(*this)((*it).i,(*it).j,R)=moy.valR;
-			(*this)((*it).i,(*it).j,G)=moy.valG;
-			(*this)((*it).i,(*it).j,B)=moy.valB;
+		if(!tab[i].empty()){
+			pixPPM moy = pixPPM::moyenne(tab[i]);
+			std::list<pixPPM>::const_iterator it=tab[i].begin();
+			for(it;it!=tab[i].end();it++){
+				(*this)((*it).i,(*it).j,R)=moy.valR;
+				(*this)((*it).i,(*it).j,G)=moy.valG;
+				(*this)((*it).i,(*it).j,B)=moy.valB;
+			}
+			valmax=max(valmax,max(moy.valR+0.5,max(moy.valG+0.5,moy.valB+0.5)))+0.5;
 		}
 	}
 	std::cout<<"c'est juste"<<std::endl;
@@ -237,9 +241,9 @@ pixPPM* imagePPM::initCentroids(int k)const{
 }
 
 
-std::list<pixPPM>* imagePPM::kMean(int k,int niter)const{
+std::list<pixPPM>* imagePPM::kMean(int k,int niter,double (*distFun)(const pixPPM &,const pixPPM &))const{
 	std::list<pixPPM>* groups=new std::list<pixPPM>[k];
-	pixPPM* repres=initCentroids(k);
+	pixPPM* repres=randInitCentroids(k,k+2);
 
 	for(int iter=0;iter<niter;iter++){
 
@@ -254,7 +258,7 @@ std::list<pixPPM>* imagePPM::kMean(int k,int niter)const{
 				double dist=numeric_limits<double>::infinity();
 
 				for(int kind=0;kind<k;kind++){//on cherche le représentant de currentPix
-					double currentDist=pixPPM::distance2(currentPix,repres[kind]);
+					double currentDist=(*distFun)(currentPix,repres[kind]);
 					if(currentDist<dist){
 						belongInd=kind;
 						dist=currentDist;
@@ -271,8 +275,29 @@ std::list<pixPPM>* imagePPM::kMean(int k,int niter)const{
 		//on met les représentants à jour
 		for(int kind=0;kind<k;kind++){
 			repres[kind]=pixPPM::moyenne(groups[kind]);
+			std::cout<<repres[kind];
 		}
 	}
 
 	return groups;
 }
+
+
+pixPPM* imagePPM::randInitCentroids(int k,int seed)const{
+	srand(seed);
+	pixPPM* repres=new pixPPM[k];
+	for(int j=0;j<k;j++){
+		int pixi=rand()%hauteur;
+		int pixj=rand()%largeur;
+		repres[j].i=pixi;
+		repres[j].j=pixj;
+		repres[j].valR=(*this)(pixi,pixj,R);
+		repres[j].valG=(*this)(pixi,pixj,G);
+		repres[j].valB=(*this)(pixi,pixj,B);
+		std::cout<<repres[j];
+	}
+
+	std::cout<<"====================================="<<std::endl;
+	return repres;
+}
+

@@ -23,7 +23,7 @@ public:
   imagePPM(const char* nomFichier);
 
   imagePPM(const imagePPM & im);
-  
+
   imagePPM(int k, std::list<pixPPM> * tab,int hauteur, int largeur);
 
   void updateValmax();
@@ -51,7 +51,9 @@ public:
 
   pixPPM* initCentroids(int k)const;
 
-  std::list<pixPPM>* kMean(int k,int niter)const;
+  pixPPM* randInitCentroids(int k,int seed)const;
+
+  std::list<pixPPM>* kMean(int k,int niter,double (*distFun)(const pixPPM &,const pixPPM &))const;
 private:
   int largeur, hauteur, valmax;
   double* bufferR;
