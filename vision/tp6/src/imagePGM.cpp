@@ -86,7 +86,7 @@ imagePGM::imagePGM(const char* nomFichier){
 
 	buffer = new double[hauteur*largeur];
 
-	if(ich2=='6'){
+	if(ich2=='5'){
 		/*Lecture*/
 		for(int i=0; i < hauteur; i++){
 			for(int j=0; j < largeur ; j++){
@@ -95,7 +95,7 @@ imagePGM::imagePGM(const char* nomFichier){
 		}
 		/* fermeture */
 	}
-	else if(ich2=='3'){
+	else if(ich2=='2'){
 		for(int i=0; i < hauteur; i++){
 			for(int j=0; j < largeur ; j++){
 				(*this)(i,j)=pm_getint(ifp);
@@ -106,9 +106,22 @@ imagePGM::imagePGM(const char* nomFichier){
 		std::cout<<"wrong format : P"<<ich2<<std::endl;
 		fclose(ifp);
 		exit(-1);
-	}
+	}      
+	std::cout<<"ICI 2"<<std::endl;
 
 	fclose(ifp);
+}
+
+imagePGM::imagePGM(int k, std::list<pixPGM> * tab,int hauteur, int largeur){
+	buffer = new double[hauteur*largeur];
+    for(int i=0;i<k;i++){
+	pixPGM moy = pixPGM::moyenne(tab[i]);
+	std::list<pixPGM>::const_iterator it=tab[i].begin();
+	 for(it;it!=tab[i].end();it++){
+			(*this)((*it).i,(*it).j)=moy.val;    	   
+	  }	       
+    }
+    
 }
 
 int imagePGM::EcrireImagePGM(const char* nomFichier)const{
@@ -120,7 +133,7 @@ int imagePGM::EcrireImagePGM(const char* nomFichier)const{
 	ostream os(&fb);
 
 	/* Ecriture */
-	os<<"P3"<<endl;
+	os<<"P2"<<endl;
 	os<<largeur<<" "<<hauteur<<endl;
 	os<<valmax<<endl;
 
@@ -136,12 +149,14 @@ int imagePGM::EcrireImagePGM(const char* nomFichier)const{
 
 }
 
-std::list<pixPGM> imagePGM::initCentroids(int k)const{
-	std::list<pixPGM> centroids;
+
+pixPGM* imagePGM::initCentroids(int k)const{
+	pixPGM* centroids=new pixPGM[k];;
 	int kk;
 	if(k%2==1){kk=k+1;}
 	else{kk=k;}
 
+	int ind=0;
 	int j1=largeur/3;
 	int j2=2*largeur/3;
 	for(int i=0;i<kk/2-1;i++){
@@ -150,8 +165,10 @@ std::list<pixPGM> imagePGM::initCentroids(int k)const{
 		cout<<posi<<endl;
 		pixPGM pix1(posi,j1,(*this)(posi,j1));
 		pixPGM pix2(posi,j2,(*this)(posi,j2));
-		centroids.push_back(pix1);
-		centroids.push_back(pix2);
+		centroids[ind]=pix1;
+		ind++;
+		centroids[ind]=pix2;
+		ind++;
 	}
 
 	if(k%2==1){
@@ -159,17 +176,56 @@ std::list<pixPGM> imagePGM::initCentroids(int k)const{
 		int posi=hauteur/(kk/2+1)*kk/2;
 		int j=largeur/2;
 		pixPGM pix(posi,j,(*this)(posi,j));
-		centroids.push_back(pix);
+		centroids[ind]=pix;
 	}
 	else{
 		std::cout<<"ici 3"<<endl;
 		int posi=hauteur/(kk/2+1)*kk/2;
 		pixPGM pix1(posi,j1,(*this)(posi,j1));
 		pixPGM pix2(posi,j2,(*this)(posi,j2));
-		centroids.push_back(pix1);
-		centroids.push_back(pix2);
+		centroids[ind]=pix1;
+		ind++;
+		centroids[ind]=pix2;
+		ind++;
 	}
 
 	return centroids;
+}
+
+
+
+std::list<pixPGM>* imagePGM::kMean(int k,int niter)const{
+	std::list<pixPGM>* groups=new std::list<pixPGM>[k];
+	pixPGM* repres=initCentroids(k);
+	
+// Boucle principale 	
+	for(int l=0;l<niter;l++){
+	for(int i=0;i<k;i++){
+	  groups[i].clear();
+	}
+	for(int i=0;i<hauteur;i++){
+	   for(int j=0;j<largeur;j++){
+	      pixPGM pix_courant(i,j,(*this)(i,j));
+	      double dist_test=numeric_limits<double>::infinity();
+	      int ind_pix_repres = 0;
+	      for(int ind=0;ind<k;ind++){
+		  double dist = pixPGM::distance2(repres[ind],pix_courant);
+		  if(dist<dist_test){
+		    dist_test=dist;
+		    ind_pix_repres = ind;
+		  }		  
+	      }
+	      groups[ind_pix_repres].push_back(pix_courant);
+	  }
+	}
+	
+	for(int i=0;i<k;i++){
+	      pixPGM pixmoy = pixPGM::moyenne(groups[i]);
+	      repres[i]=pixmoy;
+	}
+	
+	}
+  
+  return groups;
 }
 
