@@ -21,11 +21,11 @@ public:
 		return i==pix.i && j==pix.j;
 	}
 
-	inline double distance2(const pixPGM & pix_A, const pixPGM & pix_B){
+	inline static double distance2(const pixPGM & pix_A, const pixPGM & pix_B){
 	  double res_i = (pix_A.i-pix_B.i)*(pix_A.i-pix_B.i);
 	  double res_j = (pix_A.j-pix_B.j)*(pix_A.j-pix_B.j);
 	  double res_val = (pix_A.val-pix_B.val)*(pix_A.val-pix_B.val);
-	  double res = res_i + res_j  + res_val;
+	  double res = /*res_i + res_j  +*/ res_val;
 	  return res;
 	}
 
@@ -45,7 +45,7 @@ public:
 	return res;
 	}
 
-	inline pixPGM moyenne(const std::list<pixPGM> & Lpix){
+	inline static pixPGM moyenne(const std::list<pixPGM> & Lpix){
 	  std::list<pixPGM>::const_iterator it=Lpix.begin();
 	  pixPGM moy;
 	  pixPGM pix(0,0,0);
@@ -57,6 +57,8 @@ public:
 	moy = pix/nb_pix;
 	return moy;
 	}
+	
+	
 
 
 	int i;
