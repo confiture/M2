@@ -1,4 +1,6 @@
 #include <list>
+#include <iostream>
+#include <ostream>
 class pixPPM{
 public:
 
@@ -68,6 +70,11 @@ public:
 	return moy;
 	}
 
+	inline friend std::ostream& operator<<(std::ostream & os,const pixPPM & p){
+		os<<"i,j : "<<p.i<<","<<p.j<<"(RGB)"<<p.valR<<" "<<p.valG<<" "
+		  <<p.valB<<std::endl;
+		return os;
+	}
 
 	int i;
 	int j;

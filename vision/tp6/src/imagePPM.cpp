@@ -148,19 +148,21 @@ imagePPM::imagePPM(const char* nomFichier){
 }
 
 imagePPM::imagePPM(int k, std::list<pixPPM> * tab,int hauteur, int largeur){
+	this->hauteur=hauteur;
+	this->largeur=largeur;
 	bufferR = new double[hauteur*largeur];
 	bufferG = new double[hauteur*largeur];
 	bufferB = new double[hauteur*largeur];
-    for(int i=0;i<k;i++){
-	pixPPM moy = pixPPM::moyenne(tab[i]);
-	std::list<pixPPM>::const_iterator it=tab[i].begin();
-	 for(it;it!=tab[i].end();it++){
+	for(int i=0;i<k;i++){
+		pixPPM moy = pixPPM::moyenne(tab[i]);
+		std::list<pixPPM>::const_iterator it=tab[i].begin();
+		for(it;it!=tab[i].end();it++){
 			(*this)((*it).i,(*it).j,R)=moy.valR;
-			(*this)((*it).i,(*it).j,R)=moy.valG;
-			(*this)((*it).i,(*it).j,R)=moy.valB;	    	   
-	  }	       
-    }
-    
+			(*this)((*it).i,(*it).j,G)=moy.valG;
+			(*this)((*it).i,(*it).j,B)=moy.valB;
+		}
+	}
+	std::cout<<"c'est juste"<<std::endl;
 }
 
 int imagePPM::EcrireImagePPM(const char* nomFichier)const{
@@ -240,7 +242,8 @@ std::list<pixPPM>* imagePPM::kMean(int k,int niter)const{
 	pixPPM* repres=initCentroids(k);
 
 	for(int iter=0;iter<niter;iter++){
-		for(int kind=0;kind<k;k++){
+
+		for(int kind=0;kind<k;kind++){
 			groups[kind].clear();
 		}
 
@@ -248,12 +251,16 @@ std::list<pixPPM>* imagePPM::kMean(int k,int niter)const{
 			for(int j=0;j<largeur;j++){
 				pixPPM currentPix(i,j,(*this)(i,j,R),(*this)(i,j,G),(*this)(i,j,B));
 				int belongInd;//le numéro du représentant auquel appartiendra currentPix
-				int dist=numeric_limits<double>::infinity();
-				for(int kind=0;kind<k;k++){//on cherche le représentant de currentPix
-					int currentDist=pixPPM::distance2(currentPix,repres[kind]);
+				double dist=numeric_limits<double>::infinity();
+
+				for(int kind=0;kind<k;kind++){//on cherche le représentant de currentPix
+					double currentDist=pixPPM::distance2(currentPix,repres[kind]);
 					if(currentDist<dist){
-						belongInd=k;
+						belongInd=kind;
 						dist=currentDist;
+						if(dist<0){
+							exit(-1);
+						}
 					}
 				}
 
@@ -262,7 +269,7 @@ std::list<pixPPM>* imagePPM::kMean(int k,int niter)const{
 		}
 
 		//on met les représentants à jour
-		for(int kind=0;kind<k;k++){
+		for(int kind=0;kind<k;kind++){
 			repres[kind]=pixPPM::moyenne(groups[kind]);
 		}
 	}
