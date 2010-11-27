@@ -44,12 +44,8 @@ float *histogram(int w, int h, int *image, char * filename)
 	// On divise par R(i,j), G(i,j) et B(i,j) par la luminance lum
 	for(k=0;k<3;k++){
 	  imageFloat[indppm(i,j,k,w)] =  (float)image[indppm(i,j,k,w)] / lum;
-
-
 	}
-
 	
-
 	/* TO BE COMPLETED */
 			//  R(i,j)   //			// G(i,j)
        }
