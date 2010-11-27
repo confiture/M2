@@ -244,3 +244,32 @@ int ind(int i,int j,int ncol){
 int indppm(int i,int j, int k,int ncol){
   return i*ncol*3+j*3+k;
 }
+
+void normalise(float* imageFloat, int h, int w,int a, int b){
+	float min, max;
+	int i, j, k;
+	min=max=imageFloat[0];
+	//printf("max : %f",max);
+	//printf("min : %f",min);
+	for(i=0;i<h;i++){
+		for(j=0;j<w;j++){
+		      for(k=0;k<3;k++){
+			//printf("val hist : %f \n",hist[i*256+j]);
+			    if(min>imageFloat[indppm(i,j,k,w)])min=imageFloat[indppm(i,j,k,w)];
+			    if(max<imageFloat[indppm(i,j,k,w)])max=imageFloat[indppm(i,j,k,w)];
+		      }
+		}
+	}
+	//printf("max : %f",max);
+	//printf("min : %f",min);
+	for(i=0;i<h;i++){
+		for(j=0;j<w;j++){
+		    for(k=0;k<3;k++){
+			 imageFloat[indppm(i,j,k,w)]=(((double)imageFloat[indppm(i,j,k,w)]-(double)min)/
+			              ((double)max-(double)min))*(b-a)+(double)a;
+		
+		    }
+		}
+	}
+	
+}

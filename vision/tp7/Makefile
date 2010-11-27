@@ -35,7 +35,7 @@ STRIP_BIN := 0
 VERBOSE := 0
 
 # Projects list.
-PROJECTS := tp7
+PROJECTS := tp7 tests
 
 PREFIX := /usr/local
 
@@ -51,7 +51,7 @@ LDFLAGS +=
 #############################
 
 tp7_SRCS := src/face.cpp src/utils.cpp src/NewpixmapIO.cpp
-
+tests_SRCS := src/main.cpp src/utils.cpp src/NewpixmapIO.cpp
 ###########################################
 # DO NOT MODIFY ANYTHING AFTER THIS LINE. #
 ###########################################

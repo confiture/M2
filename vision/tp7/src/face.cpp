@@ -42,12 +42,12 @@ int *histogram(int w, int h, int *image, char * filename)
 //	printf("R(i,j) : %i \n",image[i*w*3+j*3+0]);
 //	printf("G(i,j) : %i \n",image[i*w*3+j*3+1]);
 //	printf("B(i,j) : %i \n",image[i*w*3+j*3+2]);
-	lum =image[i * w * 3 + j * 3 + 0] + image[i * w * 3 + j * 3 + 1] + image[i * w * 3 + j * 3 + 2];
+	lum =image[indppm(i,j,0,w)] + image[indppm(i,j,1,w)] + image[indppm(i,j,2,w)];
 //	printf("lum : %i \n",lum);
 
 	// On divise par R(i,j), G(i,j) et B(i,j) par la luminance lum
 	for(k=0;k<3;k++){
-	  imageFloat[i*w*3+j*3+k] =  (float)image[i * w * 3 + j * 3 + k] / lum;
+	  imageFloat[indppm(i,j,k,w)] =  (float)image[indppm(i,j,k,w)] / lum;
 //	  printf("val lumi normal : %f \n",imageFloat[i*w*3+j*3+k]);
 
 	}
