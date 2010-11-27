@@ -1,15 +1,15 @@
 /*
  * visage.c : calculs divers sur des images de visages
  *
- * E.B. 
+ * E.B.
  *
  */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include "utils.h"
-#include "NewpixmapIO.h"
+#include "utils.hpp"
+#include "NewpixmapIO.hpp"
 
 
 /* calcul d'histogramme des couleurs r,v sur l'image normalisee */
@@ -27,7 +27,7 @@ float *histogram(int w, int h, int *image, char * filename)
   for(i = 0;i<256;i++){
 	for(j=0;j<256;j++){
 	hist[i*256+j] = 0.0 ;
-	}	 
+	}
    }
 
   /* First normalize the image by the luminance */
@@ -45,7 +45,7 @@ float *histogram(int w, int h, int *image, char * filename)
 	lum =image[i * w * 3 + j * 3 + 0] + image[i * w * 3 + j * 3 + 1] + image[i * w * 3 + j * 3 + 2];
 //	printf("lum : %i \n",lum);
 
-	// On divise par R(i,j), G(i,j) et B(i,j) par la luminance lum	
+	// On divise par R(i,j), G(i,j) et B(i,j) par la luminance lum
 	for(k=0;k<3;k++){
 	  imageFloat[i*w*3+j*3+k] =  (float)image[i * w * 3 + j * 3 + k] / lum;
 //	  printf("val lumi normal : %f \n",imageFloat[i*w*3+j*3+k]);
@@ -55,11 +55,11 @@ float *histogram(int w, int h, int *image, char * filename)
 	/* then update the histogram in RG space */
 
 	/* TO BE COMPLETED */
-			//  R(i,j)   //			// G(i,j) 
-	
-	
+			//  R(i,j)   //			// G(i,j)
 
-	
+
+
+
        }
 }
 	int a = 0;
@@ -109,7 +109,7 @@ float *histogram(int w, int h, int *image, char * filename)
 		//printf("val histo : %f\n",hist[i*256+j]);
 		}
 	}
-  
+
 	for(i=0;i<256;i++){
 		for(j=0;j<256;j++){
 	//	printf("val histo : %f\n",hist[i*256+j]);
@@ -123,13 +123,13 @@ float *histogram(int w, int h, int *image, char * filename)
 			sum += hist[i*256+j];
 		}
 	  }
-	
+
        	for(i = 0;i<256;i++){
 		for(j=0;j<256;j++){
 			hist[i*256+j]=hist[i*256+j]/sum;
 		}
 	}*/
- 
+
   /* save the histrogram as an image .pgm */
   /* Pour recadrer l'histogramme entre 0 et 255*/
 
@@ -157,7 +157,7 @@ float *histogram(int w, int h, int *image, char * filename)
 		}
 	}*/
 
-	 
+
   writePixmap(hist, 256, 256, 5, filename);
 
   return hist;
@@ -226,15 +226,15 @@ void main(int argc, char** argv)
   /*TO BE COMPLETED */
 
  /* ... ;*/
-     
+
   /* Calculation of face barycenter */
 
   /* TO BE COMPLETED */
- 
+
   /*... ;*/
 
 
-  /* save the final image results : the image of probability 
+  /* save the final image results : the image of probability
      + the initial image with the barycenter */
 
   writePixmap(result, cols, rows, 6, argv[3]);

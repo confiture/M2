@@ -2,11 +2,11 @@
  *              Histogram and Central Limit Theorem                   *
  **********************************************************************/
 #include<stdio.h>   // to read and write on standard output and in files
-#include<string.h>  // to find extension of a file 
+#include<string.h>  // to find extension of a file
 #include<stdlib.h>
 #include <limits.h> // to use INT_MIN and INT_MAX
-#include <float.h>  // to use DBL_MIN and DBL_MAX 
-#include "utils.h"
+#include <float.h>  // to use DBL_MIN and DBL_MAX
+#include "utils.hpp"
 
 /*****************************************************************
  *        To read char, bit, rawbyte and int from a file         *
@@ -15,12 +15,12 @@ char pm_getc(FILE* file)
 {
   register int ich;
   register char ch;
-  
+
   ich = getc( file );
   if ( ich == EOF )
     pm_erreur("EOF / read error" );
   ch = (char) ich;
-  
+
   if ( ch == '#' )
     {
       do
@@ -32,7 +32,7 @@ char pm_getc(FILE* file)
 	}
       while ( ch != '\n' && ch != '\r' );
     }
-  
+
   return ch;
 }
 
@@ -40,16 +40,16 @@ char pm_getc(FILE* file)
 unsigned char pm_getbit(FILE* file)
 {
   register char ch;
-  
+
   do
     {
       ch = pm_getc( file );
     }
   while ( ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r' );
-  
+
   if ( ch != '0' && ch != '1' )
         pm_erreur("junk in file where bits should be" );
-  
+
   return ( ch == '1' ) ? 1 : 0;
 }
 
@@ -57,7 +57,7 @@ unsigned char pm_getbit(FILE* file)
 unsigned char pm_getrawbyte(FILE* file)
 {
   register int iby;
-  
+
   iby = getc( file );
   if ( iby == EOF )
     pm_erreur("EOF / read error" );
@@ -69,16 +69,16 @@ int pm_getint( FILE* file)
 {
   register char ch;
   register int i;
-  
+
   do
     {
       ch = pm_getc( file );
     }
   while ( ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r' );
-  
+
   if ( ch < '0' || ch > '9' )
     pm_erreur( "junk in file where an integer should be" );
-  
+
   i = 0;
   do
     {
@@ -86,7 +86,7 @@ int pm_getint( FILE* file)
       ch = pm_getc( file );
     }
   while ( ch >= '0' && ch <= '9' );
-  
+
   return i;
 }
 
@@ -102,17 +102,17 @@ int pm_get_signed_int( FILE* file)
       ch = pm_getc( file );
     }
   while ( ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r' );
-  
+
   if ( (ch < '0' || ch > '9') && (ch != '-') )
     pm_erreur( "junk in file where an integer should be" );
-  
+
   if (ch == '-') {
     sign = -1;
     ch = pm_getc( file );
     if ( ch < '0' || ch > '9' )
       pm_erreur( "junk in file where an integer should be" );
   }
-  
+
   i = 0;
   do
     {
@@ -120,7 +120,7 @@ int pm_get_signed_int( FILE* file)
       ch = pm_getc( file );
     }
   while ( ch >= '0' && ch <= '9' );
-  
+
   i *= sign;
 
   return i;
@@ -140,17 +140,17 @@ double pm_get_signed_double( FILE* file)
       ch = pm_getc( file );
     }
   while ( ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r' );
-  
+
   if ( (ch < '0' || ch > '9') && (ch != '-') )
     pm_erreur( "junk in file where an integer should be" );
-  
+
   if (ch == '-') {
     sign = -1;
     ch = pm_getc( file );
     if ( ch < '0' || ch > '9' )
       pm_erreur( "junk in file where an integer should be" );
   }
-  
+
   i = 0.0;
   do
     {
@@ -171,14 +171,14 @@ double pm_get_signed_double( FILE* file)
     while ( ch >= '0' && ch <= '9' );
     i += v*nb;
   }
-  
+
   i *= sign;
 
   return i;
 }
 
 void pm_erreur(char *texte)
-{ 
+{
   fprintf(stderr, "\n%s \n\n", texte);
   exit(1);
 }

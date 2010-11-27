@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include "utils.h"
-#include "NewpixmapIO.h"
+#include "utils.hpp"
+#include "NewpixmapIO.hpp"
 
 
 //------------------------------------------------------------------------
@@ -25,10 +25,10 @@ int * readPixmap(char* filename,
   int singleBit;
   int mask;
 
-  
+
   /* File opening */
   filePtr = fopen(filename,"rb");
-  
+
   /* Magic number reading */
   ich1 = getc( filePtr );
   if ( ich1 == EOF )
@@ -37,14 +37,14 @@ int * readPixmap(char* filename,
   if ( ich2 == EOF )
     pm_erreur( "EOF / read error reading magic number" );
 
-  switch(ich2) 
+  switch(ich2)
     {
     default:
       fclose(filePtr);
       printf("File format not supported\n");
       exit(1);
       break;
-      
+
     case '1':
       *type = 1;
 
@@ -54,10 +54,10 @@ int * readPixmap(char* filename,
       /* Passing number of columns and number of rows as arguments */
       *nbColumns = cols;
       *nbRows = rows;
-      
+
       /* Memory allocation */
       pixmap = (int *) malloc(cols * rows * sizeof(int));
-      
+
       /* Reading data */
       for(i=0; i < rows; i++)
 	for(j=0; j < cols ; j++)
@@ -73,10 +73,10 @@ int * readPixmap(char* filename,
       /* Passing number of columns and number of rows as arguments */
       *nbColumns = cols;
       *nbRows = rows;
-      
+
       /* Memory allocation */
       pixmap = (int *) malloc(cols * rows * sizeof(int));
-      
+
       /* Reading data */
       for(i=0; i < rows; i++)
 	for(j=0; j < cols ; j++)
@@ -86,7 +86,7 @@ int * readPixmap(char* filename,
 
     case '3':
       *type = 3;
-     
+
       /* Reading dimensions */
       cols = pm_getint( filePtr );
       rows = pm_getint( filePtr );
@@ -98,12 +98,12 @@ int * readPixmap(char* filename,
       printf("%d \n", maxVal);
       /* Memory allocation */
       pixmap = (int *) malloc(cols * rows * 3 * sizeof(int));
-      
+
       /* Reading data */
-  
+
       for(i=0; i < rows; i++)
 	for(j=0; j < cols ; j++)
-	  for(k=0 ; k < 3 ; k++)  
+	  for(k=0 ; k < 3 ; k++)
 	    pixmap[i * cols * 3 + j * 3 + k] = (int) pm_getint(filePtr);
 
       break;
@@ -114,7 +114,7 @@ int * readPixmap(char* filename,
     case '4':
       *type = 4;
       printf("Type: 4\n");
-      /* Reading dimensions */ 
+      /* Reading dimensions */
       cols = pm_getint( filePtr );
       rows = pm_getint( filePtr );
 
@@ -125,7 +125,7 @@ int * readPixmap(char* filename,
 
       /* Memory allocation */
       pixmap = (int *) malloc(rows * cols * sizeof(int));
-      
+
       /* Reading data  bit by bit... tough !*/
       /* http://orion.math.iastate.edu/burkardt/g_src/pbmpak/pbmpak.c */
 
@@ -133,8 +133,8 @@ int * readPixmap(char* filename,
 	for(i=0; i < cols ; i++) {
 	  if (i%8 == 0) {
 	    read8Bit = fgetc(filePtr);
-	    
-	    if (read8Bit == EOF) 
+
+	    if (read8Bit == EOF)
 	      pm_erreur("EOF / read error, file dimension is not a power of 2");
 
 	  }
@@ -145,7 +145,7 @@ int * readPixmap(char* filename,
 	  pixmap[j * cols + i] = (int) singleBit;
 	}
       }
-      
+
       break;
 
     case '5':
@@ -157,10 +157,10 @@ int * readPixmap(char* filename,
       /* Passing number of columns and number of rows as arguments */
       *nbColumns = cols;
       *nbRows = rows;
-      
+
       /* Memory allocation */
       pixmap = (int *) malloc(cols * rows * sizeof(int));
-      
+
       /* Reading data */
       for(i=0; i < rows; i++)
 	for(j=0; j < cols ; j++)
@@ -177,19 +177,19 @@ int * readPixmap(char* filename,
       /* Passing number of columns and number of rows as arguments */
       *nbColumns = cols;
       *nbRows = rows;
-      
+
       /* Memory allocation */
       pixmap = (int *) malloc(cols * rows * 3 * sizeof(int));
-      
+
       /* Reading data */
       for(i=0; i < rows; i++)
 	for(j=0; j < cols ; j++)
 	  for(k=0 ; k < 3 ; k++)
 	    pixmap[i * cols * 3 + j * 3 + k] =  pm_getrawbyte(filePtr);
       break;
-      
+
     }
-  
+
   fclose(filePtr);
   return pixmap;
 }
@@ -242,7 +242,7 @@ int writePixmap(int * pixmap,
     case 1:
       fprintf(filePtr, "P1\n");
       fprintf(filePtr, "%d %d \n", cols, rows);
-      
+
       for (j = 0; j < rows; j++) {
 	for (i = 0; i < cols; i++) {
 	  if (pixmap[j*cols + i] > 0)
@@ -250,7 +250,7 @@ int writePixmap(int * pixmap,
 	  else
 	    fprintf(filePtr, "0\n");
 	}
-      }  
+      }
       fprintf(filePtr, "\n");
 
       break;
@@ -259,7 +259,7 @@ int writePixmap(int * pixmap,
       fprintf(filePtr, "P2\n");
       fprintf(filePtr, "%d %d \n", cols, rows);
       fprintf(filePtr, "%u\n", (unsigned char) pm_getMax(pixmap, cols * rows));
-      
+
       for (j = 0; j < rows; j++)
 	for (i = 0; i < cols; i++)
 	  fprintf(filePtr, "%u\n", (unsigned char) pixmap[j*cols + i]);
@@ -272,16 +272,16 @@ int writePixmap(int * pixmap,
 
 	fprintf(filePtr, "P3\n");
 	fprintf(filePtr, "%d %d \n", cols, rows);
-	
+
 	fprintf(filePtr, "%u\n", (unsigned char) pm_getMax(pixmap, cols * rows * 3));
 	for (j = 0; j < rows; j++)
 	  for (i = 0; i < cols; i++)
 	    for (k = 0 ; k != 3 ; k++)
 	      fprintf(filePtr, "%u\n", (unsigned char) pixmap[j*cols * 3+ i*3 + k]);
 	fprintf(filePtr, "\n");
-	
+
       break;
-      
+
 
 
     case 4:
@@ -294,30 +294,30 @@ int writePixmap(int * pixmap,
 	for (i = 0; i < cols; i++) {
 	  if (pixmap[j*cols + i] > 0)
 	    blackOrWhite = 1;
-	  else 
+	  else
 	    blackOrWhite = 0;
 
 	  mask = 7 - i%8;
-	  
+
 	  bit = blackOrWhite % 2;
 	  c = c | (bit << mask);
-	  
+
 	  if ( (i+1)%8 == 0 || i == (cols - 1) ) {
 	    fputc(c, filePtr);
 	    c = 0;
 	  }
-	  
+
 	}
       }
       fprintf(filePtr, "\n");
-      
+
       break;
-      
+
     case 5:
       fprintf(filePtr, "P5\n");
       fprintf(filePtr, "%d %d \n", cols, rows);
       fprintf(filePtr, "%u\n", (unsigned char) pm_getMax(pixmap, cols * rows));
-      
+
       for (j = 0; j < rows; j++)
 	for (i = 0; i < cols; i++)
 	  fputc((unsigned char) pixmap[j*cols + i], filePtr);
@@ -325,12 +325,12 @@ int writePixmap(int * pixmap,
 
       break;
 
-      
+
     case 6:
       fprintf(filePtr, "P6\n");
       fprintf(filePtr, "%d %d \n", cols, rows);
       fprintf(filePtr, "%u\n", (unsigned char) pm_getMax(pixmap, cols * rows *3));
-      
+
       for (j = 0; j < rows; j++)
 	for (i = 0; i < cols; i++)
 	  for(k=0; k !=3 ; k++)
@@ -350,8 +350,8 @@ int writePixmap(int * pixmap,
 
 
 /* Algo de bresenham */
-void Bresenham(int Ax, int Ay, int Bx, int By, 
-	       int Color, 
+void Bresenham(int Ax, int Ay, int Bx, int By,
+	       int Color,
 	       int WIDTH, int *FrameBuffer)
 {
   int dX, dY, fbXincr, fbYincr, fbXYincr, dPr, dPru, P;
@@ -361,7 +361,7 @@ void Bresenham(int Ax, int Ay, int Bx, int By,
   //------------------------------------------------------------------------
   int * AfbAddr = &FrameBuffer[(Ay*WIDTH+Ax) *3];
   int * BfbAddr = &FrameBuffer[(By*WIDTH+Bx)*3];
-  
+
   //------------------------------------------------------------------------
   // DETERMINE AMOUNT TO INCREMENT FRAMEBUFFER TO GET TO SUBSEQUENT POINTS
   // (ALSO, STORE THE ABSOLUTE VALUE OF THE CHANGE IN X AND Y FOR THE LINE)
@@ -371,7 +371,7 @@ void Bresenham(int Ax, int Ay, int Bx, int By,
     dX=-dX;
     fbXincr=-3;
   AFTERNEGX:
-    
+
   fbYincr=3 * WIDTH;
   if ( (dY=By-Ay) >= 0) goto AFTERNEGY;
     fbYincr=-3 * WIDTH;
@@ -386,7 +386,7 @@ void Bresenham(int Ax, int Ay, int Bx, int By,
   // ALWAYS). THE X AND Y'S MAY BE FLIPPED IF Y IS THE INDEPENDENT VARIABLE.
   //------------------------------------------------------------------------
   if (dY > dX) goto YisIndependent;        // CHECK IF X OR Y IS INDEPENDENT VARIABLE
-  
+
   // XisIndependent:
     dPr = dY+dY;                           // AMOUNT TO INCREMENT DECISION IF RIGHT IS CHOSEN (always)
     P = -dX;                               // DECISION VARIABLE START VALUE
@@ -403,30 +403,30 @@ void Bresenham(int Ax, int Ay, int Bx, int By,
         // Up:
             AfbAddr+=fbXincr;              // ADVANCE TO NEXT POINT FROM END A
             BfbAddr-=fbXincr;              // ADVANCE TO NEXT POINT FROM END B
-            if ((dY=dY-1) > 0) goto XLOOP; // DECREMENT LOOP VARIABLE AND LOOP 
+            if ((dY=dY-1) > 0) goto XLOOP; // DECREMENT LOOP VARIABLE AND LOOP
             *AfbAddr=Color;                // (FIX MIDPOINT PROBLEM) PLOT LAST PT FROM END A
-            *(AfbAddr+1)=Color;   
-            *(AfbAddr+2)=Color;   
+            *(AfbAddr+1)=Color;
+            *(AfbAddr+2)=Color;
 
             if ((dX & 1) == 0) return;     // FINISHED IF INDEPENDENT IS EVEN (ODD # STEPS)
             *BfbAddr=Color;                // PLOT LAST PT FROM END B IF INDEPENDENT
-            *(BfbAddr+1)=Color;  
-            *(BfbAddr+2)=Color;  
+            *(BfbAddr+1)=Color;
+            *(BfbAddr+2)=Color;
             return;
         RightAndUp:
             AfbAddr+=fbXYincr;             // ADVANCE TO NEXT POINT FROM END A
             BfbAddr-=fbXYincr;             // ADVANCE TO NEXT POINT FROM END B
             P+=dPru;                       // INCREMENT DECISION (for up)
-            if ((dY=dY-1) > 0) goto XLOOP; // DECREMENT LOOP VARIABLE AND LOOP 
+            if ((dY=dY-1) > 0) goto XLOOP; // DECREMENT LOOP VARIABLE AND LOOP
         *AfbAddr=Color;                    // PLOT THE PIXEL FROM END A
         *(AfbAddr+1)=Color;                    // PLOT THE PIXEL FROM END A
-        *(AfbAddr+2)=Color;   
+        *(AfbAddr+2)=Color;
             if ((dX & 1) == 0) return;     // FINISHED IF INDEPENDENT IS EVEN (ODD # STEPS)
      *BfbAddr=Color;                    // PLOT THE PIXEL FROM END B
         *(BfbAddr+1)=Color;                    // PLOT THE PIXEL FROM END B
-        *(BfbAddr+2)=Color;        
+        *(BfbAddr+2)=Color;
             return;
-            
+
   YisIndependent:
     dPr = dX+dX;                           // AMOUNT TO INCREMENT DECISION IF RIGHT IS CHOSEN (always)
     P = -dY;                               // DECISION VARIABLE START VALUE
@@ -435,34 +435,34 @@ void Bresenham(int Ax, int Ay, int Bx, int By,
     YLOOP:                                 // PROCESS EACH POINT IN THE LINE ONE AT A TIME (use dX as loop counter)
        *AfbAddr=Color;                    // PLOT THE PIXEL FROM END A
         *(AfbAddr+1)=Color;                    // PLOT THE PIXEL FROM END A
-        *(AfbAddr+2)=Color;   
+        *(AfbAddr+2)=Color;
       *BfbAddr=Color;                    // PLOT THE PIXEL FROM END B
         *(BfbAddr+1)=Color;                    // PLOT THE PIXEL FROM END B
-        *(BfbAddr+2)=Color;        
+        *(BfbAddr+2)=Color;
         if ((P+=dPr) > 0) goto RightAndUp2;// INCREMENT DECISION, CHECK IF THE PIXEL IS GOING RIGHT AND UP
         // Up:
             AfbAddr+=fbYincr;              // ADVANCE TO NEXT POINT FROM END A
             BfbAddr-=fbYincr;              // ADVANCE TO NEXT POINT FROM END B
-            if ((dX=dX-1) > 0) goto YLOOP; // DECREMENT LOOP VARIABLE AND LOOP 
+            if ((dX=dX-1) > 0) goto YLOOP; // DECREMENT LOOP VARIABLE AND LOOP
        *AfbAddr=Color;                    // PLOT THE PIXEL FROM END A
         *(AfbAddr+1)=Color;                    // PLOT THE PIXEL FROM END A
-        *(AfbAddr+2)=Color;   
+        *(AfbAddr+2)=Color;
             if ((dY & 1) == 0) return;     // FINISHED IF INDEPENDENT IS EVEN (ODD # STEPS)
       *BfbAddr=Color;                    // PLOT THE PIXEL FROM END B
         *(BfbAddr+1)=Color;                    // PLOT THE PIXEL FROM END B
-        *(BfbAddr+2)=Color;        
+        *(BfbAddr+2)=Color;
             return;
         RightAndUp2:
              AfbAddr+=fbXYincr;            // ADVANCE TO NEXT POINT FROM END A
              BfbAddr-=fbXYincr;            // ADVANCE TO NEXT POINT FROM END B
             P+=dPru;                       // INCREMENT DECISION (for up)
-            if ((dX=dX-1) > 0) goto YLOOP; // DECREMENT LOOP VARIABLE AND LOOP 
+            if ((dX=dX-1) > 0) goto YLOOP; // DECREMENT LOOP VARIABLE AND LOOP
        *AfbAddr=Color;                    // PLOT THE PIXEL FROM END A
         *(AfbAddr+1)=Color;                    // PLOT THE PIXEL FROM END A
-        *(AfbAddr+2)=Color;   
+        *(AfbAddr+2)=Color;
             if ((dY & 1) == 0) return;     // FINISHED IF INDEPENDENT IS EVEN (ODD # STEPS)
       *BfbAddr=Color;                    // PLOT THE PIXEL FROM END B
         *(BfbAddr+1)=Color;                    // PLOT THE PIXEL FROM END B
-        *(BfbAddr+2)=Color;        
+        *(BfbAddr+2)=Color;
             return;
 }
