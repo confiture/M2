@@ -198,6 +198,38 @@ int imagePPM::EcrireImagePPM(const char* nomFichier)const{
 
 }
 
+
+void imagePPM::drawCross(int i,int j,int r,int g,int b){
+	int epais=1;
+	int grand=4;
+//int epais=5;
+//int grand=15;
+	//la verticale
+	//cout<<"i "<<i<<endl;
+	//cout<<"j "<<j<<endl;
+	for(int ii=i-grand;ii<=i+grand;ii++){
+		for(int jj=j-epais;jj<=j+epais;jj++){
+			if(ii>=0 && ii<hauteur && jj<largeur && jj>=0){
+				(*this)(ii,jj,R)=r;
+				(*this)(ii,jj,G)=g;
+				(*this)(ii,jj,B)=b;
+			}
+		}
+	}
+
+	//l'horizontale
+	for(int jj=j-grand;jj<=j+grand;jj++){
+		for(int ii=i-epais;ii<=i+epais;ii++){
+			if(ii>=0 && ii<hauteur && jj<largeur && jj>=0){
+				(*this)(ii,jj,R)=r;
+				(*this)(ii,jj,G)=g;
+				(*this)(ii,jj,B)=b;
+			}
+		}
+	}
+}
+
+
 pixPPM* imagePPM::initCentroids(int k)const{
 	pixPPM* centroids=new pixPPM[k];;
 	int kk;
@@ -337,11 +369,11 @@ void imagePPM::kMeanTrace(int k,pixPPM* repres,int niter,double (*distFun)(const
 
 
 pixPPM* imagePPM::randInitCentroids(int k,int seed)const{
-	srand(seed);
+	srand((double)seed*RAND_MAX/(k+1));
 	pixPPM* repres=new pixPPM[k];
 	for(int j=0;j<k;j++){
-		int pixi=rand()%hauteur;
-		int pixj=rand()%largeur;
+		int pixi=(double)rand()/RAND_MAX*hauteur;
+		int pixj=(double)rand()/RAND_MAX*largeur;
 		repres[j].i=pixi;
 		repres[j].j=pixj;
 		repres[j].valR=(*this)(pixi,pixj,R);
