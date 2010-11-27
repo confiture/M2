@@ -295,5 +295,13 @@ void normalisePGM(float* imageFloat, int h, int w,int a, int b){
 			              ((double)max-(double)min))*(b-a)+(double)a;
 		}
 	}
-	
+
+}
+
+void floatP2intP(float* tab_f,int* tab_i,int n){
+	for(int i=0;i<n;i++)tab_i[i]=tab_f[i]+0.5;
+}
+
+void intP2floatP(int* tab_i,int* tab_f,int n){
+	for(int i=0;i<n;i++)tab_f[i]=tab_i[i];
 }
