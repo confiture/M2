@@ -1,5 +1,5 @@
 # Name of the executable to create:
-PRG_NAME=bin/tp6
+PRG_NAME=bin/tp5
 
 # Sources:
 SOURCES=\
