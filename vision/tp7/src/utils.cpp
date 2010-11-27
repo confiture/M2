@@ -265,18 +265,16 @@ void normalisePPM(float* imageFloat, int h, int w,int a, int b){
 	for(i=0;i<h;i++){
 		for(j=0;j<w;j++){
 		    for(k=0;k<3;k++){
-          imageFloat[indppm(i,j,k,w)]=(((double)imageFloat[indppm(i,j,k,w)]-(double)min)/
-                                     ((double)max-(double)min))*(b-a)+(double)a;
-
+          imageFloat[indppm(i,j,k,w)]=((imageFloat[indppm(i,j,k,w)]-min)/
+                                     (max-min))*(b-a)+a;
 		    }
 		}
 	}
-
 }
 
 void normalisePGM(float* imageFloat, int h, int w,int a, int b){
 	float min, max;
-	int i, j, k;
+	int i, j;
 	min=max=imageFloat[0];
 	//printf("max : %f",max);
 	//printf("min : %f",min);
@@ -291,17 +289,39 @@ void normalisePGM(float* imageFloat, int h, int w,int a, int b){
 	//printf("min : %f",min);
 	for(i=0;i<h;i++){
 		for(j=0;j<w;j++){
-			 imageFloat[ind(i,j,w)]=(((double)imageFloat[ind(i,j,w)]-(double)min)/
+			 imageFloat[ind(i,j,w)]=((imageFloat[ind(i,j,w)]-min)/
+			              (max-min))*(b-a)+a;
+		}
+	}
+}
+
+void normalisePGM(int* image, int h, int w,int a, int b){
+	float min, max;
+	int i, j, k;
+	min=max=image[0];
+	//printf("max : %f",max);
+	//printf("min : %f",min);
+	for(i=0;i<h;i++){
+		for(j=0;j<w;j++){
+			//printf("val hist : %f \n",hist[i*256+j]);
+			    if(min>image[ind(i,j,w)])min=image[ind(i,j,w)];
+			    if(max<image[ind(i,j,w)])max=image[ind(i,j,w)];
+		}
+	}
+	//printf("max : %f",max);
+	//printf("min : %f",min);
+	for(i=0;i<h;i++){
+		for(j=0;j<w;j++){
+			 image[ind(i,j,w)]=(((double)image[ind(i,j,w)]-(double)min)/
 			              ((double)max-(double)min))*(b-a)+(double)a;
 		}
 	}
-
 }
 
 void floatP2intP(float* tab_f,int* tab_i,int n){
 	for(int i=0;i<n;i++)tab_i[i]=tab_f[i]+0.5;
 }
 
-void intP2floatP(int* tab_i,int* tab_f,int n){
+void intP2floatP(int* tab_i,float* tab_f,int n){
 	for(int i=0;i<n;i++)tab_f[i]=tab_i[i];
 }
