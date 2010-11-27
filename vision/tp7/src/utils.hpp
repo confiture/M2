@@ -18,3 +18,5 @@ int pm_getMin(int * pixmap, int nbPixels);
 double pm_getDBLMax(double * pixmap, int nbPixels);
 double pm_getDBLMin(double * pixmap, int nbPixels);
 void pm_setExtension(char * filename, char *ext);
+int ind(int i,int j,int ncol);
+int indppm(int i,int j, int k,int ncol);

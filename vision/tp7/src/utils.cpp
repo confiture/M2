@@ -237,3 +237,10 @@ void pm_setExtension(char * filename, char *ext)
   }
 }
 
+int ind(int i,int j,int ncol){
+  return i*ncol+j;
+}
+
+int indppm(int i,int j, int k,int ncol){
+  return i*ncol*3+j*3+k;
+}
