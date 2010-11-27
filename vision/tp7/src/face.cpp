@@ -39,16 +39,12 @@ float *histogram(int w, int h, int *image, char * filename)
 
 	/* TO BE COMPLETED */
   		  //  R(i,j)   //		//  G(i,j)  //			//  B(i,j)  //
-//	printf("R(i,j) : %i \n",image[i*w*3+j*3+0]);
-//	printf("G(i,j) : %i \n",image[i*w*3+j*3+1]);
-//	printf("B(i,j) : %i \n",image[i*w*3+j*3+2]);
 	lum =image[indppm(i,j,0,w)] + image[indppm(i,j,1,w)] + image[indppm(i,j,2,w)];
-//	printf("lum : %i \n",lum);
 
 	// On divise par R(i,j), G(i,j) et B(i,j) par la luminance lum
 	for(k=0;k<3;k++){
 	  imageFloat[indppm(i,j,k,w)] =  (float)image[indppm(i,j,k,w)] / lum;
-//	  printf("val lumi normal : %f \n",imageFloat[i*w*3+j*3+k]);
+
 
 	}
 
@@ -66,9 +62,6 @@ float *histogram(int w, int h, int *image, char * filename)
 		image[i]=imageFloat[i]+0.5;
 	}
 	
-	 writePixmap(image,
-		w, h,6,
-		"test.ppm");
 /* then update the histogram in RG space */
 	int indice;
 	for(i=0;i<h;i++){
@@ -78,17 +71,12 @@ float *histogram(int w, int h, int *image, char * filename)
 		}
 	}
 
-	for(i=0;i<256;i++){
-		for(j=0;j<256;j++){
-		printf("val histo : %f\n",hist[ind(i,j,256)]);
-		}
-	}
-
 /* save the histrogram as an image .pgm */
   /* Pour recadrer l'histogramme entre 0 et 255*/
   normalisePGM(hist,256,256,0,255);
-  
-  writePixmap(hist, 256, 256, 5, filename);
+  int* histInt=new int[256*256]; 
+  floatP2intP(hist,histInt,256*256);
+  writePixmap(histInt, 256, 256, 5, filename);
 
 	
 /* normalize the histogram	 */
@@ -104,9 +92,9 @@ float *histogram(int w, int h, int *image, char * filename)
 			hist[ind(i,j,256)]/=sum;
 		}
 	}
-
   
-
+  delete[] histInt;
+  delete[] imageFloat;
   return hist;
 }
 
