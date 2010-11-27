@@ -21,4 +21,4 @@ void pm_setExtension(char * filename, char *ext);
 int ind(int i,int j,int ncol);
 int indppm(int i,int j, int k,int ncol);
 void normalisePPM(float* imageFloat, int h, int w,int a, int b);
-void normalisePGM(float* imageFloat, int h, int w,int a, int b)
+void normalisePGM(float* imageFloat, int h, int w,int a, int b);

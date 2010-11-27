@@ -18,7 +18,7 @@ int main(int argc, char** argv)
 
 	writePixmap(image,cols,rows,type,"testinit.pgm");
 
-	normalise(imageFloat, rows, cols,0,3);
+	normalisePPM(imageFloat, rows, cols,0,3);
 
 	for(int i=0;i<rows*cols*3;i++){
 		image[i]=imageFloat[i];
