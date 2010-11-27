@@ -22,5 +22,6 @@ int ind(int i,int j,int ncol);
 int indppm(int i,int j, int k,int ncol);
 void normalisePPM(float* imageFloat, int h, int w,int a, int b);
 void normalisePGM(float* imageFloat, int h, int w,int a, int b);
+void normalisePGM(int* image, int h, int w,int a, int b);
 void floatP2intP(float* tab_f,int* tab_i,int size);
 void intP2floatP(int* tab_i,float* tab_f,int size);
