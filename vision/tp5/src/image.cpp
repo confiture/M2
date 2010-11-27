@@ -684,8 +684,8 @@ image* image::makeDepth(const image & comp,int winn,int winp,
 	double currentScore;
 	int jCorres;
 
-	(*this).EcrireImagePGM("temp1.pgm");
-	comp.EcrireImagePGM("temp2.pgm");
+	//(*this).EcrireImagePGM("temp1.pgm");
+	//comp.EcrireImagePGM("temp2.pgm");
 	for(int i=winn;i<hauteur-winn;i++){
 		for(int j=winp;j<largeur-winp;j++){
 			if(sim){
@@ -704,11 +704,13 @@ image* image::makeDepth(const image & comp,int winn,int winp,
 			}
 
 			if(j==jCorres){(*sortie)(i,j)=1.1;}
-			else{(*sortie)(i,j)=1.0/(absd(j-jCorres));assert((*sortie)(i,j)>0);}
+			else{(*sortie)(i,j)=1.0/(absf(j-jCorres));
+				assert((*sortie)(i,j)>0);}
+
 		}
 	}
 
-	sortie->valmax=1.1;
+	sortie->valmax = 1.1;
 
 	return sortie;
 }
@@ -758,12 +760,14 @@ image* image::dblMatchProfPoints(const image & comp,int winn,int winp,
 
 	for(int i=0;i<hauteur;i++){
 		for(int j=0;j<largeur;j++){
-			if(corresd[i][corresg[i][j]]!=j){(*sortie)(i,j)=-1;}
+			if(corresd[i][corresg[i][j]]!=j){(*sortie)(i,j)=0;}
 			else{
 				if(j==corresg[i][j]){(*sortie)(i,j)=1.1;}
 				else{(*sortie)(i,j)=1.0/(absd(j-corresg[i][j]));assert((*sortie)(i,j)>0);}
 			}
 		}
+		std::cout<<i/((double)hauteur)*100<<"%"<<std::endl;
+		std::cout.flush();
 	}
 
 	for(int i=0;i<hauteur;i++){

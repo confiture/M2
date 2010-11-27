@@ -51,6 +51,8 @@ public:
 
   double operator()(int i,int j,color c)const;
 
+  void drawCross(int i,int j,int r,int g,int b);
+
   pixPPM* initCentroids(int k)const;
 
   pixPPM* randInitCentroids(int k,int seed)const;

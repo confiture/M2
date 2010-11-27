@@ -1,0 +1,39 @@
+(progn
+  (merge-baseap appearance {
+    -face
+    edge
+    vect
+    -transparent
+    evert
+    shading flat
+    normscale 1
+    -normal
+    linewidth 1 
+    patchdice 50 50
+  }
+  ) # end base appearance
+  (camera "Camera" camera {
+    camtoworld transform {
+             1             0             0             0
+             0             1             0             0
+             0             0             1             0
+             0             0             3             1
+
+    }
+    perspective 0  stereo 0
+    fov 2.18382
+    frameaspect 1
+    focus 3
+    near -10000
+    far 10000
+    bgcolor 1 1 1 0
+  }
+  ) # camera "Camera" ...
+  (backcolor "Camera" 1.000000 1.000000 1.000000)
+#  (window "Camera" window { size 450 450 viewport 0 449 0 449 } )
+  # end camera Camera
+
+  (ui-target "World")
+  (normalization world none)
+  (bbox-draw world no)
+)

@@ -107,7 +107,6 @@ imagePGM::imagePGM(const char* nomFichier){
 		fclose(ifp);
 		exit(-1);
 	}
-	std::cout<<"ICI 2"<<std::endl;
 
 	fclose(ifp);
 }
@@ -118,13 +117,14 @@ imagePGM::imagePGM(int k, std::list<pixPGM> * tab,int hauteur, int largeur){
 	(*this).largeur = largeur;
 	valmax=0;
 	for(int i=0;i<k;i++){
-		pixPGM moy = pixPGM::moyenne(tab[i]);
-		std::list<pixPGM>::const_iterator it=tab[i].begin();
-		for(it;it!=tab[i].end();it++){
-			(*this)((*it).i,(*it).j)=moy.val;
+		if(!tab[i].empty()){
+			pixPGM moy = pixPGM::moyenne(tab[i]);
+			std::list<pixPGM>::const_iterator it=tab[i].begin();
+			for(it;it!=tab[i].end();it++){
+				(*this)((*it).i,(*it).j)=moy.val;
+			}
+			valmax=max(valmax,moy.val+0.5);
 		}
-		valmax=max(valmax,moy.val+0.5);
-		std::cout<<"valmax :"<<valmax<<std::endl;
 	}
 
 }
@@ -165,9 +165,7 @@ pixPGM* imagePGM::initCentroids(int k)const{
 	int j1=largeur/3;
 	int j2=2*largeur/3;
 	for(int i=0;i<kk/2-1;i++){
-		std::cout<<"ici 1"<<endl;
 		int posi=hauteur/(kk/2+1)*(i+1);
-		cout<<posi<<endl;
 		pixPGM pix1(posi,j1,(*this)(posi,j1));
 		pixPGM pix2(posi,j2,(*this)(posi,j2));
 		centroids[ind]=pix1;
@@ -175,16 +173,13 @@ pixPGM* imagePGM::initCentroids(int k)const{
 		centroids[ind]=pix2;
 		ind++;
 	}
-
 	if(k%2==1){
-		std::cout<<"ici 2"<<endl;
 		int posi=hauteur/(kk/2+1)*kk/2;
 		int j=largeur/2;
 		pixPGM pix(posi,j,(*this)(posi,j));
 		centroids[ind]=pix;
 	}
 	else{
-		std::cout<<"ici 3"<<endl;
 		int posi=hauteur/(kk/2+1)*kk/2;
 		pixPGM pix1(posi,j1,(*this)(posi,j1));
 		pixPGM pix2(posi,j2,(*this)(posi,j2));
