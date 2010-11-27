@@ -13,20 +13,20 @@
 
 
 /* calcul d'histogramme des couleurs r,v sur l'image normalisee */
-float *histogram(int w, int h, int *image, char * filename)
+int *histogram(int w, int h, int *image, char * filename)
 {
   int i, j, k,lum;
-  float *hist;
+  int *hist;
   float *imageFloat;
 
   printf("computation of histogram %s\n", filename);
 
   imageFloat = (float *) malloc(w*h*3*sizeof(float));
-  hist = (float *) malloc( 256 * 256 * sizeof(float));
+  hist = (int *) malloc( 256 * 256 * sizeof(float));
   /* Initialisation de hist */
   for(i = 0;i<256;i++){
 	for(j=0;j<256;j++){
-	hist[i*256+j] = 0.0 ;
+	hist[i*256+j] = 0 ;
 	}
    }
 
@@ -56,10 +56,6 @@ float *histogram(int w, int h, int *image, char * filename)
 
 	/* TO BE COMPLETED */
 			//  R(i,j)   //			// G(i,j)
-
-
-
-
        }
 }
 	int a = 0;
@@ -165,7 +161,7 @@ float *histogram(int w, int h, int *image, char * filename)
 
 
 
-void main(int argc, char** argv)
+int main(int argc, char** argv)
 {
   int *image, *result;
   int *skin;
@@ -173,7 +169,7 @@ void main(int argc, char** argv)
   int rows, cols, type;
   int rowsskin, colsskin, typeskin;
 
-  float *htot, *hskin;
+  int *htot, *hskin;
 
   int *prob;
 
@@ -246,6 +242,7 @@ void main(int argc, char** argv)
   free(htot);
   free(hskin);
   free(result);
+  return 0;
  }
 
 
