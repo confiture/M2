@@ -188,16 +188,57 @@ int main(int argc, char** argv)
 
 
 	/* Calculation of face barycenter */
+	double iBar=0;
+	double jBar=0;
+	double sum=0;
+	for(int i=0;i<rows;i++){
+		for(int j=0;j<cols;j++){
+			iBar+=i*probFloat[ind(i,j,cols)];
+			jBar+=j*probFloat[ind(i,j,cols)];
+			sum+=probFloat[ind(i,j,cols)];;
+		}
+	}
 
-	/* TO BE COMPLETED */
+	iBar/=sum;
+	jBar/=sum;
 
-	/*... ;*/
-
+	std::cout<<iBar<<" "<<jBar<<std::endl;
 
 	/* save the final image results : the image of probability
 	   + the initial image with the barycenter */
+	//drawing a cross
+	i=iBar+0.5;
+	j=jBar+0.5;
+	int epais=1;
+	int grand=4;
+	for(int ii=i-grand;ii<=i+grand;ii++){
+		for(int jj=j-epais;jj<=j+epais;jj++){
+			if(ii>=0 && ii<rows && jj<cols && jj>=0){
+				result[indppm(ii,jj,0,cols)]=255;
+				result[indppm(ii,jj,1,cols)]=0;
+				result[indppm(ii,jj,2,cols)]=0;
+			}
+		}
+	}
 
-	writePixmap(result, cols, rows, 6, argv[3]);
+	//l'horizontale
+	for(int jj=j-grand;jj<=j+grand;jj++){
+		for(int ii=i-epais;ii<=i+epais;ii++){
+			if(ii>=0 && ii<rows && jj<cols && jj>=0){
+				result[indppm(ii,jj,0,cols)]=255;
+				result[indppm(ii,jj,1,cols)]=0;
+				result[indppm(ii,jj,2,cols)]=0;
+			}
+		}
+	}
+
+
+
+
+
+
+
+writePixmap(result, cols, rows, 6, argv[3]);
 
 
 	free(image);
