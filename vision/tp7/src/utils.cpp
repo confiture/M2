@@ -265,13 +265,13 @@ void normalisePPM(float* imageFloat, int h, int w,int a, int b){
 	for(i=0;i<h;i++){
 		for(j=0;j<w;j++){
 		    for(k=0;k<3;k++){
-			 imageFloat[indppm(i,j,k,w)]=(((double)imageFloat[indppm(i,j,k,w)]-(double)min)/
-			              ((double)max-(double)min))*(b-a)+(double)a;
-		
+          imageFloat[indppm(i,j,k,w)]=(((double)imageFloat[indppm(i,j,k,w)]-(double)min)/
+                                     ((double)max-(double)min))*(b-a)+(double)a;
+
 		    }
 		}
 	}
-	
+
 }
 
 void normalisePGM(float* imageFloat, int h, int w,int a, int b){
