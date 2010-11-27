@@ -43,8 +43,8 @@ int main(int argc, char* argv[]){
 // <<<<<<< HEAD
     double alpha;
    sscanf(argv[2],"%f",&alpha);
-   int nb_interest_pts = atoi(argv[3]);
-   nMeilPts(argv[1],argv[4],alpha,nb_interest_pts);
+//   int nb_interest_pts = atoi(argv[3]);
+ //  nMeilPts(argv[1],argv[4],alpha,nb_interest_pts);
 //  
 //   
 //   exHarris(argv[1],alpha,argv[3]);
@@ -70,7 +70,7 @@ int main(int argc, char* argv[]){
    //im.EcrireImagePGM(argv[3]);
   //test_matchPoints(alpha,atoi(argv[2]),atoi(argv[3]),argv[4],argv[5]);
 
-//  test_drawMatchPoints(alpha,atoi(argv[2]),atoi(argv[3]),argv[4],argv[5],argv[6]);
+  test_drawMatchPoints(alpha,atoi(argv[2]),atoi(argv[3]),argv[4],argv[5],argv[6]);
 
 
   //////////////////////////////////
