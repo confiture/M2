@@ -220,5 +220,7 @@ pixPPM* image::initCentroids(int k){
 
 std::list<pixPPM> image::kMean(int k){
 	pixPPM* centroids=initCentroids(k);
+
+
 	return l;
 }
