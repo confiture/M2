@@ -13,20 +13,20 @@
 
 
 /* calcul d'histogramme des couleurs r,v sur l'image normalisee */
-int *histogram(int w, int h, int *image, char * filename)
+float *histogram(int w, int h, int *image, char * filename)
 {
   int i, j, k,lum;
-  int *hist;
+  float *hist;
   float *imageFloat;
 
   printf("computation of histogram %s\n", filename);
 
   imageFloat = (float *) malloc(w*h*3*sizeof(float));
-  hist = (int *) malloc( 256 * 256 * sizeof(float));
+  hist = (float *) malloc( 256 * 256 * sizeof(float));
   /* Initialisation de hist */
   for(i = 0;i<256;i++){
 	for(j=0;j<256;j++){
-	hist[i*256+j] = 0 ;
+	hist[i*256+j] = 0.0 ;
 	}
    }
 
@@ -52,109 +52,60 @@ int *histogram(int w, int h, int *image, char * filename)
 
 	}
 
-	/* then update the histogram in RG space */
+	
 
 	/* TO BE COMPLETED */
 			//  R(i,j)   //			// G(i,j)
        }
 }
-	int a = 0;
-	int b = 255;
-	float min, max;
-
-	min=max=hist[0];
-	//printf("max : %f",max);
-	//printf("min : %f",min);
-	for(i=0;i<h;i++){
-		for(j=0;j<w;j++){
-		  for(k=0;k<3;k++){
-			//printf("val hist : %f \n",hist[i*256+j]);
-			if(min>imageFloat[i*w*3+j*3+k])min=imageFloat[i*w*3+j*3+k];
-			if(max<imageFloat[i*w*3+j*3+k])max=imageFloat[i*w*3+j*3+k];
-		  }
-		}
+// Normalise imageFloat entre 0 et 255
+	normalisePPM(imageFloat, h, w,0,255);
+	
+	/* imageFloat to image */
+	for(int i=0;i<h*w*3;i++){
+		image[i]=imageFloat[i]+0.5;
 	}
-	//printf("max : %f",max);
-	//printf("min : %f",min);
+	
+	 writePixmap(image,
+		w, h,6,
+		"test.ppm");
+/* then update the histogram in RG space */
+	int indice;
 	for(i=0;i<h;i++){
 		for(j=0;j<w;j++){
-		    for(k=0;k<3;k++){
-			 image[i*w*3+j*3+k]=(((double)imageFloat[i*w*3+j*3+k]-(double)min)/
-			              ((double)max-(double)min))*(b-a)+(double)a;
-			if(image[i*w*3+j*3+k]<256){
-			printf("val lumi normal [0,255] : %i \n",image[i*w*3+j*3+k]);
-			}
-			else{printf("PROBLEMEEEEEEEEEEEEEEEE \n");
-			      exit(-1);}
-		    }
-		}
-	}
-	printf("h : %i \n",h);
-	printf("w : %i \n",w);
-	int ind;
-	//printf("REGARDE ICI : %i \n",image[160*w*3+247*3+0]*256+image[160*w*3+247*3+1]);
-	for(i=0;i<h;i++){
-		for(j=0;j<w;j++){
-	      //  printf("ICI : %i \n",image[i*w*3+j*3+0]*256);
-	      //  printf("ICI 2 : %i \n",image[i*w*3+j*3+1]);
-		//printf("i : %i \n",i);
-		//printf("j : %i \n",j);
-		ind = image[i*w*3+j*3+0]*256 + image[i*w*3+j*3+1];
-		//printf("IND : %i \n",ind);
-		hist[ind]=hist[ind]+1.0;
-		//printf("val histo : %f\n",hist[i*256+j]);
+		indice = image[indppm(i,j,0,w)]*256 + image[indppm(i,j,1,w)];
+		hist[indice]++;
 		}
 	}
 
 	for(i=0;i<256;i++){
 		for(j=0;j<256;j++){
-	//	printf("val histo : %f\n",hist[i*256+j]);
+		printf("val histo : %f\n",hist[ind(i,j,256)]);
 		}
 	}
-	/* normalize the histogram	 */
-/*	  int sum = 0;
+
+/* save the histrogram as an image .pgm */
+  /* Pour recadrer l'histogramme entre 0 et 255*/
+  normalisePGM(hist,256,256,0,255);
+  
+  writePixmap(hist, 256, 256, 5, filename);
+
+	
+/* normalize the histogram	 */
+	  float sum = 0.0;
 	  for(i = 0;i<256;i++){
 		for(j=0;j<256;j++){
-		//	printf("val hist : %f \n",hist[i*256+j]);
-			sum += hist[i*256+j];
+			sum += hist[ind(i,j,256)];
 		}
 	  }
 
        	for(i = 0;i<256;i++){
 		for(j=0;j<256;j++){
-			hist[i*256+j]=hist[i*256+j]/sum;
-		}
-	}*/
-
-  /* save the histrogram as an image .pgm */
-  /* Pour recadrer l'histogramme entre 0 et 255*/
-
-/*	int a = 0;
-	int b = 255;
-	float min, max;
-
-	min=max=hist[0];
-	//printf("max : %f",max);
-	//printf("min : %f",min);
-	for(i=0;i<256;i++){
-		for(j=0;j<256;j++){
-			//printf("val hist : %f \n",hist[i*256+j]);
-			if(min>hist[i*256+j])min=hist[i*256+j];
-			if(max<hist[i*256+j])max=hist[i*256+j];
+			hist[ind(i,j,256)]/=sum;
 		}
 	}
-	//printf("max : %f",max);
-	//printf("min : %f",min);
-	for(i=0;i<256;i++){
-		for(j=0;j<256;j++){
-			hist[i*256+j]=(((double)hist[i*256+j]-(double)min)/
-			              ((double)max-(double)min))*(b-a)+(double)a;
-			//printf("val hist :%d \n",hist[i*256+j]);
-		}
-	}*/
 
-
-  writePixmap(hist, 256, 256, 5, filename);
+  
 
   return hist;
 }
@@ -169,7 +120,7 @@ int main(int argc, char** argv)
   int rows, cols, type;
   int rowsskin, colsskin, typeskin;
 
-  int *htot, *hskin;
+  float *htot, *hskin;
 
   int *prob;
 
