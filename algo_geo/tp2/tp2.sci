@@ -29,17 +29,6 @@ function [X]=ordElts(X,coord)
 	end
 endfunction
 
-//function tab=demiaretes(coord,elts)
-//	tab=[]
-//	nbelts=size(elts,2)
-//	for i=1:nbelts
-//		arete()
-//		
-//	end
-//	
-//	
-//endfunction
-
 //////////////////////////////////
 //tableau aretes de la forme pour la ligne i correspondant a la demi-arete i : 
 //[demi-arete suivante, demi-arete precedente, demi-arete opposee, sommet d'origine
@@ -68,27 +57,80 @@ function aretes=cons_aretes(elts)
 			  aretes(pos(j),3)=n+j
 			end
 		end
-          end
+end
+
+aretes=cons_aretes_bord(aretes)
+aretes(:,5)=[]
+        
         endfunction
-   
+        
+///////////////////////////////////////////////////////////////////////
+//Construit les arêtes manquantes après l'exécuction de cons_aretes,
+//c'est à dire les arêtes sur le bord. Une arête est sur le bord quand
+//elle n'a pas de demi-arêtes opposée.
+///////////////////////////////////////////////////////////////////////
 function aretes=cons_aretes_bord(aretes)
   n=size(aretes,1)
+  initSize=n //La taille initiale du tableau des arêtes
   i=1
-  while(aretes(i,3)!=0)do
+  while(aretes(i,3)<>0) do
     i=i+1
   end
-  init=i
+  init=i //la première demi-arête qui n'a pas d'opposé et qui est donc sur le bord
   
   while(1==1) do
-    aretes=[aretes ;0 0 i aretes(i,5) aretes(i,4) 0]
+     disp("hehe")
+     aretes=[aretes ;n+2 n i aretes(i,5) aretes(i,4) 0] //on ajoute l'arête et son opposé
+     n=n+1
+     aretes(i,3)=n
      
-    
-    
-  end
+     i=n
+     while (aretes(i,3)<>0) do //on cherche la demi-arête dont l'opposée n'existe pas
+       disp("hoho")
+       i=aretes(aretes(i,3),2) 
+       disp(i)
+       if(i==init) then //on s'arête si on retombe sur la première demi-arête traitée qui n'avait
+                        //pas de demi-arête opposée
+         break
+       end
+     end 
+     
+     if(i==init) then
+       aretes(initSize+1,2)=n //on met a jour la demi-arête précédente
+                              //de la première demi-arête traitée qui n'avait
+                              //de demi-arête opposée puis on arête la boucle
+       aretes(n,1)=initSize+1
+       break
+     end
+   end
 endfunction
   
   
+function traceAretes(aretes,coord)
+  n=size(aretes,1)
+  for i=1:n
+    disp("X1 ind")
+    disp(aretes(i,4))
+    disp("X2 ind")
+    disp(aretes(i,1),4)
+    disp(aretes(aretes(i,1),4))
+    X1=coord(:,aretes(i,4))
+    X2=coord(:,aretes(aretes(i,1),4))
+    plot([X1(1) X2(1)],[X1(2) X2(2)]);
+  end
+endfunction
 
+function [points]=envPts(aretes,coord)
+  points=[]
+  n=size(aretes,1)
+  for i=1:n,
+    if(aretes(i,5)==0) then
+      points=[points coord(:,aretes(i,4)) coord(:,aretes(aretes(i,1),4))]
+    end
+  end
+endfunction
+
+  
 ////////////////////////////////////////////////////////////
 //Retourne le status de l'arete [pt1 pt2]
 //si pos=0 : alors l'arete opposee n'existe pas dans le tableau d'aretes aretes
@@ -145,3 +187,39 @@ function [coord,elts] = lire_delaunay(nom_f)
 end
   mclose(fid);
 endfunction
+
+//////////////////////////////////////////////////////////
+// lecture d'un fichier contenant une suite de B�zier
+// rationnelles
+// Entr�e : nom_f = le nom du fichier � lire
+// Sortie : LP = la liste des B�zier
+// LP(i) est un tableau avec 3 lignes
+// ligne 1 : abscisses des points de controle
+// ligne 2 : ordonn�es des points de controle
+// ligne 3 : poids associ�s
+function [coord,elts] = lireDelaunay(nom_f)
+  
+  // ouverture du fichier
+  fid = mopen(nom_f, 'r');
+  
+  // lecture du nombre de points
+  nB = mfscanf(fid, '%d');
+  
+  // lecture des coordonnées
+  for i=1:nB
+     coord(1,i) = mfscanf(fid, '%f');
+  end
+   for i=1:nB
+		coord(2,i) = mfscanf(fid, '%f');
+	end
+	i=1;
+   while(1==1)
+	if(meof(fid)) then 
+		break;
+	end
+	elts(i,:)=[mfscanf(fid, '%d') mfscanf(fid, '%d') mfscanf(fid, '%d')];
+	i=i+1;  
+  end
+  mclose(fid);
+endfunction
+
