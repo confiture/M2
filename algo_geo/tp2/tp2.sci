@@ -207,18 +207,14 @@ function [coord,elts] = lireDelaunay(nom_f)
   
   // lecture des coordonnées
   for i=1:nB
-     coord(1,i) = mfscanf(fid, '%f');
+    coord(1,i) = mfscanf(fid, '%f');
+    coord(2,i) = mfscanf(fid, '%f');
   end
-   for i=1:nB
-		coord(2,i) = mfscanf(fid, '%f');
-	end
-	i=1;
-   while(1==1)
-	if(meof(fid)) then 
-		break;
-	end
+   
+   nbelts=mfscanf(fid,'%d')
+   
+   for i=1:nbelts
 	elts(i,:)=[mfscanf(fid, '%d') mfscanf(fid, '%d') mfscanf(fid, '%d')];
-	i=i+1;  
   end
   mclose(fid);
 endfunction
