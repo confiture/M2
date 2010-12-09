@@ -10,5 +10,7 @@
 *.pgm
 *.bmp
 *.gif
-bin/
+*.ppm
+*.xcf
+*.DS
 
