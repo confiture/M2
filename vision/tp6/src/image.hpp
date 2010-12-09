@@ -9,31 +9,27 @@
 #include <streambuf>
 #include <algorithm>
 #include <limits>
-#include "pixelPPM.hpp"
+#include "pixel.hpp"
 #include <list>
 #include <cmath>
 #include <cassert>
-#include <string>
-#include <sstream>
 
-class imagePPM{
+class image{
 public:
   enum color{R,G,B};
 
-  imagePPM(int hauteur, int largeur,int valmax);
+  image(int hauteur, int largeur,int valmax);
 
-  imagePPM(const char* nomFichier);
+  image(const char* nomFichier);
 
-  imagePPM(const imagePPM & im);
-
-  imagePPM(int k, std::list<pixPPM> * tab,int hauteur, int largeur);
+  image(const image & im);
 
   void updateValmax();
 
   /**
    *Destructeur.
    */
-  inline ~imagePPM(){
+  inline ~image(){
     delete [] bufferR;
     delete [] bufferG;
     delete [] bufferB;
@@ -51,18 +47,8 @@ public:
 
   double operator()(int i,int j,color c)const;
 
-  void drawCross(int i,int j,int r,int g,int b);
+  std::list<pixPPM> initCentroids(int k);
 
-  pixPPM* initCentroids(int k)const;
-
-  pixPPM* randInitCentroids(int k,int seed)const;
-
-  std::list<pixPPM>* kMean(int k,pixPPM* repres,int niter,
-                           double (*distFun)(const pixPPM &,const pixPPM &))const;
-
-
-  void kMeanTrace(int k,pixPPM* repres,int niter,double (*distFun)(const pixPPM &,const pixPPM &),
-                                 char * filePat="trace")const;
 private:
   int largeur, hauteur, valmax;
   double* bufferR;

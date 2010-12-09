@@ -86,6 +86,7 @@ int main(int argc, char* argv[]){
   string traceStr("-tr");
   string inputStr("-i");
   string outputStr("-o");
+  string drawCrossesStr("-cr");
   char * fici=NULL;
   char * fico="output";
   int niter;
@@ -94,6 +95,7 @@ int main(int argc, char* argv[]){
   bool randomize=false;
   int seed;
   bool trace=false;
+  bool drawCrosses=false;
 
   int argi=1;
   while(argi<argc){
@@ -101,28 +103,22 @@ int main(int argc, char* argv[]){
     string currentArg(argv[argi]);
     if(currentArg==niterStr){
       argi++;
-      std::cout<<"ici 1"<<std::endl;
       niter=atoi(argv[argi]);
     }
     else if(currentArg==ngroupStr){
       argi++;
-      std::cout<<"ici 2"<<std::endl;
       ngroup=atoi(argv[argi]);
     }
     else if(currentArg==randStr){
       randomize=true;
       argi++;
-      std::cout<<"ici 3"<<std::endl;
       seed=atoi(argv[argi]);
     }
     else if(currentArg==distStr){
       argi++;
-      std::cout<<"ici 4"<<std::endl;
       dist=atoi(argv[argi]);
       if(dist==3){
-        std::cout<<"pourquoi?"<<std::endl;
         df=&pixPPM::distance2;
-        std::cout<<"ça"<<endl;
       }
       else if(dist==5){
         df=&pixPPM::distComp;
@@ -131,32 +127,28 @@ int main(int argc, char* argv[]){
         std::cout<<"error : unknown distance parameter -d "<<dist<<endl;
         exit(-1);
       }
-      std::cout<<"merde"<<endl;
     }
     else if(currentArg==traceStr){
-      std::cout<<"ici 5"<<std::endl;
       trace=true;
     }
     else if(currentArg==inputStr){
-      std::cout<<"ici 6"<<std::endl;
       argi++;
       fici=argv[argi];
     }
     else if(currentArg==outputStr){
-      std::cout<<"ici 7"<<std::endl;
       argi++;
       fico=argv[argi];
+    }
+    else if(currentArg==drawCrossesStr){
+      argi++;
+      drawCrosses=true;
     }
     else{
       cout<<"error : unknown parameter "<<currentArg<<endl;
     }
 
-    std::cout<<"argi "<<argi<<endl;
-
     argi++;
   }
-
-  std::cout<<"ICICICICIC"<<endl;
 
   if(fici==NULL){
     std::cout<<"error : enter an input file name"<<std::endl;
@@ -166,6 +158,7 @@ int main(int argc, char* argv[]){
 
   pixPPM* centroids;
   if(randomize){
+    std::cout<<"SEED : "<<seed<<std::endl;
     centroids=im.randInitCentroids(ngroup,seed);
   }
   else{
@@ -175,6 +168,10 @@ int main(int argc, char* argv[]){
   if(!trace){
     std::list<pixPPM>* groupes=im.kMean(ngroup,centroids,niter,df);
     imagePPM sortie(ngroup,groupes,im.getHauteur(),im.getLargeur());
+    if(drawCrosses){
+      for(int i=0;i<ngroup;i++)sortie.drawCross(centroids[i].i,centroids[i].j,
+                                            255,0,0);
+    }
     sortie.EcrireImagePPM(fico);
   }
   else{

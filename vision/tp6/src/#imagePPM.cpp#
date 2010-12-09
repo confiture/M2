@@ -1,3 +1,4 @@
+
 #include "imagePPM.hpp"
 
 using namespace std;
@@ -148,25 +149,19 @@ imagePPM::imagePPM(const char* nomFichier){
 }
 
 imagePPM::imagePPM(int k, std::list<pixPPM> * tab,int hauteur, int largeur){
-	this->hauteur=hauteur;
-	this->largeur=largeur;
 	bufferR = new double[hauteur*largeur];
 	bufferG = new double[hauteur*largeur];
 	bufferB = new double[hauteur*largeur];
-	valmax=0;
-	for(int i=0;i<k;i++){
-		if(!tab[i].empty()){
-			pixPPM moy = pixPPM::moyenne(tab[i]);
-			std::list<pixPPM>::const_iterator it=tab[i].begin();
-			for(it;it!=tab[i].end();it++){
-				(*this)((*it).i,(*it).j,R)=moy.valR;
-				(*this)((*it).i,(*it).j,G)=moy.valG;
-				(*this)((*it).i,(*it).j,B)=moy.valB;
-			}
-			valmax=max(valmax,max(moy.valR+0.5,max(moy.valG+0.5,moy.valB+0.5)))+0.5;
-		}
-	}
-	std::cout<<"c'est juste"<<std::endl;
+    for(int i=0;i<k;i++){
+	pixPPM moy = pixPPM::moyenne(tab[i]);
+	std::list<pixPPM>::const_iterator it=tab[i].begin();
+	 for(it;it!=tab[i].end();it++){
+			(*this)((*it).i,(*it).j,R)=moy.valR;
+			(*this)((*it).i,(*it).j,R)=moy.valG;
+			(*this)((*it).i,(*it).j,R)=moy.valB;	    	   
+	  }	       
+    }
+    
 }
 
 int imagePPM::EcrireImagePPM(const char* nomFichier)const{
@@ -197,38 +192,6 @@ int imagePPM::EcrireImagePPM(const char* nomFichier)const{
 	return 1;
 
 }
-
-
-void imagePPM::drawCross(int i,int j,int r,int g,int b){
-	int epais=1;
-	int grand=4;
-//int epais=5;
-//int grand=15;
-	//la verticale
-	//cout<<"i "<<i<<endl;
-	//cout<<"j "<<j<<endl;
-	for(int ii=i-grand;ii<=i+grand;ii++){
-		for(int jj=j-epais;jj<=j+epais;jj++){
-			if(ii>=0 && ii<hauteur && jj<largeur && jj>=0){
-				(*this)(ii,jj,R)=r;
-				(*this)(ii,jj,G)=g;
-				(*this)(ii,jj,B)=b;
-			}
-		}
-	}
-
-	//l'horizontale
-	for(int jj=j-grand;jj<=j+grand;jj++){
-		for(int ii=i-epais;ii<=i+epais;ii++){
-			if(ii>=0 && ii<hauteur && jj<largeur && jj>=0){
-				(*this)(ii,jj,R)=r;
-				(*this)(ii,jj,G)=g;
-				(*this)(ii,jj,B)=b;
-			}
-		}
-	}
-}
-
 
 pixPPM* imagePPM::initCentroids(int k)const{
 	pixPPM* centroids=new pixPPM[k];;
@@ -273,31 +236,25 @@ pixPPM* imagePPM::initCentroids(int k)const{
 }
 
 
-std::list<pixPPM>* imagePPM::kMean(int k,pixPPM* repres,int niter,
-                                   double (*distFun)(const pixPPM &,const pixPPM &))const{
-
+std::list<pixPPM>* imagePPM::kMean(int k,int niter)const{
 	std::list<pixPPM>* groups=new std::list<pixPPM>[k];
+	pixPPM* repres=initCentroids(k);
 
 	for(int iter=0;iter<niter;iter++){
-
-		for(int kind=0;kind<k;kind++){
+		for(int kind=0;kind<k;k++){
 			groups[kind].clear();
 		}
 
 		for(int i=0;i<hauteur;i++){
 			for(int j=0;j<largeur;j++){
 				pixPPM currentPix(i,j,(*this)(i,j,R),(*this)(i,j,G),(*this)(i,j,B));
-				int belongInd;//le num√©ro du repr√©sentant auquel appartiendra currentPix
-				double dist=numeric_limits<double>::infinity();
-
-				for(int kind=0;kind<k;kind++){//on cherche le repr√©sentant de currentPix
-					double currentDist=(*distFun)(currentPix,repres[kind]);
+				int belongInd;//le numÅÈro du reprÅÈsentant auquel appartiendra currentPix
+				int dist=numeric_limits<double>::infinity();
+				for(int kind=0;kind<k;k++){//on cherche le reprÅÈsentant de currentPix
+					int currentDist=pixPPM::distance2(currentPix,repres[kind]);
 					if(currentDist<dist){
-						belongInd=kind;
+						belongInd=k;
 						dist=currentDist;
-						if(dist<0){
-							exit(-1);
-						}
 					}
 				}
 
@@ -305,84 +262,11 @@ std::list<pixPPM>* imagePPM::kMean(int k,pixPPM* repres,int niter,
 			}
 		}
 
-		//on met les repr√©sentants √† jour
-		for(int kind=0;kind<k;kind++){
+		//on met les reprÅÈsentants Å‡ jour
+		for(int kind=0;kind<k;k++){
 			repres[kind]=pixPPM::moyenne(groups[kind]);
-			std::cout<<repres[kind];
 		}
 	}
 
 	return groups;
 }
-
-
-void imagePPM::kMeanTrace(int k,pixPPM* repres,int niter,double (*distFun)(const pixPPM &,const pixPPM &),
-                                   char * filePat)const{
-
-	std::list<pixPPM>* groups=new std::list<pixPPM>[k];
-
-	for(int iter=0;iter<niter;iter++){
-
-		for(int kind=0;kind<k;kind++){
-			groups[kind].clear();
-		}
-
-		for(int i=0;i<hauteur;i++){
-			for(int j=0;j<largeur;j++){
-				pixPPM currentPix(i,j,(*this)(i,j,R),(*this)(i,j,G),(*this)(i,j,B));
-				int belongInd;//le num√©ro du repr√©sentant auquel appartiendra currentPix
-				double dist=numeric_limits<double>::infinity();
-
-				for(int kind=0;kind<k;kind++){//on cherche le repr√©sentant de currentPix
-					double currentDist=(*distFun)(currentPix,repres[kind]);
-					if(currentDist<dist){
-						belongInd=kind;
-						dist=currentDist;
-						if(dist<0){
-							exit(-1);
-						}
-					}
-				}
-
-				groups[belongInd].push_back(currentPix);
-			}
-		}
-
-		//on √©crit le nom la trace
-		std::string name(filePat);
-		ostringstream ss;
-		ss<<(iter+1);
-		name+=ss.str();
-		name+=".ppm";
-
-		//on √©crit la trace
-		imagePPM im(k,groups,hauteur,largeur);
-		im.EcrireImagePPM(name.c_str());
-
-		//on met les repr√©sentants √† jour
-		for(int kind=0;kind<k;kind++){
-			repres[kind]=pixPPM::moyenne(groups[kind]);
-			std::cout<<repres[kind];
-		}
-	}
-}
-
-
-pixPPM* imagePPM::randInitCentroids(int k,int seed)const{
-	srand((double)seed*RAND_MAX/(k+1));
-	pixPPM* repres=new pixPPM[k];
-	for(int j=0;j<k;j++){
-		int pixi=(double)rand()/RAND_MAX*hauteur;
-		int pixj=(double)rand()/RAND_MAX*largeur;
-		repres[j].i=pixi;
-		repres[j].j=pixj;
-		repres[j].valR=(*this)(pixi,pixj,R);
-		repres[j].valG=(*this)(pixi,pixj,G);
-		repres[j].valB=(*this)(pixi,pixj,B);
-		std::cout<<repres[j];
-	}
-
-	std::cout<<"====================================="<<std::endl;
-	return repres;
-}
-
