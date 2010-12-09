@@ -811,17 +811,19 @@ image* image::transInterpol(double di,double dj){
 	int j_inf=0;
 	int j_sup=largeur;
 
-	if(di>0){i_inf=dec_i;}
+	if(di>0){i_inf=deci;}
 	else if(di<0){i_inf=0;i_sup-=deci;}
-	if(dj>0){j_inf=dec_j;}
+	if(dj>0){j_inf=decj;}
 	else if(dj<0){j_inf=0;j_sup-=decj;}
 
+
 	for(int i=i_inf;i<i_sup;i++){
-		for(int j=j_inf,j<jsup;j++){
-			trans(i,j)=(*this)(i-di,j-dj);
+		for(int j=j_inf;j<j_sup;j++){
+			trans(i+deci,j+decj)=(*this)(i,j);
 		}
 	}
 
+	std::cout<<"ici 0"<<std::endl;
 	image* inter=new image(hauteur,largeur,0);
 
 	double decRel_i=di;
@@ -840,6 +842,7 @@ image* image::transInterpol(double di,double dj){
 	if(decRel_i< 0 && decRel_j< 0)cas=2;//en haut à gauche
 	if(decRel_i>=0 && decRel_j< 0)cas=3;//en bas à gauche
 
+	std::cout<<"ici 1"<<std::endl;
 	double d0,d1,d2,d3;
 	switch(cas){
 	case 0:
@@ -869,7 +872,7 @@ image* image::transInterpol(double di,double dj){
 	}
 
 	double sumDist=d0+d1+d2+d3;
-
+	std::cout<<"ici 2"<<std::endl;
 	switch(cas){
 	case 0:
 		for(int i=i_inf+1;i<i_sup-1;i++){
@@ -881,14 +884,29 @@ image* image::transInterpol(double di,double dj){
 	case 1:
 		for(int i=i_inf+1;i<i_sup-1;i++){
 			for(int j=j_inf;j<j_sup-1;j++){
-				(*inter)(i,j)=(trans(i,j)*d0+trans(i,j+1)*d1+trans(i-1,j+1)*d2+trans(i-,j)*d3)/sumDist;
+				(*inter)(i,j)=(trans(i,j)*d0+trans(i,j+1)*d1+trans(i-1,j+1)*d2+trans(i-1,j)*d3)/sumDist;
 			}
 		}
 		break;
 	case 2:
+		for(int i=i_inf+1;i<i_sup-1;i++){
+			for(int j=j_inf;j<j_sup-1;j++){
+				(*inter)(i,j)=(trans(i,j)*d0+trans(i-1,j)*d1+trans(i-1,j-1)*d2+trans(i,j-1)*d3)/sumDist;
+			}
+		}
+		break;
+	case 3:
+		for(int i=i_inf+1;i<i_sup-1;i++){
+			for(int j=j_inf;j<j_sup-1;j++){
+				(*inter)(i,j)=(trans(i,j)*d0+trans(i,j-1)*d1+trans(i+1,j*1)*d2+trans(i+1,j)*d3)/sumDist;
+			}
+		}
+		break;
+	}
 
+	inter->updateValmax();
 
-	return NULL;
+	return inter;
 }
 
 image& image::operator=(const image & im){
