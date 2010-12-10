@@ -49,7 +49,7 @@ public:
 
   int getValmax();
 
-  int EcrireImagePGM(char* nomFichier)const;
+  int EcrireImagePGM(const char* nomFichier)const;
 
   double& operator()(int i,int j);
 

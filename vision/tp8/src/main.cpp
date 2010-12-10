@@ -51,14 +51,36 @@ void testInvMat(){
 	    <<vecS[0]<<endl<<vecS[1]<<endl;
 }
 
+void runKanade(char * fic,char * ficMod,int cornerI,int cornerJ){
+	image im(fic);
+	image model(ficMod);
+	cout<<"yoyoyo"<<endl;
+
+	im.Kanade(model,cornerI,cornerJ,0.001);
+}
+
+void testDiff(char * fic1,char * fic2){
+	image im1(fic1);
+	image im2(fic2);
+
+	image im=im1-im2;
+	im.recadre(0,255);
+
+	im.EcrireImagePGM("diff.pgm");
+}
+
 int main(int argc, char* argv[]){
 	//testExtract(argv[1]);
 	//testOpEg(argv[1]);
 
 	//testBidon();
-	testTransInter(argv[1]);
+	//testTransInter(argv[1]);
 
 	//testInvMat();
+
+	runKanade(argv[1],argv[2],atoi(argv[3]),atoi(argv[4]));
+
+	//testDiff(argv[1],argv[2]);
 
 	return 0;
 }

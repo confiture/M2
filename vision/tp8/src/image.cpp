@@ -136,7 +136,7 @@ image::image(char* nomFichier){
 	fclose(ifp);
 }
 
-int image::EcrireImagePGM(char* nomFichier)const{
+int image::EcrireImagePGM(const char* nomFichier)const{
 	char str[50];
 	/* Ouverture */
 	filebuf fb;
@@ -824,6 +824,8 @@ void image::transInterpol(double di,double dj){
 
 	trans.valmax=valmax;
 
+	trans.EcrireImagePGM("temp.pgm");
+
 	(*this)=trans;
 
 	double decRel_i=di;
@@ -902,6 +904,8 @@ void image::transInterpol(double di,double dj){
 		break;
 	}
 
+	EcrireImagePGM("temp2.pgm");
+
 	updateValmax();
 }
 
@@ -910,6 +914,11 @@ double* image::Kanade(const image & T,int cornerI,int cornerJ,double eps)const{
 	int h=T.hauteur;
 	int w=T.largeur;
 	image Io((*this),cornerI,cornerJ,h,w);
+
+	Io.EcrireImagePGM("Io.pgm");
+
+	assert(T.hauteur==Io.hauteur);
+	assert(T.largeur==Io.largeur);
 	image* gradJ = Io.contourX();
 	image* gradI = Io.contourY();
 	image gradJ2 = (*gradJ)*(*gradJ);
@@ -920,16 +929,19 @@ double* image::Kanade(const image & T,int cornerI,int cornerJ,double eps)const{
 	mat[0] = new double[2];mat[1] = new double[2];
 	mat[0][0]=mat[0][1]=mat[1][0]=mat[1][1]=0;
 
+	int n=Io.hauteur*Io.largeur;
+	for(int i=1;i<h-1;i++){
+		for(int j=1;j<w-1;j++){
+			mat[0][0] += gradI2(i,j);
+			mat[0][1] += gradIJ(i,j);
+			mat[1][0] += gradIJ(i,j);
+			mat[1][1] += gradJ2(i,j);
+		}
+	}
+
 	double** matC = invMat22(mat);
 	delete[] mat[0];delete mat[1];delete[] mat;
 
-	int n=Io.hauteur*Io.largeur;
-	for(int i=0;i<n;i++){
-		mat[0][0] += gradI2.buffer[i];
-		mat[0][1] += gradIJ.buffer[i];
-		mat[1][0] += gradIJ.buffer[i];
-		mat[1][1] += gradJ2.buffer[i];
-	}
 
 	double ** invMat = invMat22(mat);
 	double delta[2];
@@ -937,6 +949,10 @@ double* image::Kanade(const image & T,int cornerI,int cornerJ,double eps)const{
 	double *  Delta = new double[2];
 	Delta[0]=Delta[1]=0;
 
+	cout<<matC[0][0]<<" "<<matC[0][1]<<endl
+	    <<matC[1][0]<<" "<<matC[1][1]<<endl;
+
+	int k=0;
 	do{
 		vec[0]=vec[1]=0;
 		for(int i=0;i<n;i++){
@@ -949,9 +965,31 @@ double* image::Kanade(const image & T,int cornerI,int cornerJ,double eps)const{
 		Delta[0]+=delta[0];
 		Delta[1]+=delta[1];
 
+		Tom=T;
 		Tom.transInterpol(Delta[0],Delta[1]);
+
+		assert(Tom.hauteur==Io.hauteur);
+		assert(Tom.largeur==Io.largeur);
+
+		std::ostringstream ss;
+		ss<<k<<".pgm";
+		std::string TomS("tom");
+		TomS+=ss.str();
+
+		image erreur(Io-Tom);
+		erreur.recadre(0,255);
+
+		assert(erreur.hauteur==Io.hauteur);
+		assert(erreur.largeur==Io.largeur);
+
+		Tom.EcrireImagePGM(TomS.c_str());
+
+		cout<<delta[0]<<" "<<delta[1]<<endl;
+		cout<<Delta[0]<<" "<<Delta[1]<<endl<<"============="<<endl;
+
+		k++;
 	}
-	while(delta[0]>=eps || delta[1]>=eps);
+	while(absd(delta[0])>=eps || absd(delta[1])>=eps);
 
 	return Delta;
 }
