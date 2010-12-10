@@ -8,6 +8,8 @@
 #include <fstream>
 #include <streambuf>
 #include <algorithm>
+#include <string>
+#include <sstream>
 #include <limits>
 #include "pixel.hpp"
 #include <list>
@@ -122,11 +124,15 @@ public:
   image* makeDepth(const image & comp,int winn,int winp,
                    double (image::*score)(int,int,const image &,int,int,int,int)const,bool sim)const;
 
-  image* transInterpol(double di,double dj);
+  void transInterpol(double di,double dj);
+
+  double* Kanade(const image & T,int cornerI,int cornerJ,double eps)const;
 
   image& operator=(const image & im);
 
   friend image operator-(const image & im1,const image & im2);
+
+  friend image operator*(const image & im1,const image & im2);
 
   friend double residu(const image & im1,const image & im2);
 

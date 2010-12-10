@@ -795,7 +795,7 @@ image* image::dblMatchProfPoints(const image & comp,int winn,int winp,
 	return sortie;
 }
 
-image* image::transInterpol(double di,double dj){
+void image::transInterpol(double di,double dj){
 	int deci;
 	if(di>0){deci=(int)(di+0.5);}
 	else{deci=(int)(di-0.5);}
@@ -816,23 +816,15 @@ image* image::transInterpol(double di,double dj){
 	if(dj>0){j_sup-=decj;}
 	else if(dj<0){j_inf=-decj;}
 
-	std::cout<<"hauteur "<<hauteur<<endl;
-	cout<<"i_inf "<<i_inf<<endl;
-	cout<<"i_sup "<<i_sup<<endl;
-	std::cout<<"largeur "<<largeur;
-	cout<<"j_inf "<<j_inf<<endl;
-	cout<<"j_sup "<<j_sup<<endl;
-
-
 	for(int i=i_inf;i<i_sup;i++){
 		for(int j=j_inf;j<j_sup;j++){
-			std::cout<<j+decj<<std::endl;
 			trans(i+deci,j+decj)=(*this)(i,j);
 		}
 	}
 
-	std::cout<<"ici 0"<<std::endl;
-	image* inter=new image(hauteur,largeur,0);
+	trans.valmax=valmax;
+
+	(*this)=trans;
 
 	double decRel_i=di;
 	double incr=-0.5;
@@ -850,7 +842,6 @@ image* image::transInterpol(double di,double dj){
 	if(decRel_i< 0 && decRel_j< 0)cas=2;//en haut à gauche
 	if(decRel_i>=0 && decRel_j< 0)cas=3;//en bas à gauche
 
-	std::cout<<"ici 1"<<std::endl;
 	double d0,d1,d2,d3;
 	switch(cas){
 	case 0:
@@ -880,41 +871,89 @@ image* image::transInterpol(double di,double dj){
 	}
 
 	double sumDist=d0+d1+d2+d3;
-	std::cout<<"ici 2"<<std::endl;
 	switch(cas){
 	case 0:
-		for(int i=i_inf+1;i<i_sup;i++){
-			for(int j=j_inf;j<j_sup;j++){
-				(*inter)(i,j)=(trans(i,j)*d0+trans(i+1,j)*d1+trans(i+1,j+1)*d2+trans(i,j+1)*d3)/sumDist;
+		for(int i=1;i<hauteur-1;i++){
+			for(int j=1;j<largeur-1;j++){
+				(*this)(i,j)=(trans(i,j)*d0+trans(i+1,j)*d1+trans(i+1,j+1)*d2+trans(i,j+1)*d3)/sumDist;
 			}
 		}
 		break;
 	case 1:
-		for(int i=i_inf+1;i<i_sup;i++){
-			for(int j=j_inf;j<j_sup;j++){
-				(*inter)(i,j)=(trans(i,j)*d0+trans(i,j+1)*d1+trans(i-1,j+1)*d2+trans(i-1,j)*d3)/sumDist;
+		for(int i=1;i<hauteur-1;i++){
+			for(int j=1;j<largeur-1;j++){
+				(*this)(i,j)=(trans(i,j)*d0+trans(i,j+1)*d1+trans(i-1,j+1)*d2+trans(i-1,j)*d3)/sumDist;
 			}
 		}
 		break;
 	case 2:
-		for(int i=i_inf+1;i<i_sup;i++){
-			for(int j=j_inf;j<j_sup;j++){
-				(*inter)(i,j)=(trans(i,j)*d0+trans(i-1,j)*d1+trans(i-1,j-1)*d2+trans(i,j-1)*d3)/sumDist;
+		for(int i=1;i<hauteur-1;i++){
+			for(int j=1;j<largeur-1;j++){
+				(*this)(i,j)=(trans(i,j)*d0+trans(i-1,j)*d1+trans(i-1,j-1)*d2+trans(i,j-1)*d3)/sumDist;
 			}
 		}
 		break;
 	case 3:
-		for(int i=i_inf+1;i<i_sup;i++){
-			for(int j=j_inf;j<j_sup;j++){
-				(*inter)(i,j)=(trans(i,j)*d0+trans(i,j-1)*d1+trans(i+1,j*1)*d2+trans(i+1,j)*d3)/sumDist;
+		for(int i=1;i<hauteur-1;i++){
+			for(int j=1;j<largeur-1;j++){
+				(*this)(i,j)=(trans(i,j)*d0+trans(i,j-1)*d1+trans(i+1,j*1)*d2+trans(i+1,j)*d3)/sumDist;
 			}
 		}
 		break;
 	}
 
-	inter->updateValmax();
+	updateValmax();
+}
 
-	return inter;
+double* image::Kanade(const image & T,int cornerI,int cornerJ,double eps)const{
+	image Tom=T;
+	int h=T.hauteur;
+	int w=T.largeur;
+	image Io((*this),cornerI,cornerJ,h,w);
+	image* gradJ = Io.contourX();
+	image* gradI = Io.contourY();
+	image gradJ2 = (*gradJ)*(*gradJ);
+	image gradI2 = (*gradI)*(*gradI);
+	image gradIJ = (*gradI)*(*gradJ);
+
+	double** mat = new double*[2];
+	mat[0] = new double[2];mat[1] = new double[2];
+	mat[0][0]=mat[0][1]=mat[1][0]=mat[1][1]=0;
+
+	double** matC = invMat22(mat);
+	delete[] mat[0];delete mat[1];delete[] mat;
+
+	int n=Io.hauteur*Io.largeur;
+	for(int i=0;i<n;i++){
+		mat[0][0] += gradI2.buffer[i];
+		mat[0][1] += gradIJ.buffer[i];
+		mat[1][0] += gradIJ.buffer[i];
+		mat[1][1] += gradJ2.buffer[i];
+	}
+
+	double ** invMat = invMat22(mat);
+	double delta[2];
+	double vec[2];
+	double *  Delta = new double[2];
+	Delta[0]=Delta[1]=0;
+
+	do{
+		vec[0]=vec[1]=0;
+		for(int i=0;i<n;i++){
+			vec[0]+=gradI->buffer[i]*(Tom.buffer[i]-Io.buffer[i]);
+			vec[1]+=gradJ->buffer[i]*(Tom.buffer[i]-Io.buffer[i]);
+		}
+
+		matMVec22(matC,vec,delta);
+
+		Delta[0]+=delta[0];
+		Delta[1]+=delta[1];
+
+		Tom.transInterpol(Delta[0],Delta[1]);
+	}
+	while(delta[0]>=eps || delta[1]>=eps);
+
+	return Delta;
 }
 
 image& image::operator=(const image & im){
@@ -947,6 +986,18 @@ image operator-(const image & im1,const image & im2){
 
     res.updateValmax();
     return res;
+}
+
+image operator*(const image & im1,const image & im2){
+	assert(im1.hauteur==im2.hauteur);
+	assert(im1.largeur==im2.largeur);
+	image im(im1.hauteur,im1.largeur,0);
+	int n=im1.hauteur*im1.largeur;
+
+	for(int i=0;i<n;i++)im.buffer[i]=im1.buffer[i]*im2.buffer[i];
+
+	im.updateValmax();
+	return im;
 }
 
 double residu(const image & im1,const image & im2){

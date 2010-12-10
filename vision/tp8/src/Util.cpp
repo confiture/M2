@@ -137,9 +137,11 @@ double** invMat22(double** mat){
 	matInv[1]=new double[2];
 
 	matInv[0][0]=mat[1][1]/det;
-	matInv[0][1]=-mat[1][0]/det;
-	matInv[1][0]=-mat[0][1]/det;
+	matInv[0][1]=-mat[0][1]/det;
+	matInv[1][0]=-mat[1][0]/det;
 	matInv[1][1]=mat[0][0]/det;
 
 	return matInv;
 }
+
+
