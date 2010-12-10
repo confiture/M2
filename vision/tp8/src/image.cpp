@@ -811,14 +811,22 @@ image* image::transInterpol(double di,double dj){
 	int j_inf=0;
 	int j_sup=largeur;
 
-	if(di>0){i_inf=deci;}
-	else if(di<0){i_inf=0;i_sup-=deci;}
-	if(dj>0){j_inf=decj;}
-	else if(dj<0){j_inf=0;j_sup-=decj;}
+	if(di>0){i_sup-=deci;}
+	else if(di<0){i_inf=-deci;}
+	if(dj>0){j_sup-=decj;}
+	else if(dj<0){j_inf=-decj;}
+
+	std::cout<<"hauteur "<<hauteur<<endl;
+	cout<<"i_inf "<<i_inf<<endl;
+	cout<<"i_sup "<<i_sup<<endl;
+	std::cout<<"largeur "<<largeur;
+	cout<<"j_inf "<<j_inf<<endl;
+	cout<<"j_sup "<<j_sup<<endl;
 
 
 	for(int i=i_inf;i<i_sup;i++){
 		for(int j=j_inf;j<j_sup;j++){
+			std::cout<<j+decj<<std::endl;
 			trans(i+deci,j+decj)=(*this)(i,j);
 		}
 	}
@@ -875,29 +883,29 @@ image* image::transInterpol(double di,double dj){
 	std::cout<<"ici 2"<<std::endl;
 	switch(cas){
 	case 0:
-		for(int i=i_inf+1;i<i_sup-1;i++){
-			for(int j=j_inf;j<j_sup-1;j++){
+		for(int i=i_inf+1;i<i_sup;i++){
+			for(int j=j_inf;j<j_sup;j++){
 				(*inter)(i,j)=(trans(i,j)*d0+trans(i+1,j)*d1+trans(i+1,j+1)*d2+trans(i,j+1)*d3)/sumDist;
 			}
 		}
 		break;
 	case 1:
-		for(int i=i_inf+1;i<i_sup-1;i++){
-			for(int j=j_inf;j<j_sup-1;j++){
+		for(int i=i_inf+1;i<i_sup;i++){
+			for(int j=j_inf;j<j_sup;j++){
 				(*inter)(i,j)=(trans(i,j)*d0+trans(i,j+1)*d1+trans(i-1,j+1)*d2+trans(i-1,j)*d3)/sumDist;
 			}
 		}
 		break;
 	case 2:
-		for(int i=i_inf+1;i<i_sup-1;i++){
-			for(int j=j_inf;j<j_sup-1;j++){
+		for(int i=i_inf+1;i<i_sup;i++){
+			for(int j=j_inf;j<j_sup;j++){
 				(*inter)(i,j)=(trans(i,j)*d0+trans(i-1,j)*d1+trans(i-1,j-1)*d2+trans(i,j-1)*d3)/sumDist;
 			}
 		}
 		break;
 	case 3:
-		for(int i=i_inf+1;i<i_sup-1;i++){
-			for(int j=j_inf;j<j_sup-1;j++){
+		for(int i=i_inf+1;i<i_sup;i++){
+			for(int j=j_inf;j<j_sup;j++){
 				(*inter)(i,j)=(trans(i,j)*d0+trans(i,j-1)*d1+trans(i+1,j*1)*d2+trans(i+1,j)*d3)/sumDist;
 			}
 		}

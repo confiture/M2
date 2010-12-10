@@ -21,9 +21,9 @@ void testBidon(){
 
 void testTransInter(char * fic){
 	image im(fic);
-	image * transInter=im.transInterpol(6.6,-8.8);
+	image * transInter=im.transInterpol(6.6,8.8);
 
-	transInter->EcrireImagePGM("result3.pgm");
+	transInter->EcrireImagePGM("resultTrans.pgm");
 }
 
 int main(int argc, char* argv[]){
