@@ -81,6 +81,8 @@ public:
 
   image* GaussFilter();
 
+  void GaussFilterObj();
+
   image* medianFilter(int n);
 
   void recadre(double a,double b);

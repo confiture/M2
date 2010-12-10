@@ -412,6 +412,32 @@ image* image::GaussFilter(){
 	return sortie;
 }
 
+void image::GaussFilterObj(){
+	image* sortie = new image(hauteur,largeur,0);
+	double** filter=new double*[3];
+	int i;
+	int j;
+
+	for(i=0;i<3;i++)filter[i]=new double[3];
+	filter[0][0]=filter[0][2]=filter[2][0]=filter[2][2]=1.0/16;
+	filter[0][1]=filter[1][0]=filter[1][2]=filter[2][1]=2.0/16;
+	filter[1][1]=4.0/16;
+
+	for(i=1;i<hauteur-1;i++){
+		for(j=1;j<largeur-1;j++){
+			ApplyFilter(3,filter,i,j,(*sortie));
+			if(sortie->valmax<(*sortie)(i,j))sortie->valmax=(*sortie)(i,j);
+		}
+	}
+	for(i=0;i<3;i++)delete [] filter[i];
+	delete [] filter;
+
+	(*this)=(*sortie);
+
+	delete sortie;
+}
+
+
 image* image::contourX(){
 	image* sortie = new image(hauteur,largeur,0);
 	double** filter=new double*[3];
@@ -914,6 +940,7 @@ double* image::Kanade(const image & T,int cornerI,int cornerJ,double eps)const{
 	int h=T.hauteur;
 	int w=T.largeur;
 	image Io((*this),cornerI,cornerJ,h,w);
+	Io.GaussFilterObj();
 
 	Io.EcrireImagePGM("Io.pgm");
 
@@ -954,6 +981,7 @@ double* image::Kanade(const image & T,int cornerI,int cornerJ,double eps)const{
 
 	int k=0;
 	do{
+		Tom.GaussFilterObj();
 		vec[0]=vec[1]=0;
 		for(int i=0;i<n;i++){
 			vec[0]+=gradI->buffer[i]*(Tom.buffer[i]-Io.buffer[i]);
