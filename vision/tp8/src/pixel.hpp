@@ -17,6 +17,8 @@ public:
 		_i=pix._i;
 		_j=pix._j;
 		_val=pix._val;
+
+		return (*this);
 	}
 
 	inline bool equalPos(const pixel & pix){

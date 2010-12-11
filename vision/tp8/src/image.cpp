@@ -226,7 +226,6 @@ image* image::medianFilter(int p){
 	image* sortie=new image(hauteur,largeur,0);
 	double max=0;
 
-	std::cout<<"n "<<n<<endl;
 	for(int i=n;i<hauteur-n;i++){
 		for(int j=n;j<largeur-n;j++){
 			(*sortie)(i,j)=this->median(p,i,j);
@@ -940,6 +939,7 @@ double* image::Kanade(const image & T,int cornerI,int cornerJ,double eps)const{
 	int h=T.hauteur;
 	int w=T.largeur;
 	image Io((*this),cornerI,cornerJ,h,w);
+
 	Io.GaussFilterObj();
 
 	Io.EcrireImagePGM("Io.pgm");
@@ -969,15 +969,10 @@ double* image::Kanade(const image & T,int cornerI,int cornerJ,double eps)const{
 	double** matC = invMat22(mat);
 	delete[] mat[0];delete mat[1];delete[] mat;
 
-
-	double ** invMat = invMat22(mat);
 	double delta[2];
 	double vec[2];
 	double *  Delta = new double[2];
 	Delta[0]=Delta[1]=0;
-
-	cout<<matC[0][0]<<" "<<matC[0][1]<<endl
-	    <<matC[1][0]<<" "<<matC[1][1]<<endl;
 
 	int k=0;
 	do{
@@ -1010,14 +1005,14 @@ double* image::Kanade(const image & T,int cornerI,int cornerJ,double eps)const{
 		assert(erreur.hauteur==Io.hauteur);
 		assert(erreur.largeur==Io.largeur);
 
-		Tom.EcrireImagePGM(TomS.c_str());
+		erreur.EcrireImagePGM(TomS.c_str());
 
-		cout<<delta[0]<<" "<<delta[1]<<endl;
-		cout<<Delta[0]<<" "<<Delta[1]<<endl<<"============="<<endl;
+// 		cout<<delta[0]<<" "<<delta[1]<<endl;
+// 		cout<<Delta[0]<<" "<<Delta[1]<<endl<<"============="<<endl;
 
 		k++;
 	}
-	while(absd(delta[0])>=eps || absd(delta[1])>=eps);
+	while(k<50 && (absd(delta[0])>=eps || absd(delta[1])>=eps));
 
 	return Delta;
 }

@@ -51,19 +51,20 @@ void testInvMat(){
 	    <<vecS[0]<<endl<<vecS[1]<<endl;
 }
 
-void runKanade(char * fic,char * ficMod,int cornerI,int cornerJ){
+double* runKanade(char * fic,char * ficMod,int cornerI,int cornerJ){
 	image im(fic);
 	image model(ficMod);
-	cout<<"yoyoyo"<<endl;
 
-	im.Kanade(model,cornerI,cornerJ,0.001);
+	return im.Kanade(model,cornerI,cornerJ,0.001);
 }
 
-void testDiff(char * fic1,char * fic2){
+void testDiff(char * fic1,char * fic2,int row,int col){
 	image im1(fic1);
 	image im2(fic2);
 
-	image im=im1-im2;
+	image Io(im1,row,col,im2.getHauteur(),im2.getLargeur());
+
+	image im(Io-im2);
 	im.recadre(0,255);
 
 	im.EcrireImagePGM("diff.pgm");
@@ -78,9 +79,10 @@ int main(int argc, char* argv[]){
 
 	//testInvMat();
 
-	runKanade(argv[1],argv[2],atoi(argv[3]),atoi(argv[4]));
+	double* Delta=runKanade(argv[1],argv[2],atoi(argv[3]),atoi(argv[4]));
+	std::cout<<Delta[0]<<endl<<Delta[1]<<endl;
 
-	//testDiff(argv[1],argv[2]);
+	//testDiff(argv[1],argv[2],atoi(argv[3]),atoi(argv[4]));
 
 	return 0;
 }
