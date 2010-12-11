@@ -95,6 +95,8 @@ Y=Y.*omega
 Z=Z.*omega
 
 disp(X)
+disp("size X")
+disp(size(X,1))
 disp("=========")
 //on augmente le degré en u
 for i=1:size(X,2)
@@ -118,12 +120,14 @@ for i=1:size(Btemp1,1)
   B3(i,:)=Btemp(3,:)
   B4(i,:)=Btemp(4,:)
 end
-disp(B1)
-
-disp(nu)
-disp(nv)
+disp("ordre_u")
 disp(ordre_u)
-disp(ordre_v)
+disp("size")
+disp(size(B1,1))
+//// la liste de patch de Bezier
+f=mopen("nurbs_bezier.list","w");
+mfprintf(f, "{\n LIST\n");
+
 for i=1:nu
   for j=1:nv
     write_BEZ4(f, B1((i-1)*ordre_u+1:i*ordre_u,(j-1)*ordre_v+1:j*ordre_v), B2((i-1)*ordre_u+1:i*ordre_u,(j-1)*ordre_v+1:j*ordre_v),B3((i-1)*ordre_u+1:i*ordre_u,(j-1)*ordre_v+1:j*ordre_v), B4((i-1)*ordre_u+1:i*ordre_u,(j-1)*ordre_v+1:j*ordre_v));
@@ -136,6 +140,12 @@ mclose(f);
 
 endfunction
 
+//////////////////////////////////////////////////////////
+//Renvoie le polygone de contrôle de la NURBS approximant
+//le cercle unité.
+//D : les points du polygone de contrôle, D(1,:) pour les abscisses et D(2,:)
+//    pour les ordonnées
+//tau : le vecteur des noeuds
 function [D,tau]=cercleUniteNurbs()    
     D=[1. 1. 0.5522847 0. -0.5522847 -1. -1. -1. -0.5522847 -2.220D-16 0.5522847 1. 1.;
     0. 0.5522847 1. 1. 1. 0.5522847 1.110D-16  -0.5522847  -1. -1. -1. -0.5522847 -2.776D-16;
@@ -144,17 +154,25 @@ function [D,tau]=cercleUniteNurbs()
 endfunction
   
   
-  
-//la surface de révolution avec une nurbs de degré 3  
-function [X,Y,Z,W,u,v]=surfaceRevolution()
-  L=inputpoly_rat()
-  disp("=========L=============")
-  disp(L)
+////////////////////////////////////////////////////////////////////////////  
+//Renvoie la surface de révolution avec une nurbs de degré 3.
+//X,Y,Z sont les coordonnées du polygone de contrôle de la surface de révolution.  
+//W : les poids des points du polygone de contrôle de la surface de révolution.  
+//u et v sont les vecteurs des noeuds.
+////////////////////////////////////////////////////////////////////////
+function [X,Y,Z,W,u,v]=surfaceRevolution()             
+  L=inputpoly_rat() //on saisie la courbe génératrice de la surface de révolution
   nbNds=size(L,2)-2
-  disp("========tau===========")
   tau=inputnoeuds(nbNds,10,90,10)
-  disp(tau)
-  [cercle,tau_cercle]=cercleUniteNurbs()
+  
+  t=sature_noeuds(tau,4)            //on calcule puis on trace la NURBS génératrice
+  C=nurbsB(L,4,t)    
+  f=scf()
+  set(gca(),"data_bounds",[0,0;100,100])
+  plot(C(1,:),C(2,:))
+  xs2jpg(f,"generatrice.jpg")
+  [cercle,tau_cercle]=cercleUniteNurbs() //Le polygone de contrôle de la NURBS approximant
+                                         //le cercle unité
   
   X=zeros(size(cercle,2),size(L,2))
   Y=zeros(size(cercle,2),size(L,2))
@@ -173,10 +191,14 @@ function [X,Y,Z,W,u,v]=surfaceRevolution()
   v=tau
 endfunction
 
-  
-  
+////////////////////////////////////////////////////////////////
+//Saisit la courbe génératrice et écrit la surface de révolution 
+//lui correspondant.
+//La maillage est écrit dans nurbs.msh et les patchs Bézier rationnelle
+//sont écrit dans nurbs_bezier.list .
+////////////////////////////////////////////////////////////////
 function ecrisSurfaceRevol()
-  [X,Y,Z,omega,u,v]=surfaceRevolution()    
+  [X,Y,Z,omega,u,v]=surfaceRevolution()//On saisie la surface de révolution   
       
   // noeuds, degr� suivant la dimension 1
   du = 3; nu=length(u)-1
@@ -193,8 +215,6 @@ ordre_v = dv+1; nv = length(v)-1;
 f=mopen("nurbs.mesh","w");
 write_MESH(f, X, Y, Z);
 mclose(f)
-
-// DECOMMENTER LES LIGNES SUIVANTES AVANT ENDFUNCTION 
 
 //// la liste de patch de Bezier
 f=mopen("nurbs_bezier.list","w");
