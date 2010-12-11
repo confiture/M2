@@ -95,6 +95,8 @@ public:
 
   void drawLine(int xi,int yi,int xf,int yf,int color);
 
+  void drawBox(int n1,int m1,int n2,int m2,int epais,int color);
+
   double ssd(int i1,int j1,const image & comp,int i2,int j2,int n, int p)const;
 
   double zncc(int i1,int j1,const image & comp,int i2,int j2,int n, int p)const;

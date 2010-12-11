@@ -51,11 +51,29 @@ void testInvMat(){
 	    <<vecS[0]<<endl<<vecS[1]<<endl;
 }
 
-double* runKanade(char * fic,char * ficMod,int cornerI,int cornerJ){
+void runKanade(char * fic,char * ficMod,char * ficS,int cornerI,int cornerJ){
 	image im(fic);
 	image model(ficMod);
 
-	return im.Kanade(model,cornerI,cornerJ,0.001);
+	double* delta=im.Kanade(model,cornerI,cornerJ,0.001);
+	int n1=(int)(delta[0]+0.5)+cornerI;
+	int m1=(int)(delta[1]+0.5)+cornerJ;
+
+	im.drawBox(n1,m1,n1+model.getHauteur(),m1+model.getLargeur(),1,255);
+	im.EcrireImagePGM(ficS);
+	if(absd(delta[0])<0.0001){
+		cout<<0<<endl;
+	}
+	else{
+		cout<<delta[0]<<endl;
+	}
+	if(absd(delta[1])<0.0001){
+		cout<<0<<endl;
+	}
+	else{
+		cout<<delta[1]<<endl;
+	}
+	//std::cout<<delta[0]<<endl<<delta[1]<<endl;
 }
 
 void testDiff(char * fic1,char * fic2,int row,int col){
@@ -70,6 +88,13 @@ void testDiff(char * fic1,char * fic2,int row,int col){
 	im.EcrireImagePGM("diff.pgm");
 }
 
+void testDrawBox(char * fic1,int n1,int m1,int n2,int m2){
+	image im(fic1);
+	im.drawBox(n1,m1,n2,m2,1,255);
+
+	im.EcrireImagePGM("testBox.pgm");
+}
+
 int main(int argc, char* argv[]){
 	//testExtract(argv[1]);
 	//testOpEg(argv[1]);
@@ -79,10 +104,15 @@ int main(int argc, char* argv[]){
 
 	//testInvMat();
 
-	double* Delta=runKanade(argv[1],argv[2],atoi(argv[3]),atoi(argv[4]));
-	std::cout<<Delta[0]<<endl<<Delta[1]<<endl;
+	float i;
+	float j;
+	sscanf(argv[4],"%f",&i);
+	sscanf(argv[5],"%f",&j);
+	runKanade(argv[1],argv[2],argv[3],((int)(i+0.5)),((int)(j+0.5)));
 
 	//testDiff(argv[1],argv[2],atoi(argv[3]),atoi(argv[4]));
+
+	//testDrawBox(argv[1],atoi(argv[2]),atoi(argv[3]),atoi(argv[4]),atoi(argv[5]));
 
 	return 0;
 }

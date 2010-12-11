@@ -334,11 +334,7 @@ void image::drawPts(const std::list<pixel> & Lpix, int col){
 void image::drawCross(int i,int j,int color){
 	int epais=1;
 	int grand=4;
-//int epais=5;
-//int grand=15;
-	//la verticale
-	//cout<<"i "<<i<<endl;
-	//cout<<"j "<<j<<endl;
+
 	for(int ii=i-grand;ii<=i+grand;ii++){
 		for(int jj=j-epais;jj<=j+epais;jj++){
 			if(ii>=0 && ii<hauteur && jj<largeur && jj>=0){
@@ -357,24 +353,41 @@ void image::drawCross(int i,int j,int color){
 	}
 }
 
+void image::drawBox(int n1,int m1,int n2,int m2,int epais,int color){
+	int grand=4;
+
+	//lignes horizontales
+	for(int i=n1;i<=n2;i++){
+		for(int j=m1-epais;j<=m1+epais;j++){
+			if(i>=0 && i<hauteur && j<largeur && j>=0){
+				(*this)(i,j)=color;
+			}
+		}
+
+		for(int j=m2-epais;j<=m2+epais;j++){
+			if(i>=0 && i<hauteur && j<largeur && j>=0){
+				(*this)(i,j)=color;
+			}
+		}
+	}
+
+	//lignes horizontales
+	for(int j=m1;j<=m2;j++){
+		for(int i=n1-epais;i<=n1+epais;i++){
+			if(i>=0 && i<hauteur && j<largeur && j>=0){
+				(*this)(i,j)=color;
+			}
+		}
+
+		for(int i=n2-epais;i<=n2+epais;i++){
+			if(i>=0 && i<hauteur && j<largeur && j>=0){
+				(*this)(i,j)=color;
+			}
+		}
+	}
+}
 
 void image::drawLine(int xi,int yi,int xf,int yf,int color){
-	//if(xi==xf){
-	//	for(int j=yi;j<=yf;j++)(*this)(xi,j)=color;
-	//	return;
-	//}
-
-	/*
-	int x,y ;
-	double a,b ;
-	a =(double) (yf-yi)/(xf-xi) ;
-	b = yi - a * xi ;
-	for ( x = xi ; x <= xf ; x++ ) {
-		y =(int) (a * x + b) ;
-		(*this)(x,y)=color;
-	}
-	*/
-
 	double val;
 	double realVal;
 	double erreur;
@@ -849,8 +862,6 @@ void image::transInterpol(double di,double dj){
 
 	trans.valmax=valmax;
 
-	trans.EcrireImagePGM("temp.pgm");
-
 	(*this)=trans;
 
 	double decRel_i=di;
@@ -929,8 +940,6 @@ void image::transInterpol(double di,double dj){
 		break;
 	}
 
-	EcrireImagePGM("temp2.pgm");
-
 	updateValmax();
 }
 
@@ -991,21 +1000,22 @@ double* image::Kanade(const image & T,int cornerI,int cornerJ,double eps)const{
 		Tom=T;
 		Tom.transInterpol(Delta[0],Delta[1]);
 
-		assert(Tom.hauteur==Io.hauteur);
-		assert(Tom.largeur==Io.largeur);
+// 		assert(Tom.hauteur==Io.hauteur);
+// 		assert(Tom.largeur==Io.largeur);
 
-		std::ostringstream ss;
-		ss<<k<<".pgm";
-		std::string TomS("tom");
-		TomS+=ss.str();
 
-		image erreur(Io-Tom);
-		erreur.recadre(0,255);
+// 		std::ostringstream ss;
+// 		ss<<k<<".pgm";
+// 		std::string TomS("tom");
+// 		TomS+=ss.str();
 
-		assert(erreur.hauteur==Io.hauteur);
-		assert(erreur.largeur==Io.largeur);
+		//image erreur(Io-Tom);
+		//erreur.recadre(0,255);
 
-		erreur.EcrireImagePGM(TomS.c_str());
+		//assert(erreur.hauteur==Io.hauteur);
+		//assert(erreur.largeur==Io.largeur);
+
+		//erreur.EcrireImagePGM(TomS.c_str());
 
 // 		cout<<delta[0]<<" "<<delta[1]<<endl;
 // 		cout<<Delta[0]<<" "<<Delta[1]<<endl<<"============="<<endl;
