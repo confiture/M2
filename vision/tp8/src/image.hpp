@@ -132,6 +132,16 @@ public:
 
   double* Kanade(const image & T,int cornerI,int cornerJ,double eps)const;
 
+  inline double sum(){
+    double res=0;
+    for(int i=1;i<hauteur-1;i++){
+      for(int j=1;j<largeur-1;j++){
+        res+=(*this)(i,j);
+      }
+    }
+    return res;
+  }
+
   image& operator=(const image & im);
 
   friend image operator-(const image & im1,const image & im2);

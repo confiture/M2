@@ -185,6 +185,10 @@ void image::recadre(double a,double b){
 		}
 	}
 
+	int n=hauteur*largeur;
+	for(int i=0;i<n;i++)
+		if(buffer[i]<0)buffer[i]=0;
+
 	valmax=b;
 }
 
@@ -951,7 +955,7 @@ double* image::Kanade(const image & T,int cornerI,int cornerJ,double eps)const{
 
 	Io.GaussFilterObj();
 
-	Io.EcrireImagePGM("Io.pgm");
+	//Io.EcrireImagePGM("Io.pgm");
 
 	assert(T.hauteur==Io.hauteur);
 	assert(T.largeur==Io.largeur);
@@ -1004,18 +1008,19 @@ double* image::Kanade(const image & T,int cornerI,int cornerJ,double eps)const{
 // 		assert(Tom.largeur==Io.largeur);
 
 
-// 		std::ostringstream ss;
-// 		ss<<k<<".pgm";
-// 		std::string TomS("tom");
-// 		TomS+=ss.str();
+		std::ostringstream ss;
+		ss<<k<<".pgm";
+		std::string TomS("tom");
+		TomS+=ss.str();
 
-		//image erreur(Io-Tom);
-		//erreur.recadre(0,255);
+		image erreur(Tom-Io);
+		cout<<"residu "<<absd(erreur.sum())<<endl;
+		erreur.recadre(0,255);
 
 		//assert(erreur.hauteur==Io.hauteur);
 		//assert(erreur.largeur==Io.largeur);
 
-		//erreur.EcrireImagePGM(TomS.c_str());
+		erreur.EcrireImagePGM(TomS.c_str());
 
 // 		cout<<delta[0]<<" "<<delta[1]<<endl;
 // 		cout<<Delta[0]<<" "<<Delta[1]<<endl<<"============="<<endl;
@@ -1051,8 +1056,10 @@ image& image::operator=(const image & im){
 
 image operator-(const image & im1,const image & im2){
     image res(im1.hauteur,im1.largeur,0);
-    for(int i=0;i<im1.hauteur*im1.largeur;i++){
-      res.buffer[i]=im1.buffer[i]-im2.buffer[i];
+    for(int i=1;i<im1.hauteur-1;i++){
+	    for(int j=1;j<im1.largeur-1;j++){
+		    res(i,j)=im1(i,j)-im2(i,j);
+	    }
     }
 
     res.updateValmax();

@@ -21,11 +21,15 @@ void testBidon(){
 	std::cout<<(int)a<<std::endl;
 }
 
-void testTransInter(char * fic){
+void testTransInter(double i,double j,char * fic,char * ficS,char * diff){
 	image im(fic);
-	im.transInterpol(-6.6,-8.8);
+	image imInit(fic);
+	im.transInterpol(i,j);
 
-	im.EcrireImagePGM("resultTrans.pgm");
+	im.EcrireImagePGM(ficS);
+	image erreur=im-imInit;
+	erreur.recadre(0,255);
+	erreur.EcrireImagePGM(diff);
 }
 
 void testInvMat(){
@@ -100,7 +104,12 @@ int main(int argc, char* argv[]){
 	//testOpEg(argv[1]);
 
 	//testBidon();
-	//testTransInter(argv[1]);
+
+// 	float i;
+// 	float j;
+// 	sscanf(argv[1],"%f",&i);
+// 	sscanf(argv[2],"%f",&j);
+// 	testTransInter(i,j,argv[3],argv[4],argv[5]);
 
 	//testInvMat();
 
