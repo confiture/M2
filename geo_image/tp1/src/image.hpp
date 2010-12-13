@@ -242,7 +242,7 @@ public:
 
 	/*
 	 * Cette fonction permet de creer une image représentant l'élément structurant qui sera
-	 * donc un cercle de diametre 'taille'
+	 * donc un cercle de taille 'taille'
 	 * @param : taille = diamètre du cercle
 	 * @return : image = image contenant l'élément structurant cercle
 	 */
