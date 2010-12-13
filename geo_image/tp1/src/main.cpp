@@ -49,9 +49,12 @@ using namespace std;
 //   image elem_structurant = image::elemCarre(5);
 //   image* sortie=im.dilatation(elem_structurant);
 //   sortie->EcrireImagePGM("dilatation.pgm");
-      image im("objets.pgm");
-      image* sortie=im.dilatation(image::cercle,11);
-      sortie->EcrireImagePGM("test_cercle.pgm");
+   //   image im("objets.pgm");
+   //   image* sortie=im.erosion(image::cercle,11);
+   //   sortie->EcrireImagePGM("test_cercle.pgm");
+      
+      image elemCercle(5);
+      image* el->EcrireImagePGM("CercleTest.pgm");
 
      //image sortie= image::elemCercle(11);
      //sortie.EcrireImagePGM("CERCLE.PGM");

@@ -19,7 +19,7 @@ int max(int,int);
 int min(int,int);
 //gray max(gray,gray);
 float mod2PI(float);
-
+/*
 template<class T>
 void updateEquiv(T & vec,int taille,int a,int b){
   assert(a>-1);
@@ -67,3 +67,4 @@ T max(T** tab,int n,int m){
 
   return max;
 }
+*/

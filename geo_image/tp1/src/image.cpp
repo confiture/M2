@@ -155,7 +155,7 @@ int image::negatif(){
 }
 
 
-
+/*
 int** image::connexite4()const{
 	int id=0;
 	int** corres=new int*[hauteur];//l'image des étiquettes
@@ -301,8 +301,8 @@ int** image::connexite4()const{
 	}
 
 	return corres;
-}
-
+}*/
+/*
 int** image::connexite8()const{
 	int id=0;
 	int** corres=new int*[hauteur];//l'image des étiquettes
@@ -541,9 +541,9 @@ int** image::connexite8()const{
 
 	return corres;
 }
+*/
 
-
-void image::dispCompConn(const char* fic)const{
+/*void image::dispCompConn(const char* fic)const{
 	set<int> groupes;
 	image sortie(hauteur,largeur,255);
 	image im_s(*this);
@@ -563,7 +563,7 @@ void image::dispCompConn(const char* fic)const{
 
 	sortie.EcrireImagePGM(fic);
 	cout<<"nombre d'objet "<<groupes.size()<<endl;
-}
+}*/
 
 int image::nbConnCom(int nconn,int seuil){
 	set<int> groupes;
@@ -572,10 +572,10 @@ int image::nbConnCom(int nconn,int seuil){
 
 	int** conn;
 	if(nconn==8){
-		conn=im_s.connexite8();
+		conn=im_s.binConnexite8();
 	}
 	else{
-		conn=im_s.connexite4();
+		conn=im_s.bin.Connexite4();
 	}
 
 	for(int i=0;i<hauteur;i++){
@@ -760,7 +760,7 @@ return sortie;
 }
 
 image* image::ouverture(image elem_struct) const{
- image* im_erosion=erosion(elem_structurant); 
+ image* im_erosion=erosion(elem_struct); 
  image* sortie=im_erosion->dilatation(elem_struct);
  return sortie; 
 }
