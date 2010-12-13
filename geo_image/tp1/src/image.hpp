@@ -18,6 +18,8 @@
 #include <list>
 #include <string>
 #include <sstream>
+#include <limits>
+
 /**
  *\class image
  *\brief Toutes les méthodes associées à la classe image, en
@@ -308,7 +310,17 @@ public:
 	 */
 	std::list<item> makeItemList(int seuil)const;
 
+	/**
+	 *\brief Retourne l'image qui est la transformée en distance en utilisant
+	 *le masque <CODE>masque</CODE>.
+	 *
+	 *\param n : la dimension du masque est de <CODE>n*n</CODE>
+	 *\param seuil : le seuil utilisé pour binariser l'image
+	 */
+	image* distanceT(double** masque,int n,int seuil)const;
+
 	image& operator=(const image & im);
+
 private:
 	int largeur, hauteur, valmax;
 	int* buffer;
