@@ -49,12 +49,14 @@ using namespace std;
 //   image elem_structurant = image::elemCarre(5);
 //   image* sortie=im.dilatation(elem_structurant);
 //   sortie->EcrireImagePGM("dilatation.pgm");
-   //   image im("objets.pgm");
-   //   image* sortie=im.erosion(image::cercle,11);
-   //   sortie->EcrireImagePGM("test_cercle.pgm");
-      
-      image elemCercle(5);
-      image* el->EcrireImagePGM("CercleTest.pgm");
+      image im("objets.pgm");
+      image* sortie=im.dilatation(image::carre,11);
+   //   sortie->EcrireImagePGM("test_cercle_ICI.pgm");
+     
+   
+   
+    //  image elemCercle(5);
+    //  image* el->EcrireImagePGM("CercleTest.pgm");
 
      //image sortie= image::elemCercle(11);
      //sortie.EcrireImagePGM("CERCLE.PGM");
@@ -79,11 +81,14 @@ using namespace std;
 // Test fonction elemCercle
 // image elem_structurant = image::elemCercle(15);
 // elem_structurant.EcrireImagePGM("cercle.pgm");
+image elem_cercle = image::elemStruct(image::cercle,15);
+elem_cercle.EcrireImagePGM("cercle_ICI.pgm");
 
 // Test fonction elemCarre
 // image elem_structurant = image::elemCarre(15);
 // elem_structurant.EcrireImagePGM("carre.pgm");
-
+//image elem_carre = image::elemStruct(image::carre,15);
+//elem_carre.EcrireImagePGM("carre_ICI.pgm");
 
 return 0;
 
