@@ -156,7 +156,7 @@ int image::negatif(){
 
 
 
-int** image::binConnexite4()const{
+int** image::connexite4()const{
 	int id=0;
 	int** corres=new int*[hauteur];//l'image des Ã©tiquettes
 	for(int i=0;i<hauteur;i++){
@@ -303,7 +303,7 @@ int** image::binConnexite4()const{
 	return corres;
 }
 
-int** image::binConnexite8()const{
+int** image::connexite8()const{
 	int id=0;
 	int** corres=new int*[hauteur];//l'image des Ã©tiquettes
 	for(int i=0;i<hauteur;i++){
@@ -543,7 +543,7 @@ int** image::binConnexite8()const{
 }
 
 
-/*void image::dispCompConn(const char* fic)const{
+void image::dispCompConn(const char* fic)const{
 	set<int> groupes;
 	image sortie(hauteur,largeur,255);
 	image im_s(*this);
@@ -551,7 +551,7 @@ int** image::binConnexite8()const{
 
 	im_s.EcrireImagePGM("seuillage.pgm");
 
-	int** conn=im_s.binConnexite8();
+	int** conn=im_s.connexite8();
 
 	for(int i=0;i<hauteur;i++){
 		for(int j=0;j<largeur;j++){
@@ -563,7 +563,7 @@ int** image::binConnexite8()const{
 
 	sortie.EcrireImagePGM(fic);
 	cout<<"nombre d'objet "<<groupes.size()<<endl;
-}*/
+}
 
 int image::nbConnCom(int nconn,int seuil){
 	set<int> groupes;
@@ -572,10 +572,10 @@ int image::nbConnCom(int nconn,int seuil){
 
 	int** conn;
 	if(nconn==8){
-		conn=im_s.binConnexite8();
+		conn=im_s.connexite8();
 	}
 	else{
-		conn=im_s.binConnexite4();
+		conn=im_s.connexite4();
 	}
 
 	for(int i=0;i<hauteur;i++){
@@ -598,7 +598,7 @@ void image::writePgmItems(char * itemsName,int seuil){
 	image neg(*this);
 	neg.negatif();
 
-	int** conn=im_s.binConnexite4();
+	int** conn=im_s.connexite4();
 
 	for(int i=0;i<hauteur;i++){
 		for(int j=0;j<largeur;j++){
@@ -655,58 +655,89 @@ void image::writePgmItems(char * itemsName,int seuil){
 }
 
 
+//-----------------------------------------------------------------------------//
+//-------------------------Fonctions intermédiaires----------------------------//
+//-----------------------------------------------------------------------------//
+image image::elemCarre(int taille){
+  image sortie(taille,taille,1);
+  for(int i=0;i<taille;i++){
+		for(int j=0;j<taille;j++){
+			sortie(i,j)=1;
+		}
+	}
+	return sortie;
+}
+//-----------------------------------------------------------------------------//
+image image::elemCercle(int taille){
+  assert(taille%2 == 1);
+  image cercle(taille,taille,1);
+  double rayon=taille/2;
+  for(double i=0;i<taille;i++)
+    for(double j=0;j<taille;j++)
+      if((i-rayon)*(i-rayon)+(j-rayon)*(j-rayon)<rayon*rayon)cercle(i,j)=1;
 
-image* image::duplique_elemStruc_bord(image elem_struct) const{
-    image* sortie=new image(hauteur+2*elem_struct.hauteur,largeur+2*elem_struct.largeur,0);
-    //cout<<"hauteur avant"<<hauteur<<" largeur avant"<<largeur<<endl;
-    //cout<<"hauteur"<<sortie.hauteur<<" largeur"<<sortie.largeur<<endl;
+  return cercle;
+}
+
+image image::elemStruct(geom geo,int taille){
+    if(geo==carre){return elemCarre(taille);}
+    if(geo==cercle){return elemCercle(taille);}
+}
+//-----------------------------------------------------------------------------//
+image* image::duplique_elemStruc_bord(int taille /*image elem_struct*/) const{
+   // image elem_struct = elemStruct(geo,taille);
+    image* sortie=new image(hauteur+2*taille,largeur+2*taille,0);
+
     // On se place sur la premiere ligne de l'image courante
     for(int k=0;k<(*this).hauteur;k++){
       // On traite le 1er bord (bord gauche de l'image)
       int n=0;
-
-	  for(int i=elem_struct.hauteur;i<hauteur+elem_struct.hauteur;i++){
-		for(int j=0;j<elem_struct.largeur;j++){
-		      (*sortie)(i,j) = (*this)(k,0);
+      
+	  for(int i=taille;i<hauteur+taille;i++){
+		for(int j=0;j<taille;j++){
+		      (*sortie)(i,j) = (*this)(k,0);	      
 		}
 	  }
-
+	  
     // On traite le 2ème bord (bord droite de l'image)
-	  for(int i=elem_struct.hauteur;i<hauteur+elem_struct.hauteur;i++){
-		for(int j=sortie->largeur-elem_struct.largeur-1;j<sortie->largeur;j++){
+	  for(int i=taille;i<hauteur+taille;i++){
+		for(int j=sortie->largeur-taille-1;j<sortie->largeur;j++){
 		      (*sortie)(i,j) = (*this)(k,hauteur-1);
 		}
 	  }
     }
 
  // On traite le 3 ème bord (bord du haut de l'image)
-    for(int i=0;i<elem_struct.hauteur;i++){
+    for(int i=0;i<taille;i++){
 	  for(int j=0;j<sortie->largeur;j++){
-		     (*sortie)(i,j) = (*sortie)(elem_struct.hauteur,j);
+		     (*sortie)(i,j) = (*sortie)(taille,j);
 	  }
     }
 
  // On traite le 4 ème bord (bord du bas de l'image)
-    for(int i=sortie->hauteur-elem_struct.hauteur;i<sortie->hauteur;i++){
+    for(int i=sortie->hauteur-taille;i<sortie->hauteur;i++){
 	  for(int j=0;j<sortie->largeur;j++){
-		     (*sortie)(i,j) = (*sortie)(sortie->hauteur-elem_struct.hauteur-1,j);
+		     (*sortie)(i,j) = (*sortie)(sortie->hauteur-taille-1,j);
 	  }
     }
-
+ 
  // On remplie l'intérieur de l'image
     for(int i=0;i<hauteur;i++){
 	    for(int j=0;j<hauteur;j++){
-		  (*sortie)(i+elem_struct.hauteur,j+elem_struct.largeur) = (*this)(i,j);
+		  (*sortie)(i+taille,j+taille) = (*this)(i,j);
 	    }
     }
     sortie->valmax = valmax;
-
+    
     return sortie;
 }
-
-
-image* image::dilatation(image elem_struct) const{
-   image* sortie=(*this).duplique_elemStruc_bord(elem_struct);
+//-----------------------------------------------------------------------------//
+//-------------------------OPERATEURS MORPHOLOGIQUES --------------------------//
+//-----------------------------------------------------------------------------//
+image* image::dilatation(geom geo, int taille/*image elem_struct*/) const{
+   image* sortie=(*this).duplique_elemStruc_bord(taille/*elem_struct*/);
+   image elem_struct = elemStruct(geo,taille);
+   elem_struct.EcrireImagePGM("testElem.pgm");
    image copie(*sortie);
    // On traite les bords
    int ind = (int)(elem_struct.hauteur/2.0+0.5);
@@ -715,7 +746,7 @@ image* image::dilatation(image elem_struct) const{
    for(int i=ind;i<sortie->hauteur-ind;i++){
 	for(int j=ind;j<sortie->largeur-ind;j++){
 		 // boucle sur l'image de l'élément structurant
-		 int maximum=copie(i,j);
+		 int maximum=copie(i,j);		 
 		 int m=0;
 		 for(int k=i-ind;k<ind+i-1;k++){
 		      int n=0;
@@ -725,15 +756,15 @@ image* image::dilatation(image elem_struct) const{
 		      }
 		 m=m+1;
 		 }
-	  (*sortie)(i,j) = maximum ;
+	  (*sortie)(i,j) = maximum ;	
 	}
    }
 return sortie;
 }
-
-
-image* image::erosion(image elem_struct) const{
-   image* sortie=(*this).duplique_elemStruc_bord(elem_struct);
+//-----------------------------------------------------------------------------//
+image* image::erosion(geom geo, int taille/*image elem_struct*/) const{
+   image* sortie=(*this).duplique_elemStruc_bord(taille/*elem_struct*/);
+    image elem_struct = elemStruct(geo,taille);
    // On fait une copie
    image copie(*sortie);
    // On traite les bords
@@ -743,7 +774,7 @@ image* image::erosion(image elem_struct) const{
    for(int i=ind;i<sortie->hauteur-ind;i++){
 	for(int j=ind;j<sortie->largeur-ind;j++){
 		 // boucle sur l'image de l'élément structurant
-		 int minimum=copie(i,j);
+		 int minimum=copie(i,j);		 
 		 int m=0;
 		 for(int k=i-ind;k<ind+i-1;k++){
 		      int n=0;
@@ -753,14 +784,23 @@ image* image::erosion(image elem_struct) const{
 		      }
 		 m=m+1;
 		 }
-	  (*sortie)(i,j) = minimum ;
+	  (*sortie)(i,j) = minimum ;	
 	}
    }
 return sortie;
 }
-
-image* image::ouverture(image elem_struct) const{
- image* im_erosion=erosion(elem_struct);
- image* sortie=im_erosion->dilatation(elem_struct);
- return sortie;
+//-----------------------------------------------------------------------------//
+image* image::ouverture(geom g,int taille/*image elem_struct*/) const{
+ image* im_erosion=erosion(g,taille); 
+ im_erosion->EcrireImagePGM("EROSION.pgm");
+ image* sortie=im_erosion->dilatation(g,taille);
+ return sortie; 
 }
+//-----------------------------------------------------------------------------//
+image* image::fermeture(geom g,int taille/*image elem_struct*/) const{
+ image* im_dilatation=dilatation(g,taille); 
+ im_dilatation->EcrireImagePGM("DILATATION.pgm");
+ image* sortie=im_dilatation->erosion(g,taille);
+ return sortie; 
+}
+//-----------------------------------------------------------------------------//
