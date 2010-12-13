@@ -277,16 +277,16 @@ public:
 
 	/* Cette fonction applique l'opérateur morphologique 'ouverture' sur l'objet courant et renvoie
 	 * l'image  après ouverture par l'élément structurant elem_struct
-	 * @param : elem_struct = image contenant l'élément structurant
-	 * @return : image* = image après ouverture
+	 * @param elem_struct : image contenant l'élément structurant
+	 * @return image* : image après ouverture
 	 */
 	image* ouverture(geom g,int taille/*image elem_struct*/) const;
 
 
 	/* Cette fonction applique l'opérateur morphologique 'fermeture' sur l'objet courant et renvoie
 	 * l'image  après fermeture par l'élément structurant elem_struct
-	 * @param : elem_struct = image contenant l'élément structurant
-	 * @return : image* = image après fermeture
+	 * @param elem_struct : image contenant l'élément structurant
+	 * @return image* : image après fermeture
 	 */
 	image* fermeture(geom g,int taille/*image elem_struct*/) const;
 
@@ -296,15 +296,15 @@ public:
 	 *\brief Fabrique l'objet qui a pour Ã©tiquette tag dans le tableau des composantes
 	 *connexes connexTab.
 	 *
-	 *@param tag le numÃ©ro de la composante connexe de l'objet
-	 *@return la structure item
+	 *\param tag le numÃ©ro de la composante connexe de l'objet
+	 *\return la structure item
 	 */
 	item makeItem(int tag,int** connexTab,int seuil)const;
 
 	/**
 	 *\brief Fabrique la liste des objets qui sont présents dans l'image.
 	 *
-	 *@param seuil : le seuil utilisé pour isoler les objets du fond.
+	 *\param seuil : le seuil utilisé pour isoler les objets du fond.
 	 */
 	std::list<item> makeItemList(int seuil)const;
 
