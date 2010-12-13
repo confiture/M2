@@ -654,8 +654,6 @@ void image::writePgmItems(char * itemsName,int seuil){
 	}
 }
 
-
-
 image* image::duplique_elemStruc_bord(image elem_struct) const{
 	image* sortie=new image(hauteur+2*elem_struct.hauteur,largeur+2*elem_struct.largeur,0);
 	//cout<<"hauteur avant"<<hauteur<<" largeur avant"<<largeur<<endl;
@@ -779,49 +777,57 @@ image* image::distanceT(double** masque,int n,int seuil)const{
 
 	for(int i=p;i<hauteur-p;i++){
 		for(int j=p;j<largeur-p;j++){
-			int minDist=numeric_limits<int>::max();
-			for(int k=0;k<p;k++){
-				for(int l=0;l<n;l++){
+			if(binaire(i,j)==255){
+				int minDist=numeric_limits<int>::max();
+				for(int k=0;k<p;k++){
+					for(int l=0;l<n;l++){
+						if((*imS)(i-p+k,j-p+l)!=numeric_limits<int>::max()){
+							if(minDist>(*imS)(i-p+k,j-p+l)+masque[k][l]){
+								minDist=(*imS)(i-p+k,j-p+l)+masque[k][l];
+							}
+						}
+					}
+				}
+
+				int k=p;
+				for(int l=0;l<p;l++){
 					if((*imS)(i-p+k,j-p+l)!=numeric_limits<int>::max()){
 						if(minDist>(*imS)(i-p+k,j-p+l)+masque[k][l]){
 							minDist=(*imS)(i-p+k,j-p+l)+masque[k][l];
 						}
 					}
 				}
-			}
 
-			int k=p;
-			for(int l=0;l<=p;l++){
-				if((*imS)(i-p+k,j-p+l)!=numeric_limits<int>::max()){
-					if(minDist>(*imS)(i-p+k,j-p+l)+masque[k][l]){
-						minDist=(*imS)(i-p+k,j-p+l)+masque[k][l];
-					}
-				}
+				(*imS)(i,j)=minDist;
 			}
 		}
 	}
 
 	for(int i=hauteur-p-1;i>=p;i--){
 		for(int j=largeur-p-1;j>=p;j--){
-			int minDist=numeric_limits<int>::max();
+			if(binaire(i,j)==255){
+				int minDist=numeric_limits<int>::max();
 
-			for(int l=p+1;l<n;l++){
-				if((*imS)(i,j-p+l)!=numeric_limits<int>::max()){
-					if(minDist>(*imS)(i,j-p+l)+masque[p][l]){
-						minDist=(*imS)(i,j-p+l)+masque[p][l];
-					}
-				}
-			}
-
-
-			for(int k=p+1;k<n;k++){
-				for(int l=0;l<n;l++){
-					if((*imS)(i-p+k,j-p+l)!=numeric_limits<int>::max()){
-						if(minDist>(*imS)(i-p+k,j-p+l)+masque[k][l]){
-							minDist=(*imS)(i-p+k,j-p+l)+masque[k][l];
+				for(int l=p+1;l<n;l++){
+					if((*imS)(i,j-p+l)!=numeric_limits<int>::max()){
+						if(minDist>(*imS)(i,j-p+l)+masque[p][l]){
+							minDist=(*imS)(i,j-p+l)+masque[p][l];
 						}
 					}
 				}
+
+
+				for(int k=p+1;k<n;k++){
+					for(int l=0;l<n;l++){
+						if((*imS)(i-p+k,j-p+l)!=numeric_limits<int>::max()){
+							if(minDist>(*imS)(i-p+k,j-p+l)+masque[k][l]){
+								minDist=(*imS)(i-p+k,j-p+l)+masque[k][l];
+							}
+						}
+					}
+				}
+
+				(*imS)(i,j)=minDist;
 			}
 		}
 	}
