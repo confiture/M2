@@ -7,12 +7,11 @@
 #include <cstdio>
 #include <fstream>
 #include <streambuf>
-#include "image.hpp"
-//class image;
+class image;
 
 class item{
 public:
-	image im;
+	image* pIm;
 	int epaisseur;
 	int nbTrous;
 

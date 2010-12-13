@@ -155,8 +155,8 @@ int image::negatif(){
 }
 
 
-/*
-int** image::connexite4()const{
+
+int** image::binConnexite4()const{
 	int id=0;
 	int** corres=new int*[hauteur];//l'image des Ã©tiquettes
 	for(int i=0;i<hauteur;i++){
@@ -301,9 +301,9 @@ int** image::connexite4()const{
 	}
 
 	return corres;
-}*/
-/*
-int** image::connexite8()const{
+}
+
+int** image::binConnexite8()const{
 	int id=0;
 	int** corres=new int*[hauteur];//l'image des Ã©tiquettes
 	for(int i=0;i<hauteur;i++){
@@ -541,7 +541,7 @@ int** image::connexite8()const{
 
 	return corres;
 }
-*/
+
 
 /*void image::dispCompConn(const char* fic)const{
 	set<int> groupes;
@@ -551,7 +551,7 @@ int** image::connexite8()const{
 
 	im_s.EcrireImagePGM("seuillage.pgm");
 
-	int** conn=im_s.connexite8();
+	int** conn=im_s.binConnexite8();
 
 	for(int i=0;i<hauteur;i++){
 		for(int j=0;j<largeur;j++){
@@ -575,7 +575,7 @@ int image::nbConnCom(int nconn,int seuil){
 		conn=im_s.binConnexite8();
 	}
 	else{
-		conn=im_s.bin.Connexite4();
+		conn=im_s.binConnexite4();
 	}
 
 	for(int i=0;i<hauteur;i++){
@@ -598,7 +598,7 @@ void image::writePgmItems(char * itemsName,int seuil){
 	image neg(*this);
 	neg.negatif();
 
-	int** conn=im_s.connexite4();
+	int** conn=im_s.binConnexite4();
 
 	for(int i=0;i<hauteur;i++){
 		for(int j=0;j<largeur;j++){
@@ -664,13 +664,13 @@ image* image::duplique_elemStruc_bord(image elem_struct) const{
     for(int k=0;k<(*this).hauteur;k++){
       // On traite le 1er bord (bord gauche de l'image)
       int n=0;
-      
+
 	  for(int i=elem_struct.hauteur;i<hauteur+elem_struct.hauteur;i++){
 		for(int j=0;j<elem_struct.largeur;j++){
-		      (*sortie)(i,j) = (*this)(k,0);	      
+		      (*sortie)(i,j) = (*this)(k,0);
 		}
 	  }
-	  
+
     // On traite le 2ème bord (bord droite de l'image)
 	  for(int i=elem_struct.hauteur;i<hauteur+elem_struct.hauteur;i++){
 		for(int j=sortie->largeur-elem_struct.largeur-1;j<sortie->largeur;j++){
@@ -692,7 +692,7 @@ image* image::duplique_elemStruc_bord(image elem_struct) const{
 		     (*sortie)(i,j) = (*sortie)(sortie->hauteur-elem_struct.hauteur-1,j);
 	  }
     }
- 
+
  // On remplie l'intérieur de l'image
     for(int i=0;i<hauteur;i++){
 	    for(int j=0;j<hauteur;j++){
@@ -700,7 +700,7 @@ image* image::duplique_elemStruc_bord(image elem_struct) const{
 	    }
     }
     sortie->valmax = valmax;
-    
+
     return sortie;
 }
 
@@ -715,7 +715,7 @@ image* image::dilatation(image elem_struct) const{
    for(int i=ind;i<sortie->hauteur-ind;i++){
 	for(int j=ind;j<sortie->largeur-ind;j++){
 		 // boucle sur l'image de l'élément structurant
-		 int maximum=copie(i,j);		 
+		 int maximum=copie(i,j);
 		 int m=0;
 		 for(int k=i-ind;k<ind+i-1;k++){
 		      int n=0;
@@ -725,7 +725,7 @@ image* image::dilatation(image elem_struct) const{
 		      }
 		 m=m+1;
 		 }
-	  (*sortie)(i,j) = maximum ;	
+	  (*sortie)(i,j) = maximum ;
 	}
    }
 return sortie;
@@ -743,7 +743,7 @@ image* image::erosion(image elem_struct) const{
    for(int i=ind;i<sortie->hauteur-ind;i++){
 	for(int j=ind;j<sortie->largeur-ind;j++){
 		 // boucle sur l'image de l'élément structurant
-		 int minimum=copie(i,j);		 
+		 int minimum=copie(i,j);
 		 int m=0;
 		 for(int k=i-ind;k<ind+i-1;k++){
 		      int n=0;
@@ -753,14 +753,14 @@ image* image::erosion(image elem_struct) const{
 		      }
 		 m=m+1;
 		 }
-	  (*sortie)(i,j) = minimum ;	
+	  (*sortie)(i,j) = minimum ;
 	}
    }
 return sortie;
 }
 
 image* image::ouverture(image elem_struct) const{
- image* im_erosion=erosion(elem_struct); 
+ image* im_erosion=erosion(elem_struct);
  image* sortie=im_erosion->dilatation(elem_struct);
- return sortie; 
+ return sortie;
 }

@@ -169,5 +169,4 @@ public:
 private:
 	int largeur, hauteur, valmax;
 	int* buffer;
-
 };

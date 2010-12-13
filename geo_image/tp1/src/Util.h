@@ -19,7 +19,7 @@ int max(int,int);
 int min(int,int);
 //gray max(gray,gray);
 float mod2PI(float);
-/*
+
 template<class T>
 void updateEquiv(T & vec,int taille,int a,int b){
   assert(a>-1);
@@ -34,7 +34,7 @@ void updateEquiv(T & vec,int taille,int a,int b){
     if(vec[i]==max)vec[i]=min;
   }
 }
-
+/*
 template<class T>
 void finalUpdateEquiv(T & vec,int taille){
   std::stack<int> tagged;
