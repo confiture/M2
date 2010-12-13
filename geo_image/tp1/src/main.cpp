@@ -39,9 +39,26 @@ void test_trous(const char * fic){
   sortie.EcrireImagePGM("sortiePareil.pgm");
 }
 
+
+void testDistT(const char* fic){
+  double** masque=new double*[3];
+  for(int i=0;i<3;i++){
+    masque[i]=new double[3];
+  }
+  masque[0][0]=masque[0][2]=masque[2][0]=masque[2][2]=4;
+  masque[0][1]=masque[1][0]=masque[2][1]=masque[1][2]=3;
+
+  image im(fic);
+  image* DT=im.distanceT(masque,3,50);
+  DT->recadre(0,255);
+  DT->EcrireImagePGM("testDistT.pgm");
+}
+
 int main(int argc, char* argv[]){
 using namespace std;
 
+
+ testDistT(argv[1]);
 
 
   // Test dilatation
@@ -52,9 +69,9 @@ using namespace std;
    //   image im("objets.pgm");
    //   image* sortie=im.erosion(image::cercle,11);
    //   sortie->EcrireImagePGM("test_cercle.pgm");
-      
-      image elemCercle(5);
-      image* el->EcrireImagePGM("CercleTest.pgm");
+
+//image elemCercle(5);
+//    image* el->EcrireImagePGM("CercleTest.pgm");
 
      //image sortie= image::elemCercle(11);
      //sortie.EcrireImagePGM("CERCLE.PGM");

@@ -544,26 +544,26 @@ int** image::binConnexite8()const{
 
 
 /*void image::dispCompConn(const char* fic)const{
-	set<int> groupes;
-	image sortie(hauteur,largeur,255);
-	image im_s(*this);
-	im_s.seuiller(50);
+  set<int> groupes;
+  image sortie(hauteur,largeur,255);
+  image im_s(*this);
+  im_s.seuiller(50);
 
-	im_s.EcrireImagePGM("seuillage.pgm");
+  im_s.EcrireImagePGM("seuillage.pgm");
 
-	int** conn=im_s.binConnexite8();
+  int** conn=im_s.binConnexite8();
 
-	for(int i=0;i<hauteur;i++){
-		for(int j=0;j<largeur;j++){
-			if(conn[i][j]!=0){sortie(i,j)=100+conn[i][j];groupes.insert(conn[i][j]);}
-			else{sortie(i,j)=0;}
-			//std::cout<<conn[i][j]<<endl;
-		}
-	}
+  for(int i=0;i<hauteur;i++){
+  for(int j=0;j<largeur;j++){
+  if(conn[i][j]!=0){sortie(i,j)=100+conn[i][j];groupes.insert(conn[i][j]);}
+  else{sortie(i,j)=0;}
+  //std::cout<<conn[i][j]<<endl;
+  }
+  }
 
-	sortie.EcrireImagePGM(fic);
-	cout<<"nombre d'objet "<<groupes.size()<<endl;
-}*/
+  sortie.EcrireImagePGM(fic);
+  cout<<"nombre d'objet "<<groupes.size()<<endl;
+  }*/
 
 int image::nbConnCom(int nconn,int seuil){
 	set<int> groupes;
@@ -657,110 +657,174 @@ void image::writePgmItems(char * itemsName,int seuil){
 
 
 image* image::duplique_elemStruc_bord(image elem_struct) const{
-    image* sortie=new image(hauteur+2*elem_struct.hauteur,largeur+2*elem_struct.largeur,0);
-    //cout<<"hauteur avant"<<hauteur<<" largeur avant"<<largeur<<endl;
-    //cout<<"hauteur"<<sortie.hauteur<<" largeur"<<sortie.largeur<<endl;
-    // On se place sur la premiere ligne de l'image courante
-    for(int k=0;k<(*this).hauteur;k++){
-      // On traite le 1er bord (bord gauche de l'image)
-      int n=0;
+	image* sortie=new image(hauteur+2*elem_struct.hauteur,largeur+2*elem_struct.largeur,0);
+	//cout<<"hauteur avant"<<hauteur<<" largeur avant"<<largeur<<endl;
+	//cout<<"hauteur"<<sortie.hauteur<<" largeur"<<sortie.largeur<<endl;
+	// On se place sur la premiere ligne de l'image courante
+	for(int k=0;k<(*this).hauteur;k++){
+		// On traite le 1er bord (bord gauche de l'image)
+		int n=0;
 
-	  for(int i=elem_struct.hauteur;i<hauteur+elem_struct.hauteur;i++){
-		for(int j=0;j<elem_struct.largeur;j++){
-		      (*sortie)(i,j) = (*this)(k,0);
+		for(int i=elem_struct.hauteur;i<hauteur+elem_struct.hauteur;i++){
+			for(int j=0;j<elem_struct.largeur;j++){
+				(*sortie)(i,j) = (*this)(k,0);
+			}
 		}
-	  }
 
-    // On traite le 2ème bord (bord droite de l'image)
-	  for(int i=elem_struct.hauteur;i<hauteur+elem_struct.hauteur;i++){
-		for(int j=sortie->largeur-elem_struct.largeur-1;j<sortie->largeur;j++){
-		      (*sortie)(i,j) = (*this)(k,hauteur-1);
+		// On traite le 2ème bord (bord droite de l'image)
+		for(int i=elem_struct.hauteur;i<hauteur+elem_struct.hauteur;i++){
+			for(int j=sortie->largeur-elem_struct.largeur-1;j<sortie->largeur;j++){
+				(*sortie)(i,j) = (*this)(k,hauteur-1);
+			}
 		}
-	  }
-    }
+	}
 
- // On traite le 3 ème bord (bord du haut de l'image)
-    for(int i=0;i<elem_struct.hauteur;i++){
-	  for(int j=0;j<sortie->largeur;j++){
-		     (*sortie)(i,j) = (*sortie)(elem_struct.hauteur,j);
-	  }
-    }
+	// On traite le 3 ème bord (bord du haut de l'image)
+	for(int i=0;i<elem_struct.hauteur;i++){
+		for(int j=0;j<sortie->largeur;j++){
+			(*sortie)(i,j) = (*sortie)(elem_struct.hauteur,j);
+		}
+	}
 
- // On traite le 4 ème bord (bord du bas de l'image)
-    for(int i=sortie->hauteur-elem_struct.hauteur;i<sortie->hauteur;i++){
-	  for(int j=0;j<sortie->largeur;j++){
-		     (*sortie)(i,j) = (*sortie)(sortie->hauteur-elem_struct.hauteur-1,j);
-	  }
-    }
+	// On traite le 4 ème bord (bord du bas de l'image)
+	for(int i=sortie->hauteur-elem_struct.hauteur;i<sortie->hauteur;i++){
+		for(int j=0;j<sortie->largeur;j++){
+			(*sortie)(i,j) = (*sortie)(sortie->hauteur-elem_struct.hauteur-1,j);
+		}
+	}
 
- // On remplie l'intérieur de l'image
-    for(int i=0;i<hauteur;i++){
-	    for(int j=0;j<hauteur;j++){
-		  (*sortie)(i+elem_struct.hauteur,j+elem_struct.largeur) = (*this)(i,j);
-	    }
-    }
-    sortie->valmax = valmax;
+	// On remplie l'intérieur de l'image
+	for(int i=0;i<hauteur;i++){
+		for(int j=0;j<hauteur;j++){
+			(*sortie)(i+elem_struct.hauteur,j+elem_struct.largeur) = (*this)(i,j);
+		}
+	}
+	sortie->valmax = valmax;
 
-    return sortie;
+	return sortie;
 }
 
 
 image* image::dilatation(image elem_struct) const{
-   image* sortie=(*this).duplique_elemStruc_bord(elem_struct);
-   image copie(*sortie);
-   // On traite les bords
-   int ind = (int)(elem_struct.hauteur/2.0+0.5);
+	image* sortie=(*this).duplique_elemStruc_bord(elem_struct);
+	image copie(*sortie);
+	// On traite les bords
+	int ind = (int)(elem_struct.hauteur/2.0+0.5);
 
-   // boucle sur toute l'image
-   for(int i=ind;i<sortie->hauteur-ind;i++){
-	for(int j=ind;j<sortie->largeur-ind;j++){
-		 // boucle sur l'image de l'élément structurant
-		 int maximum=copie(i,j);
-		 int m=0;
-		 for(int k=i-ind;k<ind+i-1;k++){
-		      int n=0;
-		      for(int l=j-ind;l<ind+j-1;l++){l;
-			  maximum = max(maximum,copie(k,l)*elem_struct(m,n) );
-			  n=n+1;
-		      }
-		 m=m+1;
-		 }
-	  (*sortie)(i,j) = maximum ;
+	// boucle sur toute l'image
+	for(int i=ind;i<sortie->hauteur-ind;i++){
+		for(int j=ind;j<sortie->largeur-ind;j++){
+			// boucle sur l'image de l'élément structurant
+			int maximum=copie(i,j);
+			int m=0;
+			for(int k=i-ind;k<ind+i-1;k++){
+				int n=0;
+				for(int l=j-ind;l<ind+j-1;l++){l;
+					maximum = max(maximum,copie(k,l)*elem_struct(m,n) );
+					n=n+1;
+				}
+				m=m+1;
+			}
+			(*sortie)(i,j) = maximum ;
+		}
 	}
-   }
-return sortie;
+	return sortie;
 }
 
 
 image* image::erosion(image elem_struct) const{
-   image* sortie=(*this).duplique_elemStruc_bord(elem_struct);
-   // On fait une copie
-   image copie(*sortie);
-   // On traite les bords
-   int ind = (int)(elem_struct.hauteur/2.0+0.5);
+	image* sortie=(*this).duplique_elemStruc_bord(elem_struct);
+	// On fait une copie
+	image copie(*sortie);
+	// On traite les bords
+	int ind = (int)(elem_struct.hauteur/2.0+0.5);
 
-   // boucle sur toute l'image
-   for(int i=ind;i<sortie->hauteur-ind;i++){
-	for(int j=ind;j<sortie->largeur-ind;j++){
-		 // boucle sur l'image de l'élément structurant
-		 int minimum=copie(i,j);
-		 int m=0;
-		 for(int k=i-ind;k<ind+i-1;k++){
-		      int n=0;
-		      for(int l=j-ind;l<ind+j-1;l++){l;
-			  minimum = min(minimum,copie(k,l)*elem_struct(m,n) );
-			  n=n+1;
-		      }
-		 m=m+1;
-		 }
-	  (*sortie)(i,j) = minimum ;
+	// boucle sur toute l'image
+	for(int i=ind;i<sortie->hauteur-ind;i++){
+		for(int j=ind;j<sortie->largeur-ind;j++){
+			// boucle sur l'image de l'élément structurant
+			int minimum=copie(i,j);
+			int m=0;
+			for(int k=i-ind;k<ind+i-1;k++){
+				int n=0;
+				for(int l=j-ind;l<ind+j-1;l++){l;
+					minimum = min(minimum,copie(k,l)*elem_struct(m,n) );
+					n=n+1;
+				}
+				m=m+1;
+			}
+			(*sortie)(i,j) = minimum ;
+		}
 	}
-   }
-return sortie;
+	return sortie;
 }
 
-image* image::ouverture(image elem_struct) const{
- image* im_erosion=erosion(elem_struct);
- image* sortie=im_erosion->dilatation(elem_struct);
- return sortie;
+image* image::ouverture(image elem_struct)const{
+	image* im_erosion=erosion(elem_struct);
+	image* sortie=im_erosion->dilatation(elem_struct);
+	return sortie;
+}
+
+image* image::distanceT(double** masque,int n,int seuil)const{
+	int p=(n-1)/2;
+	image binaire(*this);
+	binaire.seuiller(seuil);
+
+	image* imS=new image(hauteur,largeur,0);
+	for(int i=0;i<hauteur;i++){
+		for(int j=0;j<largeur;j++){
+			if(binaire(i,j)==255)(*imS)(i,j)=numeric_limits<int>::max();
+		}
+	}
+
+	for(int i=p;i<hauteur-p;i++){
+		for(int j=p;j<largeur-p;j++){
+			int minDist=numeric_limits<int>::max();
+			for(int k=0;k<p;k++){
+				for(int l=0;l<n;l++){
+					if((*imS)(i-p+k,j-p+l)!=numeric_limits<int>::max()){
+						if(minDist>(*imS)(i-p+k,j-p+l)+masque[k][l]){
+							minDist=(*imS)(i-p+k,j-p+l)+masque[k][l];
+						}
+					}
+				}
+			}
+
+			int k=p;
+			for(int l=0;l<=p;l++){
+				if((*imS)(i-p+k,j-p+l)!=numeric_limits<int>::max()){
+					if(minDist>(*imS)(i-p+k,j-p+l)+masque[k][l]){
+						minDist=(*imS)(i-p+k,j-p+l)+masque[k][l];
+					}
+				}
+			}
+		}
+	}
+
+	for(int i=hauteur-p-1;i>=p;i--){
+		for(int j=largeur-p-1;j>=p;j--){
+			int minDist=numeric_limits<int>::max();
+
+			for(int l=p+1;l<n;l++){
+				if((*imS)(i,j-p+l)!=numeric_limits<int>::max()){
+					if(minDist>(*imS)(i,j-p+l)+masque[p][l]){
+						minDist=(*imS)(i,j-p+l)+masque[p][l];
+					}
+				}
+			}
+
+
+			for(int k=p+1;k<n;k++){
+				for(int l=0;l<n;l++){
+					if((*imS)(i-p+k,j-p+l)!=numeric_limits<int>::max()){
+						if(minDist>(*imS)(i-p+k,j-p+l)+masque[k][l]){
+							minDist=(*imS)(i-p+k,j-p+l)+masque[k][l];
+						}
+					}
+				}
+			}
+		}
+	}
+
+	return imS;
 }
