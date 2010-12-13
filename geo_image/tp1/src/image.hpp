@@ -293,7 +293,7 @@ public:
 	void writePgmItems(char * itemsName,int seuil);
 
 	/**
-	 *Fabrique l'objet qui a pour étiquette tag dans le tableau des composantes
+	 *\brief Fabrique l'objet qui a pour étiquette tag dans le tableau des composantes
 	 *connexes connexTab.
 	 *
 	 *@param tag le numéro de la composante connexe de l'objet
@@ -302,9 +302,9 @@ public:
 	item makeItem(int tag,int** connexTab,int seuil)const;
 
 	/**
-	 *Fabrique la liste des objets qui sont présents dans l'image.
+	 *\brief Fabrique la liste des objets qui sont pr�sents dans l'image.
 	 *
-	 *@param seuil le seuil utilisé pour isoler les objets du fond.
+	 *@param seuil : le seuil utilis� pour isoler les objets du fond.
 	 */
 	std::list<item> makeItemList(int seuil)const;
 
