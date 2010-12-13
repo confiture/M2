@@ -5,7 +5,7 @@ PRG_NAME=bin/tp1
 SOURCES=\
 	src/Util.cpp\
 	src/image.cpp\
-	srd/item.cpp\
+	src/item.cpp\
 	src/main.cpp
 
 # Where to search for the sources:
