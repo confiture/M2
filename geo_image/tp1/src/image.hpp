@@ -19,7 +19,7 @@
 #include <string>
 #include <sstream>
 #include <limits>
-
+#include <map>
 /**
  *\class image
  *\brief Toutes les méthodes associées à la classe image, en
@@ -55,7 +55,11 @@ public:
 	/**
 	 *\brief Constructeur vide.
 	 */
-	image(){}
+	image(){
+		hauteur=0;
+		largeur=0;
+		buffer=NULL;
+	}
 
 	/**
 	 *\brief Construit une image de hauteur <CODE>hauteur</CODE>,
@@ -275,11 +279,11 @@ public:
 	 * @return : image = image contenant l'élément structurant cercle
 	 */
 	static image elemTriangle(int taille);
-	
-	
-	
+
+
+
 	static image elemCroix(int taille,int epaisseur);
-	
+
 	static image elemStruct(geom geo,int taille);
 
 	/* Cette fonction permet de dupliquer les bords de l'image m fois sur la hauteur et n fois sur la largeur
@@ -348,6 +352,9 @@ public:
 	 *\param seuil : le seuil utilisé pour binariser l'image
 	 */
 	image* distanceT(double** masque,int n,int seuil)const;
+
+
+	image* axeMedian(double** masque,int n,int seuil);
 
 	image& operator=(const image & im);
         image& operator-(const image & im);
