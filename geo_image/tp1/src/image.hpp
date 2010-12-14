@@ -280,8 +280,6 @@ public:
 	 */
 	static image elemTriangle(int taille);
 
-
-
 	static image elemCroix(int taille,int epaisseur);
 
 	static image elemStruct(geom geo,int taille);

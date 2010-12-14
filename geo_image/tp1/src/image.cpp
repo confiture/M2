@@ -1076,7 +1076,6 @@ image image::elemCercle(int taille){
   assert(taille%2 == 1);
   image cercle(taille,taille,1);
   double rayon=taille/2;
-
   for(double i=0;i<taille;i++)
     for(double j=0;j<taille;j++)
       if((i-rayon)*(i-rayon)+(j-rayon)*(j-rayon)<rayon*rayon)cercle(i,j)=1;
@@ -1105,7 +1104,6 @@ image image::elemCroix(int taille,int epaisseur){
    int a = taille - epaisseur;
    assert(a>0);
    assert(a%2 == 0);
-
    for(double i=0;i<taille;i++){
      for(double j=0;j<taille;j++){
        sortie(i,j)=0;
@@ -1126,7 +1124,6 @@ std::cout<<"epaisseur : "<<epaisseur<<endl;
 	   sortie(i,j)=1;
      }
    }
-
    return sortie;
 }
 
@@ -1137,7 +1134,6 @@ image image::elemStruct(geom geo,int taille){
 }
 
 //-----------------------------------------------------------------------------//
-
 image* image::erosion(geom geo, int taille, bool Estdupliquer/*image elem_struct*/){
    image* sortie;
 	if(!Estdupliquer){
@@ -1146,7 +1142,8 @@ image* image::erosion(geom geo, int taille, bool Estdupliquer/*image elem_struct
 	else{
 	     sortie=(this);
 	}
-    image elem_struct = elemStruct(geo,taille);	
+
+    image elem_struct = elemStruct(geo,taille);
    // On fait une copie
    image copie(*sortie);
    // On traite les bords
@@ -1173,6 +1170,7 @@ image* image::erosion(geom geo, int taille, bool Estdupliquer/*image elem_struct
    }
 return sortie;
 }
+
 
 // dupliquer sert a savoir si l'image a déja était dupliquer sur les bords par l'élément structurant.
 // Si celle-ci a été dupliqué, il faut mettre cette variable a vrai sinon a faux
