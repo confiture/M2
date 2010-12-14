@@ -23,6 +23,9 @@ image::image(int hauteur, int largeur,int valmax){
 	this->largeur=largeur;
 	this->valmax=valmax;
 	this->buffer=new int[hauteur*largeur];
+
+	int n=hauteur*largeur;
+	for(int i=0;i<n;i++)buffer[i]=valmax;
 }
 
 image::image(const char* nomFichier){
@@ -69,6 +72,13 @@ image::image(const image & im){
 		for(int j=0;j<largeur;j++){
 			(*this)(i,j)=im(i,j);
 		}
+	}
+}
+
+void image::updateValmax(){
+	valmax=0;
+	for(int i=0;i<hauteur*largeur;i++){
+		if(buffer[i]>valmax)valmax=buffer[i];
 	}
 }
 
@@ -829,9 +839,10 @@ image* image::distanceT(double** masque,int n,int seuil)const{
 		}
 	}
 
+
 	for(int i=p;i<hauteur-p;i++){
 		for(int j=p;j<largeur-p;j++){
-			if(binaire(i,j)==255){
+			if((*imS)(i,j)!=0){
 				int minDist=numeric_limits<int>::max();
 				for(int k=0;k<p;k++){
 					for(int l=0;l<n;l++){
@@ -857,19 +868,19 @@ image* image::distanceT(double** masque,int n,int seuil)const{
 		}
 	}
 
+
 	for(int i=hauteur-p-1;i>=p;i--){
 		for(int j=largeur-p-1;j>=p;j--){
-			if(binaire(i,j)==255){
-				int minDist=numeric_limits<int>::max();
+			if((*imS)(i,j)!=0){
+				int minDist=(*imS)(i,j);
 
 				for(int l=p+1;l<n;l++){
 					if((*imS)(i,j-p+l)!=numeric_limits<int>::max()){
-						if(minDist>(*imS)(i,j-p+l)+masque[p][l]){
-							minDist=(*imS)(i,j-p+l)+masque[p][l];
+						if(minDist >(*imS)(i,j-p+l)+masque[p][l]){
+							minDist =(*imS)(i,j-p+l)+masque[p][l];
 						}
 					}
 				}
-
 
 				for(int k=p+1;k<n;k++){
 					for(int l=0;l<n;l++){
@@ -887,6 +898,92 @@ image* image::distanceT(double** masque,int n,int seuil)const{
 	}
 
 	return imS;
+}
+
+
+image image::boule(double** masque,int n,int r){
+	int p=(n-1)/2;
+	int a=masque[0][p];
+	image bl(2*(r/a + p) + 1 , 2*(r/a + p) + 1,0);
+	int pBl=r/a+p;
+
+	for(int i=0;i<bl.hauteur;i++){
+		for(int j=0;j<bl.largeur;j++){
+			bl(i,j)=numeric_limits<int>::max();
+		}
+	}
+
+	bl(pBl,pBl)=0;
+
+	for(int i=p;i<bl.hauteur-p;i++){
+		for(int j=p;j<bl.largeur-p;j++){
+			if(bl(i,j)!=0){
+				int minDist=numeric_limits<int>::max();
+				for(int k=0;k<p;k++){
+					for(int l=0;l<n;l++){
+						if(bl(i-p+k,j-p+l)!=numeric_limits<int>::max()){
+							if(minDist>bl(i-p+k,j-p+l)+masque[k][l]){
+								minDist=bl(i-p+k,j-p+l)+masque[k][l];
+							}
+						}
+					}
+				}
+
+				int k=p;
+				for(int l=0;l<p;l++){
+					if(bl(i-p+k,j-p+l)!=numeric_limits<int>::max()){
+						if(minDist>bl(i-p+k,j-p+l)+masque[k][l]){
+							minDist=bl(i-p+k,j-p+l)+masque[k][l];
+						}
+					}
+				}
+
+				bl(i,j)=minDist;
+				//assert(bl(i,j)!=numeric_limits<int>::max());
+			}
+		}
+	}
+
+
+	for(int i=bl.hauteur-p-1;i>=p;i--){
+		for(int j=bl.largeur-p-1;j>=p;j--){
+			if(bl(i,j)!=0){
+				int minDist=bl(i,j);
+
+				for(int l=p+1;l<n;l++){
+					if(bl(i,j-p+l)!=numeric_limits<int>::max()){
+						if(minDist >bl(i,j-p+l)+masque[p][l]){
+							minDist =bl(i,j-p+l)+masque[p][l];
+						}
+					}
+				}
+
+				for(int k=p+1;k<n;k++){
+					for(int l=0;l<n;l++){
+						if(bl(i-p+k,j-p+l)!=numeric_limits<int>::max()){
+							if(minDist>bl(i-p+k,j-p+l)+masque[k][l]){
+								minDist=bl(i-p+k,j-p+l)+masque[k][l];
+							}
+						}
+					}
+				}
+
+				bl(i,j)=minDist;
+				//assert(bl(i,j)!=numeric_limits<int>::max());
+			}
+		}
+	}
+
+	for(int i=0;i<bl.hauteur;i++){
+		for(int j=0;j<bl.largeur;j++){
+			if(bl(i,j)>r)
+				bl(i,j)=0;
+			else
+				bl(i,j)=1;
+		}
+	}
+
+	return bl;
 }
 
 //-----------------------------------------------------------------------------//
@@ -1046,3 +1143,26 @@ image* image::fermeture(geom g,int taille/*image elem_struct*/) const{
  return sortie;
 }
 //-----------------------------------------------------------------------------//
+
+
+image& image::operator=(const image & im){
+	valmax=im.valmax;
+	if(buffer!=NULL){
+		if(hauteur!=im.hauteur || largeur!=im.largeur){
+			delete[] buffer;
+			hauteur=im.hauteur;
+			largeur=im.largeur;
+			buffer=new int[hauteur*largeur];
+		}
+	}
+	else{
+		hauteur=im.hauteur;
+		largeur=im.largeur;
+		buffer=new int[hauteur*largeur];
+	}
+
+	int n=hauteur*largeur;
+	for(int i=0;i<n;i++)buffer[i]=im.buffer[i];
+
+	return (*this);
+}
