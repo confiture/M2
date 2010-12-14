@@ -1064,8 +1064,14 @@ image image::elemStruct(geom geo,int taille){
 }
 
 //-----------------------------------------------------------------------------//
-image* image::erosion(geom geo, int taille/*image elem_struct*/) const{
-   image* sortie=(*this).duplique_elemStruc_bord(taille/*elem_struct*/);
+image* image::erosion(geom geo, int taille, bool Estdupliquer/*image elem_struct*/){
+   image* sortie;
+	if(!Estdupliquer){
+	sortie=(*this).duplique_elemStruc_bord(taille/*elem_struct*/);
+	}
+	else{
+	     sortie=(this);
+	}
     image elem_struct = elemStruct(geo,taille);	
    // On fait une copie
    image copie(*sortie);
@@ -1094,13 +1100,17 @@ image* image::erosion(geom geo, int taille/*image elem_struct*/) const{
 return sortie;
 }
 
-
-image* image::dilatation(geom geo, int taille/*image elem_struct*/) const{
-	image* sortie=(*this).duplique_elemStruc_bord(taille/*elem_struct*/);
-	std::cout<<"geo : "<<geo<<endl;
-	std::cout<<"taille : "<<taille<<endl;
+// dupliquer sert a savoir si l'image a déja était dupliquer sur les bords par l'élément structurant.
+// Si celle-ci a été dupliqué, il faut mettre cette variable a vrai sinon a faux
+image* image::dilatation(geom geo, int taille, bool Estdupliquer/*image elem_struct*/){
+	image* sortie;
+	if(!Estdupliquer){
+	sortie=(*this).duplique_elemStruc_bord(taille/*elem_struct*/);
+	}
+	else{
+	     sortie=(this);
+	}
 	image elem_struct = elemStruct(geo,taille);
-	elem_struct.EcrireImagePGM("testElem.pgm");
 	image copie(*sortie);
 	// On traite les bords
 	int ind = (int)(elem_struct.hauteur/2.0+0.5);
@@ -1129,17 +1139,17 @@ image* image::dilatation(geom geo, int taille/*image elem_struct*/) const{
 }
 
 //-----------------------------------------------------------------------------//
-image* image::ouverture(geom g,int taille/*image elem_struct*/) const{
- image* im_erosion=erosion(g,taille);
+image* image::ouverture(geom g,int taille/*image elem_struct*/){
+ image* im_erosion=erosion(g,taille,false);
  im_erosion->EcrireImagePGM("EROSION.pgm");
- image* sortie=im_erosion->dilatation(g,taille);
+ image* sortie=im_erosion->dilatation(g,taille,true);
  return sortie;
 }
 //-----------------------------------------------------------------------------//
-image* image::fermeture(geom g,int taille/*image elem_struct*/) const{
- image* im_dilatation=dilatation(g,taille);
+image* image::fermeture(geom g,int taille/*image elem_struct*/){
+ image* im_dilatation=dilatation(g,taille,false);
  im_dilatation->EcrireImagePGM("DILATATION.pgm");
- image* sortie=im_dilatation->erosion(g,taille);
+ image* sortie=im_dilatation->erosion(g,taille,true);
  return sortie;
 }
 //-----------------------------------------------------------------------------//
@@ -1165,4 +1175,22 @@ image& image::operator=(const image & im){
 	for(int i=0;i<n;i++)buffer[i]=im.buffer[i];
 
 	return (*this);
+}
+
+
+
+image& image::operator-(const image & im){
+	assert(hauteur==im.hauteur);
+	assert(largeur==im.largeur);
+	image* sortie=new image(hauteur,largeur,0);
+	for(int i=0;i<hauteur;i++){
+	  for(int j=0;j<largeur;j++){
+	      // std::cout<<"im : "<<(*this)(i,j);
+	      // std::cout<<" | ouv: "<<im(i,j)<<endl;
+	       (*sortie)(i,j)=(*this)(i,j)-im(i,j);
+	       if((*sortie)(i,j)<0){(*sortie)(i,j)=0;};
+	  }
+	}
+	sortie->updateValmax();
+	return(*sortie);
 }

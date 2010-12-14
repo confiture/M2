@@ -101,14 +101,31 @@ using namespace std;
 // elem_structurant.EcrireImagePGM("cercle.pgm");
 //elem_cercle.EcrireImagePGM("cercle_ICI.pgm");
 
-image im("objets.pgm");
+image im("riz.pgm");
+// image* dilatation=im.dilatation(image::cercle,11,false);
+// dilatation->EcrireImagePGM("dilatation.pgm");
+
+ image* ouverture=im.ouverture(image::cercle,15);
+ ouverture->EcrireImagePGM("ouverture_cercle.pgm");
+  
+ image* im_duplique=im.duplique_elemStruc_bord(15);
+ im_duplique->EcrireImagePGM("im_duplique.pgm");
+// 
+// 
+ image enleve_fond = (*im_duplique)-(*ouverture);
+ enleve_fond.EcrireImagePGM("Resultat.pgm");
+ enleve_fond.seuiller(5);
+ enleve_fond.EcrireImagePGM("ResultatSeuiller.pgm");
+  image* ouverturefin=enleve_fond.ouverture(image::cercle,15);
+ ouverturefin->EcrireImagePGM("ResultatFinal.pgm");
+
 //image* sortie=im.erosion(image::triangle,11);
 //sortie->EcrireImagePGM("erosion_triangle.pgm");
-image elem_structurant = image::elemCroix(11,1);
+//image elem_structurant = image::elemCroix(11,1);
 
 
-image* sortie=im.dilatation(elem_structurant);
-sortie->EcrireImagePGM("dilatation_croix.pgm");
+//image* sortie=im.dilatation(elem_structurant);
+//sortie->EcrireImagePGM("dilatation_croix.pgm");
 
 
 //image* sortie3=im.dilatation(image::cercle,5);

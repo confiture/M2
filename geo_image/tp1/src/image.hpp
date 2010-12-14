@@ -298,21 +298,21 @@ public:
 	 * @param : elem_struct = image contenant l'élément structurant
 	 * @return : image* = image dilatée
 	 */
-	image* dilatation(geom g,int taille /*image elem_struct*/)const;
+	image* dilatation(geom g,int taille,bool Estdupliquer /*image elem_struct*/);
 
 	/* Cette fonction applique l'opérateur morphologique 'erosion' sur l'objet courant et renvoie
 	 * l'image  après érosion par l'élément structurant elem_struct
 	 * @param : elem_struct = image contenant l'élément structurant
 	 * @return : image* = image après érosion
 	 */
-	image* erosion(geom g,int taille/*image elem_struct*/) const;
+	image* erosion(geom g,int taille,bool Estdupliquer/*image elem_struct*/);
 
 	/* Cette fonction applique l'opérateur morphologique 'ouverture' sur l'objet courant et renvoie
 	 * l'image  après ouverture par l'élément structurant elem_struct
 	 * @param elem_struct : image contenant l'élément structurant
 	 * @return image* : image après ouverture
 	 */
-	image* ouverture(geom g,int taille/*image elem_struct*/) const;
+	image* ouverture(geom g,int taille/*image elem_struct*/);
 
 
 	/* Cette fonction applique l'opérateur morphologique 'fermeture' sur l'objet courant et renvoie
@@ -320,7 +320,7 @@ public:
 	 * @param elem_struct : image contenant l'élément structurant
 	 * @return image* : image après fermeture
 	 */
-	image* fermeture(geom g,int taille/*image elem_struct*/) const;
+	image* fermeture(geom g,int taille/*image elem_struct*/);
 
 	void writePgmItems(char * itemsName,int seuil);
 
@@ -350,7 +350,7 @@ public:
 	image* distanceT(double** masque,int n,int seuil)const;
 
 	image& operator=(const image & im);
-
+        image& operator-(const image & im);
 private:
 	int largeur, hauteur, valmax;
 	int* buffer;
