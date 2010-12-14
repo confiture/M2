@@ -986,6 +986,79 @@ image image::boule(double** masque,int n,int r){
 	return bl;
 }
 
+
+image* image::axeMedian(double** masque,int n,int seuil){
+	bool incluse=true;
+	image& DT = (*distanceT(masque,n,seuil));
+	int p=(n-1)/2;
+	map<int,image> boules;
+	map<int,image>::iterator itG;
+	map<int,image>::iterator itP;
+
+	for(int i=0;i<hauteur;i++){
+		for(int j=0;j<largeur;j++){//le centre de la grande boule est (i,j)
+			int rayG=DT(i,j);
+
+			if(rayG!=0){
+				itG=boules.find(rayG);
+				if(itG==boules.end()){
+					boules[rayG]=boule(masque,n,rayG);
+					itG=boules.find(rayG);
+				}
+
+				int hG=itG->second.hauteur;
+				int pG=(hG-1)/2;
+				for(int iG=0;iG<hG;iG++){
+					for(int jG=0;jG<hG;jG++){
+
+						int cPi=i-pG+iG;//le centre de la petite boule
+						int cPj=j-pG+jG;
+						int rayP=DT(cPi,cPj);
+						if(cPi!=i && cPj!=j && rayP!=0){
+							itP=boules.find(rayP);
+							if(itP==boules.end()){
+								boules[rayP]=boule(masque,n,rayP);
+								itP=boules.find(rayP);
+							}
+
+							int hP=itP->second.hauteur;
+							int pP=(hP-1)/2;
+							int jP;
+							int iP;
+							for(iP=0;iP<hP;iP++){
+								for(jP=0;jP<hP;jP++){
+									if((itP->second)(iP,jP)!=0 && abs(i-(iP-pP+cPi))>pG || abs(j-(jP-pP+cPj))>pG){
+										//cout<<"hehe"<<endl;
+										break;/*la petite boule n'est pas incluse dans la grande*/
+									}
+									if(DT(cPi-pP+iP,cPj-pP+jP)!=0 && (itP->second)(iP,jP)!=0 && (itG->second)(iP-pP+cPi-i+pG,jP-pP+cPj-j+pG)==0){
+										//cout<<"hoho"<<endl;
+										break;/*la petite boule n'est pas incluse dans la grande*/
+									}
+								}
+								if(jP<hP)
+									break;
+							}
+
+							//cout<<"ici 3"<<endl;
+							if(jP==hP)
+								DT(cPi,cPj)=0;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	for(int i=0;i<hauteur;i++){
+		for(int j=0;j<largeur;j++){
+			if(DT(i,j)>0)DT(i,j)=255;
+		}
+	}
+
+	return &DT;
+}
+
 //-----------------------------------------------------------------------------//
 //-------------------------Fonctions intermédiaires----------------------------//
 //-----------------------------------------------------------------------------//
@@ -1003,7 +1076,7 @@ image image::elemCercle(int taille){
   assert(taille%2 == 1);
   image cercle(taille,taille,1);
   double rayon=taille/2;
-  
+
   for(double i=0;i<taille;i++)
     for(double j=0;j<taille;j++)
       if((i-rayon)*(i-rayon)+(j-rayon)*(j-rayon)<rayon*rayon)cercle(i,j)=1;
@@ -1032,7 +1105,7 @@ image image::elemCroix(int taille,int epaisseur){
    int a = taille - epaisseur;
    assert(a>0);
    assert(a%2 == 0);
-   
+
    for(double i=0;i<taille;i++){
      for(double j=0;j<taille;j++){
        sortie(i,j)=0;
@@ -1053,7 +1126,7 @@ std::cout<<"epaisseur : "<<epaisseur<<endl;
 	   sortie(i,j)=1;
      }
    }
-   
+
    return sortie;
 }
 
@@ -1066,7 +1139,7 @@ image image::elemStruct(geom geo,int taille){
 //-----------------------------------------------------------------------------//
 image* image::erosion(geom geo, int taille/*image elem_struct*/) const{
    image* sortie=(*this).duplique_elemStruc_bord(taille/*elem_struct*/);
-    image elem_struct = elemStruct(geo,taille);	
+    image elem_struct = elemStruct(geo,taille);
    // On fait une copie
    image copie(*sortie);
    // On traite les bords
