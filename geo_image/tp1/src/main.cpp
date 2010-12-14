@@ -39,9 +39,26 @@ void test_trous(const char * fic){
   sortie.EcrireImagePGM("sortiePareil.pgm");
 }
 
+
+void testDistT(const char* fic){
+  double** masque=new double*[3];
+  for(int i=0;i<3;i++){
+    masque[i]=new double[3];
+  }
+  masque[0][0]=masque[0][2]=masque[2][0]=masque[2][2]=4;
+  masque[0][1]=masque[1][0]=masque[2][1]=masque[1][2]=3;
+
+  image im(fic);
+  image* DT=im.distanceT(masque,3,50);
+  DT->recadre(0,255);
+  DT->EcrireImagePGM("testDistT.pgm");
+}
+
 int main(int argc, char* argv[]){
 using namespace std;
 
+
+ //testDistT(argv[1]);
 
 
   // Test dilatation
@@ -49,9 +66,15 @@ using namespace std;
 //   image elem_structurant = image::elemCarre(5);
 //   image* sortie=im.dilatation(elem_structurant);
 //   sortie->EcrireImagePGM("dilatation.pgm");
-      image im("objets.pgm");
-      image* sortie=im.dilatation(image::cercle,11);
-      sortie->EcrireImagePGM("test_cercle.pgm");
+
+  //    image im("objets.pgm");
+  //    image* sortie=im.dilatation(image::carre,11);
+   //   sortie->EcrireImagePGM("test_cercle_ICI.pgm");
+
+
+
+    //  image elemCercle(5);
+    //  image* el->EcrireImagePGM("CercleTest.pgm");
 
      //image sortie= image::elemCercle(11);
      //sortie.EcrireImagePGM("CERCLE.PGM");
@@ -76,11 +99,44 @@ using namespace std;
 // Test fonction elemCercle
 // image elem_structurant = image::elemCercle(15);
 // elem_structurant.EcrireImagePGM("cercle.pgm");
+//elem_cercle.EcrireImagePGM("cercle_ICI.pgm");
 
+image im("objets.pgm");
+//image* sortie=im.erosion(image::triangle,11);
+//sortie->EcrireImagePGM("erosion_triangle.pgm");
+image elem_structurant = image::elemCroix(11,1);
+
+
+image* sortie=im.dilatation(elem_structurant);
+sortie->EcrireImagePGM("dilatation_croix.pgm");
+
+
+//image* sortie3=im.dilatation(image::cercle,5);
+//sortie3->EcrireImagePGM("dilatation_cercle5.pgm");
+
+/*image* sortie2=im.dilatation(image::carre,11);
+sortie2->EcrireImagePGM("dilatation_carre.pgm");*/
+
+//image* sortie4=im.erosion(image::carre,11);
+//sortie4->EcrireImagePGM("erosion_carre.pgm");
+
+ //image cercle = image::elemStruct(image::cercle,11);
+ //cercle.EcrireImagePGM("CERCLE.pgm");
+ 
+ 
+ 
+     
+//image elem_carre = image::elemStruct(image::carre,11);
+//elem_carre.EcrireImagePGM("carre_ICI.pgm");
+
+
+
+  
 // Test fonction elemCarre
 // image elem_structurant = image::elemCarre(15);
 // elem_structurant.EcrireImagePGM("carre.pgm");
-
+//image elem_carre = image::elemStruct(image::carre,15);
+//elem_carre.EcrireImagePGM("carre_ICI.pgm");
 
 return 0;
 

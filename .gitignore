@@ -13,4 +13,4 @@
 *.ppm
 *.xcf
 *.DS
-
+bin/

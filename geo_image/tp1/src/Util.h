@@ -34,7 +34,7 @@ void updateEquiv(T & vec,int taille,int a,int b){
     if(vec[i]==max)vec[i]=min;
   }
 }
-
+/*
 template<class T>
 void finalUpdateEquiv(T & vec,int taille){
   std::stack<int> tagged;
@@ -67,3 +67,4 @@ T max(T** tab,int n,int m){
 
   return max;
 }
+*/
