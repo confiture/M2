@@ -81,6 +81,12 @@ public:
 	image(const image & im);
 
 	/**
+	 *\brief Met à jour le champ <CODE>valmax</CODE>
+	 *qui est la valeur maximale.
+	 */
+	void updateValmax();
+
+	/**
 	 *\brief Construit l'image à partir d'une portion d'image.
 	 *
 	 *Constructeur par copie de la portion l'image <CODE>im</CODE>
@@ -225,11 +231,19 @@ public:
 
 	image* dilatation(image elem_struct)const;
 
-	image* erosion(image elem_struct) const;
+	image* erosion(image elem_struct)const;
 
-	image* ouverture(image elem_struct) const;
+	image* ouverture(image elem_struct)const;
 
-
+	/**
+	 *\brief Retourne la boule binaire de rayon <CODE>r</CODE> avec
+	 *le masque <CODE>masque</CODE> de dimension <CODE>n*n</CODE>.
+	 *
+	 *\param masque : le masque utilisé
+	 *\param n      : dimension du masque
+	 *\param r      : le rayon de la boule fabriquée
+	 */
+	static image boule(double** masque,int n,int r);
 
 //-----------------------------------------------------------------------------//
 //-------------------------Fonctions intermédiaires----------------------------//
