@@ -72,3 +72,33 @@ function creer_fig_iso()
   set(a,"axes_visible",["on","on","on"])  // afficher les axes
   set(a,"box","on")                       
 endfunction  
+
+//////////////////////////////////////////////////////////////////////////////
+// Choix � la souris d'une suite de noeuds strictement croissants entre
+// XG et XD
+// Entr�e : XG, XD = bornes pour la suite de noeuds (XG<XD)
+//          nbNds = nb de noeuds total, l'utilisateur entre les nbNds-2 
+//            noeuds internes tau(k), 1<k<nbNds
+//            les deux noeuds extr�maux sont tau(1)=XG et tau(nbNds)=XD
+//          YG = ordonn�es pour le dessin de la suite de noeuds
+// Sortie : tau = le vecteur des noeuds
+function tau = inputnoeuds(nbNds,XG,XD,Ynoeuds)
+
+tau=zeros(1,nbNds);
+
+info = msprintf("Entrer une suite croissante de %d noeuds sur le segment vert en cliquant la souris",nbNds-2);
+
+tau(1) = XG; tau(nbNds) = XD;
+plot(XG,Y,"gs");
+plot(XD,Y,"gs");
+plot([XG,XD],[Y,Y],"-g");
+i = 2;
+while i<nbNds
+    xinfo(info);
+    [but,x,y] = xclick();
+    if x > tau(i-1) & x < tau(nbNds)
+        tau(i) = x;
+        plot( x , Ynoeuds , 'gv' );
+        i = i+1;
+    end
+end

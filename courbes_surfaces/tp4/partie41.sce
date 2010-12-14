@@ -1,13 +1,13 @@
-exec('util.sce')
-exec('nurbs.sce')
+//exec('util.sce')
+//exec('nurbs.sce')
 /////////////////////////////////////////////////////////
 // conversion d'une surface NURBS en patch de Bezier
 /////////////////////////////////////////////////////////
 function prog41()
   
 //// 1 - d�finition de la NURBS
-cas = 1; // NURBS lue dans un fichier
-//cas = 0; // NURBS definie dans le programme
+//cas = 1; // NURBS lue dans un fichier
+cas = 0; // NURBS definie dans le programme
 select cas
 case 1 // lecture dans un fichier
   nom_f = uigetfile('*.txt','.','Selection d''un fichier NURBS');
@@ -93,7 +93,7 @@ mfprintf(f, "{\n LIST\n");
 X=X.*omega
 Y=Y.*omega
 Z=Z.*omega
-
+disp(size(X,2))
 disp(X)
 disp("=========")
 //on augmente le degré en u
@@ -105,10 +105,12 @@ for i=1:size(X,2)
   Btemp3(:,i)=Btemp(3,:)'
   Btemp4(:,i)=Btemp(4,:)'
 end
+printf("la");
+disp(Btemp4)
 
-disp(Btemp1)
 disp("=========")
-
+printf("size Btemp1");
+disp(size(Btemp1,1))
 Btemp=[]
 //on augmente le degré en v
 for i=1:size(Btemp1,1)
@@ -118,6 +120,7 @@ for i=1:size(Btemp1,1)
   B3(i,:)=Btemp(3,:)
   B4(i,:)=Btemp(4,:)
 end
+printf("la2");
 disp(B1)
 
 disp(nu)
@@ -127,7 +130,7 @@ disp(ordre_v)
 for i=1:nu
   for j=1:nv
     write_BEZ4(f, B1((i-1)*ordre_u+1:i*ordre_u,(j-1)*ordre_v+1:j*ordre_v), B2((i-1)*ordre_u+1:i*ordre_u,(j-1)*ordre_v+1:j*ordre_v),B3((i-1)*ordre_u+1:i*ordre_u,(j-1)*ordre_v+1:j*ordre_v), B4((i-1)*ordre_u+1:i*ordre_u,(j-1)*ordre_v+1:j*ordre_v));
-    disp(i)
+   
   end
 end
 
