@@ -58,7 +58,7 @@ int main(int argc, char* argv[]){
 using namespace std;
 
 
- testDistT(argv[1]);
+ //testDistT(argv[1]);
 
 
   // Test dilatation
@@ -67,8 +67,8 @@ using namespace std;
 //   image* sortie=im.dilatation(elem_structurant);
 //   sortie->EcrireImagePGM("dilatation.pgm");
 
-      image im("objets.pgm");
-      image* sortie=im.dilatation(image::carre,11);
+  //    image im("objets.pgm");
+  //    image* sortie=im.dilatation(image::carre,11);
    //   sortie->EcrireImagePGM("test_cercle_ICI.pgm");
 
 
@@ -99,9 +99,39 @@ using namespace std;
 // Test fonction elemCercle
 // image elem_structurant = image::elemCercle(15);
 // elem_structurant.EcrireImagePGM("cercle.pgm");
-image elem_cercle = image::elemStruct(image::cercle,15);
-elem_cercle.EcrireImagePGM("cercle_ICI.pgm");
+//elem_cercle.EcrireImagePGM("cercle_ICI.pgm");
 
+image im("objets.pgm");
+//image* sortie=im.erosion(image::triangle,11);
+//sortie->EcrireImagePGM("erosion_triangle.pgm");
+image elem_structurant = image::elemCroix(11,1);
+
+
+image* sortie=im.dilatation(elem_structurant);
+sortie->EcrireImagePGM("dilatation_croix.pgm");
+
+
+//image* sortie3=im.dilatation(image::cercle,5);
+//sortie3->EcrireImagePGM("dilatation_cercle5.pgm");
+
+/*image* sortie2=im.dilatation(image::carre,11);
+sortie2->EcrireImagePGM("dilatation_carre.pgm");*/
+
+//image* sortie4=im.erosion(image::carre,11);
+//sortie4->EcrireImagePGM("erosion_carre.pgm");
+
+ //image cercle = image::elemStruct(image::cercle,11);
+ //cercle.EcrireImagePGM("CERCLE.pgm");
+ 
+ 
+ 
+     
+//image elem_carre = image::elemStruct(image::carre,11);
+//elem_carre.EcrireImagePGM("carre_ICI.pgm");
+
+
+
+  
 // Test fonction elemCarre
 // image elem_structurant = image::elemCarre(15);
 // elem_structurant.EcrireImagePGM("carre.pgm");

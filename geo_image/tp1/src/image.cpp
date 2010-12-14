@@ -765,8 +765,11 @@ image* image::dilatation(image elem_struct) const{
 			int m=0;
 			for(int k=i-ind;k<ind+i-1;k++){
 				int n=0;
-				for(int l=j-ind;l<ind+j-1;l++){l;
+				for(int l=j-ind;l<ind+j-1;l++){
+				  // On vérifie qu'on est bien sur l'objet (élément structurant)
+				  if(elem_struct(m,n)==1){
 					maximum = max(maximum,copie(k,l)*elem_struct(m,n) );
+				  }
 					n=n+1;
 				}
 				m=m+1;
@@ -793,8 +796,11 @@ image* image::erosion(image elem_struct) const{
 			int m=0;
 			for(int k=i-ind;k<ind+i-1;k++){
 				int n=0;
-				for(int l=j-ind;l<ind+j-1;l++){l;
+				for(int l=j-ind;l<ind+j-1;l++){
+				  // On vérifie qu'on est bien sur l'objet (élément structurant)
+				  if(elem_struct(m,n)==1){
 					minimum = min(minimum,copie(k,l)*elem_struct(m,n) );
+				  }
 					n=n+1;
 				}
 				m=m+1;
@@ -900,27 +906,74 @@ image image::elemCercle(int taille){
   assert(taille%2 == 1);
   image cercle(taille,taille,1);
   double rayon=taille/2;
+  
   for(double i=0;i<taille;i++)
     for(double j=0;j<taille;j++)
       if((i-rayon)*(i-rayon)+(j-rayon)*(j-rayon)<rayon*rayon)cercle(i,j)=1;
+      else cercle(i,j)=0;
 
   return cercle;
+}
+
+image image::elemTriangle(int taille){
+   image sortie(taille,taille,1);
+   for(double i=0;i<taille;i++){
+     for(double j=i;j<taille;j++){
+       sortie(i,j)=0;
+     }
+   }
+   for(double i=1;i<taille;i++){
+     for(double j=0;j<i;j++){
+	     sortie(i,j)=1;
+     }
+   }
+   return sortie;
+}
+
+image image::elemCroix(int taille,int epaisseur){
+   image sortie(taille,taille,1);
+   int a = taille - epaisseur;
+   assert(a>0);
+   assert(a%2 == 0);
+   
+   for(double i=0;i<taille;i++){
+     for(double j=0;j<taille;j++){
+       sortie(i,j)=0;
+     }
+   }
+   int ind = (int)(taille/2.0+0.5) -1;
+std::cout<<"ind : "<<ind<<endl;
+std::cout<<"epaisseur : "<<epaisseur<<endl;
+   // vertical //
+   for(double i=0;i<taille;i++){
+     for(double j=ind-epaisseur;j<=ind+epaisseur;j++){
+	   sortie(i,j)=1;
+     }
+   }
+    // horizontal //
+   for(double i=ind-epaisseur;i<=ind+epaisseur;i++){
+     for(double j=0;j<taille;j++){
+	   sortie(i,j)=1;
+     }
+   }
+   
+   return sortie;
 }
 
 image image::elemStruct(geom geo,int taille){
     if(geo==carre){return elemCarre(taille);}
     if(geo==cercle){return elemCercle(taille);}
+    if(geo==triangle){return elemTriangle(taille);}
 }
 
 //-----------------------------------------------------------------------------//
 image* image::erosion(geom geo, int taille/*image elem_struct*/) const{
    image* sortie=(*this).duplique_elemStruc_bord(taille/*elem_struct*/);
-    image elem_struct = elemStruct(geo,taille);
+    image elem_struct = elemStruct(geo,taille);	
    // On fait une copie
    image copie(*sortie);
    // On traite les bords
    int ind = (int)(elem_struct.hauteur/2.0+0.5);
-
    // boucle sur toute l'image
    for(int i=ind;i<sortie->hauteur-ind;i++){
 	for(int j=ind;j<sortie->largeur-ind;j++){
@@ -929,8 +982,11 @@ image* image::erosion(geom geo, int taille/*image elem_struct*/) const{
 		 int m=0;
 		 for(int k=i-ind;k<ind+i-1;k++){
 		      int n=0;
-		      for(int l=j-ind;l<ind+j-1;l++){l;
+		      for(int l=j-ind;l<ind+j-1;l++){
+			// On vérifie qu'on est bien sur l'objet (élément structurant)
+			  if(elem_struct(m,n)==1){
 			  minimum = min(minimum,copie(k,l)*elem_struct(m,n) );
+			  }
 			  n=n+1;
 		      }
 		 m=m+1;
@@ -944,6 +1000,8 @@ return sortie;
 
 image* image::dilatation(geom geo, int taille/*image elem_struct*/) const{
 	image* sortie=(*this).duplique_elemStruc_bord(taille/*elem_struct*/);
+	std::cout<<"geo : "<<geo<<endl;
+	std::cout<<"taille : "<<taille<<endl;
 	image elem_struct = elemStruct(geo,taille);
 	elem_struct.EcrireImagePGM("testElem.pgm");
 	image copie(*sortie);
@@ -958,8 +1016,11 @@ image* image::dilatation(geom geo, int taille/*image elem_struct*/) const{
 			int m=0;
 			for(int k=i-ind;k<ind+i-1;k++){
 				int n=0;
-				for(int l=j-ind;l<ind+j-1;l++){l;
+				for(int l=j-ind;l<ind+j-1;l++){
+				  // On vérifie qu'on est bien sur l'objet (élément structurant)
+				    if(elem_struct(m,n)==1){
 					maximum = max(maximum,copie(k,l)*elem_struct(m,n) );
+				    }
 					n=n+1;
 				}
 				m=m+1;

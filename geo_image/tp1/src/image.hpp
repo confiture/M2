@@ -45,7 +45,11 @@ public:
 		/**
 		 *Géométrie d'un cercle.
 		 */
-		cercle
+		cercle,
+		/**
+		 *Géométrie d'un triangle.
+		 */
+		triangle
 	};
 
 	/**
@@ -250,6 +254,18 @@ public:
 	 */
 	static image elemCercle(int taille);
 
+	/*
+	 * Cette fonction permet de creer une image représentant l'élément structurant qui sera
+	 * donc un triangle de taille 'taille'
+	 * @param : taille =  coté du triangle
+	 * @return : image = image contenant l'élément structurant cercle
+	 */
+	static image elemTriangle(int taille);
+	
+	
+	
+	static image elemCroix(int taille,int epaisseur);
+	
 	static image elemStruct(geom geo,int taille);
 
 	/* Cette fonction permet de dupliquer les bords de l'image m fois sur la hauteur et n fois sur la largeur
