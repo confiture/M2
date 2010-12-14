@@ -351,10 +351,10 @@ public:
 	 */
 	image* distanceT(double** masque,int n,int seuil)const;
 
-
 	image* axeMedian(double** masque,int n,int seuil);
 
 	image& operator=(const image & im);
+
         image& operator-(const image & im);
 private:
 	int largeur, hauteur, valmax;

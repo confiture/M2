@@ -1076,6 +1076,7 @@ image image::elemCercle(int taille){
   assert(taille%2 == 1);
   image cercle(taille,taille,1);
   double rayon=taille/2;
+
   for(double i=0;i<taille;i++)
     for(double j=0;j<taille;j++)
       if((i-rayon)*(i-rayon)+(j-rayon)*(j-rayon)<rayon*rayon)cercle(i,j)=1;
