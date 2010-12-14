@@ -23,6 +23,9 @@ image::image(int hauteur, int largeur,int valmax){
 	this->largeur=largeur;
 	this->valmax=valmax;
 	this->buffer=new int[hauteur*largeur];
+
+	int n=hauteur*largeur;
+	for(int i=0;i<n;i++)buffer[i]=valmax;
 }
 
 image::image(const char* nomFichier){
@@ -823,9 +826,10 @@ image* image::distanceT(double** masque,int n,int seuil)const{
 		}
 	}
 
+
 	for(int i=p;i<hauteur-p;i++){
 		for(int j=p;j<largeur-p;j++){
-			if(binaire(i,j)==255){
+			if((*imS)(i,j)!=0){
 				int minDist=numeric_limits<int>::max();
 				for(int k=0;k<p;k++){
 					for(int l=0;l<n;l++){
@@ -847,23 +851,24 @@ image* image::distanceT(double** masque,int n,int seuil)const{
 				}
 
 				(*imS)(i,j)=minDist;
+				assert((*imS)(i,j)!=numeric_limits<int>::max());
 			}
 		}
 	}
 
+
 	for(int i=hauteur-p-1;i>=p;i--){
 		for(int j=largeur-p-1;j>=p;j--){
-			if(binaire(i,j)==255){
-				int minDist=numeric_limits<int>::max();
+			if((*imS)(i,j)!=0){
+				int minDist=(*imS)(i,j);
 
 				for(int l=p+1;l<n;l++){
 					if((*imS)(i,j-p+l)!=numeric_limits<int>::max()){
-						if(minDist>(*imS)(i,j-p+l)+masque[p][l]){
-							minDist=(*imS)(i,j-p+l)+masque[p][l];
+						if(minDist >(*imS)(i,j-p+l)+masque[p][l]){
+							minDist =(*imS)(i,j-p+l)+masque[p][l];
 						}
 					}
 				}
-
 
 				for(int k=p+1;k<n;k++){
 					for(int l=0;l<n;l++){
@@ -876,6 +881,7 @@ image* image::distanceT(double** masque,int n,int seuil)const{
 				}
 
 				(*imS)(i,j)=minDist;
+				assert((*imS)(i,j)!=numeric_limits<int>::max());
 			}
 		}
 	}
