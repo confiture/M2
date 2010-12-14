@@ -1143,7 +1143,6 @@ image* image::erosion(geom geo, int taille, bool Estdupliquer/*image elem_struct
 	else{
 	     sortie=(this);
 	}
-
     image elem_struct = elemStruct(geo,taille);
    // On fait une copie
    image copie(*sortie);
@@ -1171,7 +1170,6 @@ image* image::erosion(geom geo, int taille, bool Estdupliquer/*image elem_struct
    }
 return sortie;
 }
-
 
 // dupliquer sert a savoir si l'image a déja était dupliquer sur les bords par l'élément structurant.
 // Si celle-ci a été dupliqué, il faut mettre cette variable a vrai sinon a faux

@@ -355,7 +355,7 @@ public:
 
 	image& operator=(const image & im);
 
-        image& operator-(const image & im);
+	image& operator-(const image & im);
 private:
 	int largeur, hauteur, valmax;
 	int* buffer;
