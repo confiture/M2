@@ -831,6 +831,7 @@ image* image::distanceT(double** masque,int n,int seuil)const{
 	int p=(n-1)/2;
 	image binaire(*this);
 	binaire.seuiller(seuil);
+	binaire.EcrireImagePGM("binaire.pgm");
 
 	image* imS=new image(hauteur,largeur,0);
 	for(int i=0;i<hauteur;i++){
@@ -987,6 +988,24 @@ image image::boule(double** masque,int n,int r){
 }
 
 
+// image* image::axeMedian(double** masque,int n,int seuil){
+// 	image& DT = (*distanceT(masque,n,seuil));
+// 	image& DTs=(*(new image(DT)));
+// 	DT.EcrireImagePGM("dt.pgm");
+
+// 	for(int i=1;i<hauteur-1;i++){
+// 		for(int j=1;j<largeur-1;j++){
+// 			if(DT.max1dirLoc(i,j))
+// 				DTs(i,j)=255;
+// 			else
+// 				DTs(i,j)=0;
+// 		}
+// 	}
+
+// 	return &DTs;
+// }
+
+
 image* image::axeMedian(double** masque,int n,int seuil){
 	bool incluse=true;
 	image& DT = (*distanceT(masque,n,seuil));
@@ -1014,7 +1033,7 @@ image* image::axeMedian(double** masque,int n,int seuil){
 						int cPi=i-pG+iG;//le centre de la petite boule
 						int cPj=j-pG+jG;
 						int rayP=DT(cPi,cPj);
-						if(cPi!=i && cPj!=j && rayP!=0){
+						if(rayP<rayG && (cPi!=i || cPj!=j) && rayP!=0){
 							itP=boules.find(rayP);
 							if(itP==boules.end()){
 								boules[rayP]=boule(masque,n,rayP);
@@ -1027,14 +1046,17 @@ image* image::axeMedian(double** masque,int n,int seuil){
 							int iP;
 							for(iP=0;iP<hP;iP++){
 								for(jP=0;jP<hP;jP++){
-									if((itP->second)(iP,jP)!=0 && abs(i-(iP-pP+cPi))>pG || abs(j-(jP-pP+cPj))>pG){
-										//cout<<"hehe"<<endl;
-										break;/*la petite boule n'est pas incluse dans la grande*/
+									if(DT(cPi-pP+iP,cPj-pP+jP)!=0){
+										if((itP->second)(iP,jP)!=0 && abs(i-(iP-pP+cPi))>pG || abs(j-(jP-pP+cPj))>pG){
+											//cout<<"hehe"<<endl;
+											break;/*la petite boule n'est pas incluse dans la grande*/
+										}
+										if(/*DT(cPi-pP+iP,cPj-pP+jP)!=0 &&*/ (itP->second)(iP,jP)==1 && (itG->second)(iP-pP+cPi-i+pG,jP-pP+cPj-j+pG)==0){
+											//cout<<"hoho"<<endl;
+											break;/*la petite boule n'est pas incluse dans la grande*/
+										}
 									}
-									if(DT(cPi-pP+iP,cPj-pP+jP)!=0 && (itP->second)(iP,jP)!=0 && (itG->second)(iP-pP+cPi-i+pG,jP-pP+cPj-j+pG)==0){
-										//cout<<"hoho"<<endl;
-										break;/*la petite boule n'est pas incluse dans la grande*/
-									}
+									//if()
 								}
 								if(jP<hP)
 									break;
@@ -1058,7 +1080,6 @@ image* image::axeMedian(double** masque,int n,int seuil){
 
 	return &DT;
 }
-
 //-----------------------------------------------------------------------------//
 //-------------------------Fonctions intermédiaires----------------------------//
 //-----------------------------------------------------------------------------//
@@ -1264,4 +1285,15 @@ image& image::operator-(const image & im){
 	}
 	sortie->updateValmax();
 	return(*sortie);
+}
+
+
+bool image::max1dirLoc(int i,int j)const{
+	int max=(*this)(i,j);
+	if(((*this)(i-1,j)<max && max>(*this)(i+1,j)) ||
+	   ((*this)(i,j-1)<max && max>(*this)(i,j+1)) ||
+	   ((*this)(i+1,j+1)<max && max>(*this)(i-1,j-1)) ||
+	   ((*this)(i+1,j-1)<max && max>(*this)(i-1,j+1)))return (*this)(i,j)!=0;
+
+	return false;
 }

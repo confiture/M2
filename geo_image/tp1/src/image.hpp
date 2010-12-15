@@ -351,6 +351,8 @@ public:
 	 */
 	image* distanceT(double** masque,int n,int seuil)const;
 
+	bool max1dirLoc(int i,int j)const;
+
 	image* axeMedian(double** masque,int n,int seuil);
 
 	image& operator=(const image & im);
