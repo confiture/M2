@@ -64,16 +64,61 @@ void testAxeMed(const char* fic){
 
   image im(fic);
   image* DT=im.axeMedian(masque,3,50);
+  image* recons=DT->reconsAxeMed(masque,3);
+  recons->EcrireImagePGM("reconstruction.pgm");
   DT->recadre(0,255);
   DT->EcrireImagePGM("testAxeMed.pgm");
 }
 
+void testBoulesMax(char * fic){
+  double** masque=new double*[3];
+  for(int i=0;i<3;i++){
+    masque[i]=new double[3];
+  }
+  masque[0][0]=masque[0][2]=masque[2][0]=masque[2][2]=4;
+  masque[0][1]=masque[1][0]=masque[2][1]=masque[1][2]=3;
+
+  image im(fic);
+  image* DT=im.boulesMax(masque,3,50);
+  image* recons=DT->reconsAxeMed(masque,3);
+  recons->EcrireImagePGM("reconstruction.pgm");
+}
+
+void testPetiteBoule(){
+  double** masque=new double*[3];
+  for(int i=0;i<3;i++){
+    masque[i]=new double[3];
+  }
+  masque[0][0]=masque[0][2]=masque[2][0]=masque[2][2]=4;
+  masque[0][1]=masque[1][0]=masque[2][1]=masque[1][2]=3;
+
+  image b3=image::boule(masque,3,4);
+  b3.EcrireImagePGM("petiteBoule.pgm");
+}
+
+void testBouleMax(char* fic){
+  double** masque=new double*[3];
+  for(int i=0;i<3;i++){
+    masque[i]=new double[3];
+  }
+  masque[0][0]=masque[0][2]=masque[2][0]=masque[2][2]=4;
+  masque[0][1]=masque[1][0]=masque[2][1]=masque[1][2]=3;
+
+  image im(fic);
+  image* dt=im.boulesMax(masque,3,50);
+  dt->recadre(0,255);
+
+  dt->EcrireImagePGM("dansKoi.pgm");
+}
 
 int main(int argc, char* argv[]){
 using namespace std;
 
  //testDistT(argv[1]);
  testAxeMed(argv[1]);
+ //testPetiteBoule();
+ //testBouleMax(argv[1]);
+//testBoulesMax(argv[1]);
 
   // Test dilatation
 //   image im("objets.pgm");
