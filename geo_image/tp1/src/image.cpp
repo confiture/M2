@@ -987,24 +987,6 @@ image image::boule(double** masque,int n,int r){
 	return bl;
 }
 
-
-// image* image::axeMedian(double** masque,int n,int seuil){
-// 	image& DT = (*boulesMax(masque,n,seuil));
-// 	image& DTs=(*(new image(DT)));
-// 	DT.EcrireImagePGM("dt.pgm");
-
-// 	for(int i=1;i<hauteur-1;i++){
-// 		for(int j=1;j<largeur-1;j++){
-// 			if(DT.max1dirLoc(i,j))
-// 				DTs(i,j)=255;
-// 			else
-// 				DTs(i,j)=0;
-// 		}
-// 	}
-// 	return &DTs;
-// }
-
-
 image* image::axeMedian(double** masque,int n,int seuil){
 	bool incluse=true;
 	image& DT = (*boulesMax(masque,n,seuil));
@@ -1033,8 +1015,7 @@ image* image::axeMedian(double** masque,int n,int seuil){
 						int cPi=i-pG+iG;//le centre de la petite boule
 						int cPj=j-pG+jG;
 						int rayP=DT(cPi,cPj);
-						if(rayP<masque[p][p+1]){DT(cPi,cPj)=0;}
-						else if(rayP>=rayG){}
+						if(rayP>=rayG){}
 						else if(rayP<rayG && (cPi!=i || cPj!=j) && rayP!=0){
 							itP=boules.find(rayP);
 							if(itP==boules.end()){
@@ -1042,30 +1023,7 @@ image* image::axeMedian(double** masque,int n,int seuil){
 								itP=boules.find(rayP);
 							}
 
-							int hP=itP->second.hauteur;
-							int pP=(hP-1)/2;
-							int jP;
-							int iP;
-							for(iP=0;iP<hP;iP++){
-								for(jP=0;jP<hP;jP++){
-									if(DT(cPi-pP+iP,cPj-pP+jP)!=0){
-										if((itP->second)(iP,jP)!=0 && abs(i-(iP-pP+cPi))>pG || abs(j-(jP-pP+cPj))>pG){
-											//cout<<"hehe"<<endl;
-											break;/*la petite boule n'est pas incluse dans la grande*/
-										}
-										if(DT(cPi-pP+iP,cPj-pP+jP)!=0 && (itP->second)(iP,jP)==1 && (itG->second)(iP-pP+cPi-i+pG,jP-pP+cPj-j+pG)==0){
-											//cout<<"hoho"<<endl;
-											break;/*la petite boule n'est pas incluse dans la grande*/
-										}
-									}
-								}
-								if(jP<hP)
-									break;
-							}
-
-							//cout<<"ici 3"<<endl;
-							if(jP==hP)
-								DT(cPi,cPj)=0;
+							if((itG->second).inclus((itP->second),cPi-i+pG,cPj-j+pG)){DT(cPi,cPj)=0;}
 						}
 					}
 				}
@@ -1344,7 +1302,8 @@ bool image::inclus(const image & im,int i,int j)const{
 	int k,l;
 	for(k=0;k<im.hauteur;k++){
 		for(l=0;l<im.largeur;l++){
-			if(im(k,l)!=0 && (*this)(i+k-ph,j+l-pl)==0)break;
+			if(im(k,l)!=0 && i+k-ph>=0 && i+k-ph<hauteur
+			   && j+l-pl>=0 && j+l-pl<largeur && (*this)(i+k-ph,j+l-pl)==0)break;
 		}
 		if(l<im.largeur)break;
 	}
