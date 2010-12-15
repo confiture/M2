@@ -355,6 +355,12 @@ public:
 
 	image* axeMedian(double** masque,int n,int seuil);
 
+	image* reconsAxeMed(double** masque,int n);
+
+	image* boulesMax(double** masque,int n,int seuil);
+
+	bool inclus(const image & im,int i,int j)const;
+
 	image& operator=(const image & im);
 
 	image& operator-(const image & im);
