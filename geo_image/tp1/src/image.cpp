@@ -1088,6 +1088,7 @@ image image::elemCarre(int taille){
 	}
 	return sortie;
 }
+
 //-----------------------------------------------------------------------------//
 image image::elemCercle(int taille){
   assert(taille%2 == 1);
