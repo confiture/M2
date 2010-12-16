@@ -111,14 +111,27 @@ void testBouleMax(char* fic){
   dt->EcrireImagePGM("dansKoi.pgm");
 }
 
+void testItems(char * fic){
+  double** masque=new double*[3];
+  for(int i=0;i<3;i++){
+    masque[i]=new double[3];
+  }
+
+  masque[0][0]=masque[0][2]=masque[2][0]=masque[2][2]=4;
+  masque[0][1]=masque[1][0]=masque[2][1]=masque[1][2]=3;
+  image im(fic);
+  im.writePgmItems("item",50,masque,3);
+}
+
 int main(int argc, char* argv[]){
 using namespace std;
 
  //testDistT(argv[1]);
- testAxeMed(argv[1]);
+ //testAxeMed(argv[1]);
  //testPetiteBoule();
  //testBouleMax(argv[1]);
 //testBoulesMax(argv[1]);
+ testItems(argv[1]);
 
   // Test dilatation
 //   image im("objets.pgm");

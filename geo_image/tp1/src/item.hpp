@@ -38,6 +38,11 @@ public:
 	double epaisseur;
 
 	/**
+	 *L'aire de l'objet.
+	 */
+	int aire;
+
+	/**
 	 *\brief Ecrit l'image contenant l'objet dans le fichier
 	 *<CODE>fic</CODE>.
 	 *
@@ -49,9 +54,33 @@ public:
 	 *\brief Met à jour l'épaisseur moyenne de l'objet.
 	 *
 	 *\param masque : le masque utilisé pour les distances
+	 *\param n      : dimension du masque
 	 *\param seuil : seuil utilisé pour distinguer l'objet du fond
 	 */
 	void loadEpaisseur(double** masque,int n,int seuil);
+
+	/**
+	 *\brief Met à jour le nombre de trous de l'objet.
+	 *
+	 *\param seuil : seuil utilisé pour distinguer l'objet du fond
+	 */
+	void loadNbTrous(int seuil);
+
+	/**
+	 *\brief Met à jour l'aire (en pixels) de l'objet.
+	 *
+	 *\param seuil : seuil utilisé pour distinguer l'objet du fond
+	 */
+	void loadAire(int seuil);
+
+	/**
+	 *\brief Met à jour tous les champs de l'objet (toutes ses caractéristiques).
+	 *
+	 *\param masque : le masque utilisé pour les distances
+	 *\param n      : dimension du masque
+	 *\param seuil : seuil utilisé pour distinguer l'objet du fond
+	 */
+	void load(double** masque,int n,int seuil);
 
 };
 

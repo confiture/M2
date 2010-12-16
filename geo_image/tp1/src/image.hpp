@@ -95,17 +95,19 @@ public:
 	void updateValmax();
 
 	/**
-	 *\brief Construit l'image à partir d'une portion d'image.
+	 *\brief Construit l'image contenant seulement l'objet étiqueté par
+	 *<CODE>etiq</CODE>. L'objet doit se trouver dans le rectangle :
 	 *
-	 *Constructeur par copie de la portion l'image <CODE>im</CODE>
-	 *étant dans le rectangle <CODE>(i1,j1),(i2,j1),(i2,j2),(i1,j2)</CODE>.
 	 *
+	 *\param image : image dans laquelle se trouve l'objet
 	 *\param i1 : indice de ligne du coin supérieur gauche du rectangle
 	 *\param i2 : indice de ligne du coin inférieur droit du rectange
 	 *\param j1 : indice de colonne du coin supérieur gauche du rectangle
 	 *\param j2 : indice de colonne du coin inférieur droit du rectange
+	 *\param conn : l'étiquetage des composantes connexes
+	 *\param etiq : l'étiquette de la composante connexes qui définit l'objet
 	 */
-	image(const image & im,int i1,int i2,int j1,int j2);
+	image(const image & im,int i1,int i2,int j1,int j2,int** conn,int etiq);
 
 
 	/**
@@ -324,7 +326,7 @@ public:
 	 */
 	image* fermeture(geom g,int taille/*image elem_struct*/);
 
-	void writePgmItems(char * itemsName,int seuil);
+	void writePgmItems(char * itemsName,int seuil,double** masque,int n);
 
 	/**
 	 *\brief Fabrique l'objet qui a pour Ã©tiquette tag dans le tableau des composantes
@@ -346,6 +348,7 @@ public:
 	 *\brief Retourne l'image qui est la transformée en distance en utilisant
 	 *le masque <CODE>masque</CODE>.
 	 *
+	 *\param masque : masque utilisé pour la distance
 	 *\param n : la dimension du masque est de <CODE>n*n</CODE>
 	 *\param seuil : le seuil utilisé pour binariser l'image
 	 */

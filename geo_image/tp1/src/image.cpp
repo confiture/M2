@@ -82,14 +82,19 @@ void image::updateValmax(){
 	}
 }
 
-image::image(const image & im,int i1,int i2,int j1,int j2){
+image::image(const image & im,int i1,int i2,int j1,int j2,int** conn,int etiq){
 	valmax=im.valmax;
 	hauteur=i2-i1+1;
 	largeur=j2-j1+1;
 	buffer=new int[hauteur*largeur];
 	for(int i=i1;i<=i2;i++){
 		for(int j=j1;j<=j2;j++){
-			(*this)(i-i1,j-j1)=im(i,j);
+			if(conn[i][j]==etiq){
+				(*this)(i-i1,j-j1)=im(i,j);
+			}
+			else{
+				(*this)(i-i1,j-j1)=0;
+			}
 		}
 	}
 }
@@ -293,18 +298,9 @@ int** image::binConnexite4()const{
 		}
 	}
 
-	//finalUpdateEquiv(equiv,id);
-
-	std::cout<<"corres[97][0] equiv a "<<equiv[corres[97][0]]<<std::endl;
-	std::cout<<"corres[98][0] equiv a "<<equiv[corres[98][0]]<<std::endl;
-	//std::cout<<"corres[99][2] equiv a "<<equiv[corres[99][1]]<<std::endl;
-
 	//mise à jour des groupes grâce au tableau des équivalences
 	for(int i=0;i<hauteur;i++){
 		for(int j=0;j<largeur;j++){
-			//cout<<equiv[corres[i][j]]<<endl;
-			//std::cout<<" i "<<i<<" j "<<j<<"corres[i][j]"<<corres[i][j]<<endl;
-			//if(corres[i][j]==1)exit(-1);
 			if(corres[i][j]!=-1){corres[i][j]=equiv[corres[i][j]]+1;} // +1 pour rammener -1 à 0
 			else{corres[i][j]=0;}
 		}
@@ -600,16 +596,29 @@ int image::nbConnCom(int nconn,int seuil){
 	return groupes.size();
 }
 
-void image::writePgmItems(char * itemsName,int seuil){
-	string name(itemsName);
+
+int** image::makeConnComp(int nconn,int seuil)const{
 	set<int> groupes;
 	image im_s(*this);
 	im_s.seuiller(seuil);
-	image neg(*this);
-	neg.negatif();
 
-	int** conn=im_s.binConnexite4();
+	int** conn;
+	if(nconn==8){
+		conn=im_s.binConnexite8();
+	}
+	else{
+		conn=im_s.binConnexite4();
+	}
 
+	return conn;
+}
+
+
+void image::writePgmItems(char * itemsName,int seuil,double** masque,int n){
+	string name(itemsName);
+	set<int> groupes;
+
+	int** conn=makeConnComp(4,seuil);
 	for(int i=0;i<hauteur;i++){
 		for(int j=0;j<largeur;j++){
 			if(conn[i][j]!=0){groupes.insert(conn[i][j]);}
@@ -635,14 +644,10 @@ void image::writePgmItems(char * itemsName,int seuil){
 			}
 		}
 
-		image temp((*this),i1-1,i2+1,j1-1,j2+1);
-		image tempNeg(neg,i1-1,i2+1,j1-1,j2+1);
-		//image tempNeg((*this),i1-1,i2+1,j1-1,j2+1);
-		tempNeg.negatif();
+		image* obIm = new image((*this),i1-1,i2+1,j1-1,j2+1,conn,(*it));
 		item objet;
-		objet.pIm=&temp;
-		objet.epaisseur=666;
-		objet.nbTrous=tempNeg.nbConnCom(8,tempNeg.valmax-seuil)-1;
+		objet.pIm=obIm;
+		objet.load(masque,n,seuil);
 
 		string name(itemsName);
 		ostringstream ss;
@@ -650,15 +655,6 @@ void image::writePgmItems(char * itemsName,int seuil){
 		name+=ss.str();
 		name+=".pgm";
 		objet.writePgmItem(name.c_str());
-		string strneg("neg");
-		strneg+=name;
-		const char * tt=strneg.c_str();
-		//tempNeg.EcrireImagePGM(tt);
-		//tempNeg.dispCompConn(tt);
-
-		image tempNegSeuil(tempNeg);
-		tempNegSeuil.seuiller(tempNeg.valmax-seuil);
-		//tempNegSeuil.EcrireImagePGM(tt);
 
 		k++;
 	}
