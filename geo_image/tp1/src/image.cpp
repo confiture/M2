@@ -757,69 +757,75 @@ image* image::duplique_elemStruc_bord(int taille /*image elem_struct*/) const{
 }
 
 
-image* image::dilatation(image elem_struct) const{
-	image* sortie=(*this).duplique_elemStruc_bord(elem_struct);
-	image copie(*sortie);
-	// On traite les bords
-	int ind = (int)(elem_struct.hauteur/2.0+0.5);
-
-	// boucle sur toute l'image
-	for(int i=ind;i<sortie->hauteur-ind;i++){
-		for(int j=ind;j<sortie->largeur-ind;j++){
-			// boucle sur l'image de l'élément structurant
-			int maximum=copie(i,j);
-			int m=0;
-			for(int k=i-ind;k<ind+i-1;k++){
-				int n=0;
-				for(int l=j-ind;l<ind+j-1;l++){
-				  // On vérifie qu'on est bien sur l'objet (élément structurant)
-				  if(elem_struct(m,n)==1){
-					maximum = max(maximum,copie(k,l)*elem_struct(m,n) );
-				  }
-					n=n+1;
-				}
-				m=m+1;
-			}
-			(*sortie)(i,j) = maximum ;
-		}
+//-----------------------------------------------------------------------------//
+image* image::dilatation(image elem_struct,bool Estdupliquer){
+	 image* sortie;
+	if(!Estdupliquer){
+	sortie=(*this).duplique_elemStruc_bord(elem_struct);
 	}
+	else{
+	     sortie=(this);
+	}
+	elem_struct.EcrireImagePGM("element_structurant.pgm");
+	image copie(*sortie);
+	int p=(elem_struct.hauteur-1)/2.0;
+	for(int i=p;i<sortie->hauteur-p;i++){
+	   for(int j=p;j<sortie->largeur-p;j++){
+	     int maximum=copie(i,j);
+	     for(int k=0;k<elem_struct.hauteur;k++){
+	       for(int l=0;l<elem_struct.largeur;l++){
+		 if(elem_struct(k,l)==1){
+			maximum = max(maximum,copie(i+k-p,j+l-p)*elem_struct(k,l));
+		 }
+	       }
+	     }
+	     (*sortie)(i,j) = maximum ;
+	   }
+	}
+
 	return sortie;
 }
-
-
-image* image::erosion(image elem_struct) const{
-	image* sortie=(*this).duplique_elemStruc_bord(elem_struct);
+//-----------------------------------------------------------------------------//
+image* image::erosion(image elem_struct,bool Estdupliquer){
+	 image* sortie;
+	if(!Estdupliquer){
+	sortie=(*this).duplique_elemStruc_bord(elem_struct);
+	}
+	else{
+	     sortie=(this);
+	}
+	elem_struct.EcrireImagePGM("element_structurant.pgm");
 	// On fait une copie
 	image copie(*sortie);
-	// On traite les bords
-	int ind = (int)(elem_struct.hauteur/2.0+0.5);
-
-	// boucle sur toute l'image
-	for(int i=ind;i<sortie->hauteur-ind;i++){
-		for(int j=ind;j<sortie->largeur-ind;j++){
-			// boucle sur l'image de l'élément structurant
-			int minimum=copie(i,j);
-			int m=0;
-			for(int k=i-ind;k<ind+i-1;k++){
-				int n=0;
-				for(int l=j-ind;l<ind+j-1;l++){
-				  // On vérifie qu'on est bien sur l'objet (élément structurant)
-				  if(elem_struct(m,n)==1){
-					minimum = min(minimum,copie(k,l)*elem_struct(m,n) );
-				  }
-					n=n+1;
-				}
-				m=m+1;
-			}
-			(*sortie)(i,j) = minimum ;
-		}
+	int p=(elem_struct.hauteur-1)/2.0;
+	for(int i=p;i<sortie->hauteur-p;i++){
+	   for(int j=p;j<sortie->largeur-p;j++){
+	     int minimum=copie(i,j);
+	     for(int k=0;k<elem_struct.hauteur;k++){
+	       for(int l=0;l<elem_struct.largeur;l++){
+		 if(elem_struct(k,l)==1){
+			minimum = min(minimum,copie(i+k-p,j+l-p)*elem_struct(k,l));
+		 }
+	       }
+	     }
+	     (*sortie)(i,j) = minimum ;
+	   }
 	}
+
 	return sortie;
 }
 
-image* image::ouverture(image elem_struct)const{
-	image* im_erosion=erosion(elem_struct);
-	image* sortie=im_erosion->dilatation(elem_struct);
+//-----------------------------------------------------------------------------//
+image* image::ouverture(image elem_struct){
+	image* im_erosion=erosion(elem_struct,false);
+	image* sortie=im_erosion->dilatation(elem_struct,true);
+	return sortie;
+}
+
+//-----------------------------------------------------------------------------//
+image* image::fermeture(image elem_struct){
+	image* im_dilatation=dilatation(elem_struct,false);
+	image* sortie=im_dilatation->erosion(elem_struct,true);
 	return sortie;
 }
 
@@ -894,6 +900,7 @@ image* image::distanceT(double** masque,int n,int seuil)const{
 		}
 	}
 
+	imS->updateValmax();
 	return imS;
 }
 
@@ -1027,6 +1034,7 @@ image* image::axeMedian(double** masque,int n,int seuil){
 		}
 	}
 
+	DT.updateValmax();
 	return &DT;
 }
 
@@ -1052,8 +1060,6 @@ image* image::reconsAxeMed(double** masque,int n){
 
 				int hB=itBoule->second.hauteur;
 				int pB=(hB-1)/2;
-				cout<<ray<<endl;
-				cout<<"hauteur "<<hB<<endl;
 				for(int iB=0;iB<hB;iB++){
 					for(int jB=0;jB<hB;jB++){
 						if((itBoule->second)(iB,jB)==1)
@@ -1066,8 +1072,6 @@ image* image::reconsAxeMed(double** masque,int n){
 
 	cons.valmax=1;
 
-	cons.EcrireImagePGM("impossible.gpm");
-	boules[26].EcrireImagePGM("boule26.pgm");
 	return &cons;
 }
 

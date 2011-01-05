@@ -239,11 +239,13 @@ public:
 
 	image* duplique_elemStruc_bord(image elem_struct)const;
 
-	image* dilatation(image elem_struct)const;
+	image* dilatation(image elem_struct,bool Estdupliquer);
 
-	image* erosion(image elem_struct)const;
 
-	image* ouverture(image elem_struct)const;
+	image* erosion(image elem_struct,bool Estdupliquer);
+
+	image* ouverture(image elem_struct);
+	image* fermeture(image elem_struct);
 
 	/**
 	 *\brief Retourne la boule binaire de rayon <CODE>r</CODE> avec
@@ -282,6 +284,8 @@ public:
 	 */
 	static image elemTriangle(int taille);
 
+
+
 	static image elemCroix(int taille,int epaisseur);
 
 	static image elemStruct(geom geo,int taille);
@@ -291,7 +295,7 @@ public:
 	 * @param : elem_struct = image contenant l'élément structurant
 	 * @return : image* = image avec les bords dupliqués
 	 */
-	image* duplique_elemStruc_bord(int taille/*image elem_struct*/)const;
+	image* duplique_elemStruc_bord(int taille)const;
 
 //-----------------------------------------------------------------------------//
 //-------------------------OPERATEURS MORPHOLOGIQUES --------------------------//
@@ -302,21 +306,21 @@ public:
 	 * @param : elem_struct = image contenant l'élément structurant
 	 * @return : image* = image dilatée
 	 */
-	image* dilatation(geom g,int taille,bool Estdupliquer /*image elem_struct*/);
+	image* dilatation(geom g,int taille,bool Estdupliquer);
 
 	/* Cette fonction applique l'opérateur morphologique 'erosion' sur l'objet courant et renvoie
 	 * l'image  après érosion par l'élément structurant elem_struct
 	 * @param : elem_struct = image contenant l'élément structurant
 	 * @return : image* = image après érosion
 	 */
-	image* erosion(geom g,int taille,bool Estdupliquer/*image elem_struct*/);
+	image* erosion(geom g,int taille,bool Estdupliquer);
 
 	/* Cette fonction applique l'opérateur morphologique 'ouverture' sur l'objet courant et renvoie
 	 * l'image  après ouverture par l'élément structurant elem_struct
 	 * @param elem_struct : image contenant l'élément structurant
 	 * @return image* : image après ouverture
 	 */
-	image* ouverture(geom g,int taille/*image elem_struct*/);
+	image* ouverture(geom g,int taille);
 
 
 	/* Cette fonction applique l'opérateur morphologique 'fermeture' sur l'objet courant et renvoie
@@ -324,7 +328,7 @@ public:
 	 * @param elem_struct : image contenant l'élément structurant
 	 * @return image* : image après fermeture
 	 */
-	image* fermeture(geom g,int taille/*image elem_struct*/);
+	image* fermeture(geom g,int taille);
 
 	void writePgmItems(char * itemsName,int seuil,double** masque,int n);
 
