@@ -1,0 +1,209 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage{pdfpages}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage[francais]{babel}
+\usepackage[dvips,lmargin=3cm,rmargin=3cm,tmargin=3cm,bmargin=4cm]{geometry}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage[utf8]{inputenc}
+\usepackage{listings}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{float}
+\usepackage[T1]{fontenc}
+%\usepackage[nottoc, notlof, notlot]{tocbibind}
+\usepackage{graphicx}
+
+% Macros pratique pour les maths.
+\newcommand{\bs}{\symbol{92}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\K}{\mathbb{K}}
+\newcommand{\B}{\mathcal{B}}
+\newcommand{\tab}{\hspace*{1cm}}
+\newcommand{\norm}[1]{\left\vert \left\vert {#1}  \right\vert \right\vert}
+\newcommand{\abs}[1]{ \left\vert {#1}  \right\vert}
+\newcommand{\vect}[1]{\overrightarrow{#1}}
+\newcommand{\scal}[2]{\langle #1 \vert #2 \rangle}
+\newcommand{\exems}{$ $ \\ \noindent{{\textbf{Exemples.~}}}}
+\newcommand{\exem}{$ $ \\ \noindent{{\textbf{Exemple.~}}}}
+\newcommand{\rem}{$ $\\\ \noindent{{\textbf{Remarque.~}}}}
+\newcommand{\rems}{$ $ \\ \noindent{{\textbf{Remarques.~}}}}
+\newcommand{\rap}{$ $ \\ \noindent{{\textbf{Rappel.~}}}}
+\newcommand{\car}[1]{|#1|}
+\newcommand{\card}{\mbox{card}}
+\newcommand{\stab}{\mbox{Stab}}
+\newcommand{\ba}[1]{\overline{#1}}
+\newcommand{\inte}[1]{ [\![{#1} ]\!]}
+
+% Configuration du package lstlisting pour du C++.
+\lstset{
+  basicstyle=\small,
+  breaklines=true,
+  commentstyle=\color[rgb]{0.3,0.3,0.3}\textit,
+  emphstyle=\rmfamily\color{blue},
+  frame=single,
+  keywordstyle=\color{blue},
+  language=C++,
+  lineskip=0pt,
+  numbers=left,
+  numbersep=5pt,
+  numberstyle=\tt\small\color{gray},
+  showstringspaces=false,
+  tabsize=4,
+  texcl=true
+}
+
+\title{
+  \huge{\bf TP1 - Calcul de courbes iso-valeur sur une triangulation}
+}
+
+\author{
+    \textsc{Koraa} Galel \\
+    \textsc{Trlin} Moreno
+}
+
+\date{7 janvier 2011}
+
+\begin{document}
+ \maketitle
+ %\tableofcontents
+ \pagebreak
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  \section{Le code}
+  On a implémenté tout d'abord une fonction intersection entre un segment et un plan :\\
+
+  \begin{lstlisting}[language=c++]
+/**
+ *Retourne l'intersection du segment [p1,p2] avec le plan z=v.
+ *
+ */
+Point3 intersection(const Point3& p1,const Point3& p2,int v){
+	if(v==p1.z)return p1;
+	if(v==p2.z)return p2;
+
+	double a = (v-p2.z)/(p1.z-p2.z);
+	return a*p1+(1-a)*p2;
+}
+  \end{lstlisting}
+
+  Nous avons ensuite complété la fonction {\tt calcul\_isocourbe} :\\
+
+  \begin{lstlisting}[language=c++]
+	N=0;
+	bool e2; // booléen qui indique si on est sur le deuxième sommet du segment (E2[N])
+	for(int iT=0;iT<nT;iT++){ // boucle sur les mailles
+		e2=false;
+		for(int ar=0;ar<3;ar++){ //boucle sur les arêtes
+			if(S[T[iT][ar]].z==v && S[T[iT][(ar+1)%3]].z==v){ // cas où l'arête est sur le plan
+				E1[N]=S[T[iT][ar]];
+				E2[N]=S[T[iT][(ar+1)%3]];
+				N++;
+				break;
+			}
+			else if((S[T[iT][ar]].z-v)*(S[T[iT][(ar+1)%3]].z-v)<=0){ // cas où le plan intersecte l'arête en un seul point
+				if(e2){
+					E2[N]=intersection(S[T[iT][ar]],S[T[iT][(ar+1)%3]],v);
+					N++;
+					break;
+				}
+				else{
+					E1[N]=intersection(S[T[iT][ar]],S[T[iT][(ar+1)%3]],v);
+					e2=true;
+				}
+			}
+		}
+	}
+  \end{lstlisting}
+
+  Notre programme {\tt tp1} prend en paramètre la hauteur,
+  le fichier d'entrée, le fichier de sortie et la couleur (r,g,b) de
+  l'iso-courbe.
+
+  Pour obtenir un grand nombre d'iso-courbes avec un dégradé de couleur,
+  nous avons écrit un script shell qui fait ceci. Ce script prend
+  en entrée le fichier à traiter, la hauteur minimale, le pas des
+  iso-courbes et la hauteur maximale.
+  Voici le shell :\\
+
+  \begin{lstlisting}[language=bash]
+#!/bin/sh
+
+ext=.vect
+for i in $( seq $2 $3 $4 ) # boucle sur les hauteurs des iso-courbes
+do
+	r=$(echo "($i - $2)/($4 - $2)" | bc -l) # la couleur rouge
+	b=$(echo "1 - $r" | bc -l)              # la couleur bleue
+	bin/tp1 $i $1 $5$i$ext $r 0.0 $b        # exécution du programme
+done
+
+  \end{lstlisting}
+
+
+  \section{Algorithmes}
+  \subsection{Composantes connexes}
+
+  \subsection{Axe médian}
+
+  \subsection{Opérateurs morphologiques}
+
+
+  \section{Exercice 1}
+
+  \pagebreak
+  \section{Exercice 2}
+
+
+%   \begin{center}
+%
+%   Voici le résultat de l'interpolation pour $(\Delta i, \Delta j)= (7.1,-3.8) :$ \\ ~\\
+%   \begin{tabular}{cc}
+%    \includegraphics[height=6cm]{bateauT1/bateauT.png} & \includegraphics[height=6cm]{bateauT1/ErrbateauT.png} \\
+%    {\it Image interpolée} & {\it Différence entre l'image interpolée et l'image originale}
+%   \end{tabular}
+%   \end{center}
+%
+% \pagebreak
+%
+%   \begin{center}
+%    \includegraphics[height=7cm]{houseT_-4.7_3.8/house.png}
+%    {\it ~\\ Image originale \\ ~\\}
+%
+%   Voici le résultat de l'interpolation pour $(\Delta i, \Delta j)= (-4.7, 3.8) :$ \\ ~\\
+%   \begin{tabular}{cc}
+%    \includegraphics[height=7cm]{houseT_-4.7_3.8/houseT.png} & \includegraphics[height=7cm]{houseT_-4.7_3.8/ErrHouseT.png} \\
+%    {\it Image interpolée} & {\it Différence entre l'image interpolée et l'image originale}
+%   \end{tabular}
+%   \end{center}
+%
+% \paragraph{Observations :}
+% On voit se former des bandes noires sur les bords dues à la translation, de plus
+% l'interpolation floute l'image.
+%
+% \pagebreak
+%
+% \section{L'objet tracké}
+% Voici quelques résultats de la traque de l'objet :
+% \begin{center}
+%  \begin{tabular}{|c|c|c|c|}
+%  \hline
+%  taz001 & taz002 & taz003 & taz004 \\
+%  \includegraphics[height=3cm]{sauveCadres/taz001.png} & \includegraphics[height=3cm]{sauveCadres/taz002.png} &
+%  \includegraphics[height=3cm]{sauveCadres/taz003.png} & \includegraphics[height=3cm]{sauveCadres/taz004.png}\\
+%  \hline
+%  taz005 & taz006 & taz007 & taz008 \\
+%  \includegraphics[height=3cm]{sauveCadres/taz005.png} & \includegraphics[height=3cm]{sauveCadres/taz006.png} &
+%  \includegraphics[height=3cm]{sauveCadres/taz007.png} & \includegraphics[height=3cm]{sauveCadres/taz008.png}\\
+%  \hline
+%  \end{tabular}
+% \end{center}
+
+\end{document}

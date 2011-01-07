@@ -7,6 +7,7 @@
 #include<cstdio>
 #include<cstdlib>
 #include<cstring>
+#include<iostream>
 
 // le type Point3
 // les 3 coordonnées
@@ -263,17 +264,17 @@ int calcul_isocourbe(Point3 *S, int nS, Triangle *T, int nT, double v,
 	}
 
 	N=0;
-	bool e2;
-	for(int iT=0;iT<nT;iT++){
+	bool e2; // booléen qui indique si on est sur le deuxième sommet du segment (E2[N])
+	for(int iT=0;iT<nT;iT++){ // boucle sur les mailles
 		e2=false;
-		for(int ar=0;ar<3;ar++){
-			if(S[T[iT][ar]].z==v && S[T[iT][(ar+1)%3]].z==v){
+		for(int ar=0;ar<3;ar++){ //boucle sur les arêtes
+			if(S[T[iT][ar]].z==v && S[T[iT][(ar+1)%3]].z==v){ // cas où l'arête est sur le plan
 				E1[N]=S[T[iT][ar]];
 				E2[N]=S[T[iT][(ar+1)%3]];
 				N++;
 				break;
 			}
-			else if((S[T[iT][ar]].z-v)*(S[T[iT][(ar+1)%3]].z-v)<=0){
+			else if((S[T[iT][ar]].z-v)*(S[T[iT][(ar+1)%3]].z-v)<=0){ // cas où le plan intersecte l'arête en un seul point
 				if(e2){
 					E2[N]=intersection(S[T[iT][ar]],S[T[iT][(ar+1)%3]],v);
 					N++;
@@ -299,10 +300,16 @@ int main(int argc,char* argv[])
 		int nS;
 		Triangle *T;
 		int nT;
-		double v; // le plan des isovaleurs
+		float v; // le plan des isovaleurs
 		sscanf(argv[1],"%f",&v);
+		std::cout<<v<<std::endl;
 		char* ficE=argv[2];
 		char* ficS=argv[3];
+		float r,g,b;
+		sscanf(argv[4],"%f",&r);
+		sscanf(argv[5],"%f",&g);
+		sscanf(argv[6],"%f",&b);
+		Couleur coul(r,g,b);
 
 		// lecture du fichier Geomview au format OFF
 		fprintf(stdout, "Lecture des données ...\n");
@@ -325,7 +332,7 @@ int main(int argc,char* argv[])
 
 		// écriture du fichier Geomview au format VECT
 		fprintf(stdout, "Ecriture du fichier segments ...\n");
-		if (ecrire_segments_VECT(E1,E2,nE,/*"ex_isoligne1.vect"*/ficS)!=0)
+		if (ecrire_segments_VECT(E1,E2,nE,/*"ex_isoligne1.vect"*/ficS,coul)!=0)
 		{
 			free((void *)T);
 			free((void *)S);
