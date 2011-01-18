@@ -25,7 +25,7 @@ function p = polyfit(t,y,n)
   end
   
   // test des abscisses t(i)
-  tc = -sort(-t); // tri par ordre croissant
+  tc = -gsort(-t); // tri par ordre croissant
   dtc = diff(tc);
   if min(dtc)==0
     error('les abscisses t doivent etre distinctes entre elles');

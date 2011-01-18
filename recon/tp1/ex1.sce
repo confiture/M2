@@ -558,7 +558,7 @@ function ex143()
   xs2png(3,"ex143d.png")
 endfunction
 
-function cercle_mc2(x,y)
+function [C,r]=cercle_mc2(x,y)
   n=length(x)
   x2=x.^2
   y2=y.^2
@@ -578,13 +578,13 @@ function cercle_mc2(x,y)
   [V,D]=spec(inv(P)*A)
   
   indM=1
-  while(D(indM,indM)<0)
+  while(real(D(indM,indM)) < 0)
     indM=indM+1
   end
   
   indInit=indM
   for ind=indInit:4
-    if(D(ind,ind)>0 & D(ind,ind)< D(indM,indM)) then
+    if(real(D(ind,ind))>0 & real(D(ind,ind))< real(D(indM,indM))) then
       indM=ind
     end
   end
@@ -596,7 +596,6 @@ endfunction
 
 function SM8()
   t=0:0.01:2*%pi
-  t=t'
   x=cos(t)+rand(t)*0.4-0.2
   y=sin(t)+rand(t)*0.4-0.2
   [C,r]=cercle_mc2(x,y)
@@ -604,6 +603,7 @@ function SM8()
   plot(x,y,'r+')
   plot(C(1)+r*cos(t),C(2)+r*sin(t),'k-')
   set(gca(),'isoview','on')
+  xs2png(0,"sm8--0-2pi.png")
   
   
   t=0:0.01:%pi
@@ -614,20 +614,38 @@ function SM8()
   plot(x,y,'r+')
   plot(C(1)+r*cos(t),C(2)+r*sin(t),'k-')  
   set(gca(),'isoview','on')
-  
+  xs2png(1,"sm8--0-pi.png")
   
   t=0:0.01:%pi/2
-  x=cos(t)+rand(t))*0.4-0.2
+  x=cos(t)+rand(t)*0.4-0.2
   y=sin(t)+rand(t)*0.4-0.2  
   [C,r]=cercle_mc2(x,y)
   scf()
   plot(x,y,'r+')
   plot(C(1)+r*cos(t),C(2)+r*sin(t),'k-')
   set(gca(),'isoview','on')
-  
-  
+  xs2png(2,"sm8--0-piSur2.png")
 endfunction
 
+
+function [XY]=approxim_parabole(x,y)
+  [B,v,n]=droite_mc(x,y)
+  M=[v n]
+  XY=(M')*[x-B(1) ; y-B(2)]
+  p=polyfit(X(1,:),X(2,:),2)
+  
+  //xyOrig=M*XY+b
+  xtrace=linspace(x(1),x($),1000)
+  ytrace=polyval(p,xtrace);
+  
+  xyOrig=M*[xtrace ; ytrace]+[B(1)*ones(1,1000) ; B(2)*ones(1,1000)]
+  
+  scf()
+  plot(x,y,'ro')
+  plot(xyOrig(1,:),xyOrig(2,:),'k-')
+endfunction 
+  
+  
 
 
 
