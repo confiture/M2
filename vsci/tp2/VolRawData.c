@@ -753,16 +753,16 @@ void drawIsoCurveZ(void)
 			p4.y=jj;
 			p4.z=buffer_vol[ii+1+sx*jj+sx*sy*Oz];
 
-			if(jj%2==0){
+			//if(jj+ii%2==0){
 				T[0].p[0]=p1;
-				T[0].p[1]=p2;
-				T[0].p[2]=p3;
+				T[0].p[1]=p3;
+				T[0].p[2]=p2;
 
 				T[1].p[0]=p1;
 				T[1].p[1]=p4;
 				T[1].p[2]=p3;
-			}
-			else{
+				//}
+				/*else{
 				T[0].p[0]=p1;
 				T[0].p[1]=p2;
 				T[0].p[2]=p4;
@@ -770,7 +770,7 @@ void drawIsoCurveZ(void)
 				T[1].p[0]=p4;
 				T[1].p[1]=p2;
 				T[1].p[2]=p3;
-			}
+				}*/
 
 			for(int iT=0;iT<2;iT++){
 				for(ar=0;ar<3;ar++){ //boucle sur les arêtes
