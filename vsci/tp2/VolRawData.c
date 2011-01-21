@@ -52,7 +52,7 @@ int sx2, sy2, sz2;
 double hz = 1.0;
 
 /* indices des positions des 3 slices */
-int Ox, Oy, Oz;
+int Ox,Oy, Oz;
 
 /* isovaleur de la courbe */
 float isoVal=0.5;
@@ -308,7 +308,8 @@ void CopieEcran(const char *filename)
 	for (l=height-1; l>=0; --l)
 	{
 		unsigned char *ptr = data + l*lineSize ;
-		fwrite(ptr, lineSize, 1, fd);
+		fwrite(ptr, width*3, 1, fd);
+		//fwrite(ptr, lineSize, 1, fd);
 	}
 	fclose(fd) ;
 	free(data);
@@ -731,12 +732,14 @@ void drawIsoCurveZ(void)
 	Point3 p3;
 	Point3 p4;
 	int e2;
+	// Tableau contenant les 2 triangles pour une maille du maillage régulier
 	Triangle T[2];
 
 	for(ii=0;ii<sx-1;ii++){
 		for(jj=0;jj<sy-1;jj++){
 			e2=0;
 
+		// Construction des 2 triangles de la maille du maillage régulier 
 			p1.x=ii;
 			p1.y=jj;
 			p1.z=buffer_vol[ii+sx*jj+sx*sy*Oz];
@@ -753,7 +756,7 @@ void drawIsoCurveZ(void)
 			p4.y=jj;
 			p4.z=buffer_vol[ii+1+sx*jj+sx*sy*Oz];
 
-			//if(jj+ii%2==0){
+
 				T[0].p[0]=p1;
 				T[0].p[1]=p3;
 				T[0].p[2]=p2;
@@ -761,16 +764,6 @@ void drawIsoCurveZ(void)
 				T[1].p[0]=p1;
 				T[1].p[1]=p4;
 				T[1].p[2]=p3;
-				//}
-				/*else{
-				T[0].p[0]=p1;
-				T[0].p[1]=p2;
-				T[0].p[2]=p4;
-
-				T[1].p[0]=p4;
-				T[1].p[1]=p2;
-				T[1].p[2]=p3;
-				}*/
 
 			for(int iT=0;iT<2;iT++){
 				for(ar=0;ar<3;ar++){ //boucle sur les arêtes
@@ -802,6 +795,192 @@ void drawIsoCurveZ(void)
 
 	glEnd();
 }
+
+
+void drawIsoCurveX(void)
+{
+	unsigned long i,j;
+
+	glLineWidth(1.);     /* épaisseur 1  */
+	glColor3f(0.,1.,1.); /* couleur cyan */
+	glBegin(GL_LINES);
+
+	/* début du calcul et tracé de la courbe isovaleur            */
+	/* les données de la coupe x=Ox sont données par              */
+	/* buffer_vol[Ox+sx*j+sx*sy*k] avec 0<=k<=sz-1 et 0<=j<=sy-1  */
+	/*                                                            */
+	/* Pour tracer un segment [(x1,y1,z1)-(x2,y2,z2)],            */
+	/* insérer les deux instructions OpenGL suivantes :           */
+	/*    glVertex3f( x1 , y1 , z1 );                             */
+	/*    glVertex3f( x2 , y2 , z2 );                             */
+	/*                                                            */
+	/* PARTIE A COMPLETER                                         */
+	int kk;
+	int jj;
+	int ar;
+
+	Point3 S1;
+	Point3 S2;
+	Point3 p1;
+	Point3 p2;
+	Point3 p3;
+	Point3 p4;
+	int e2;
+	Triangle T[2];
+
+	for(kk=0;kk<sz-1;kk++){
+		for(jj=0;jj<sy-1;jj++){
+			e2=0;
+
+			p1.x=kk;
+			p1.y=jj;
+			p1.z=buffer_vol[Ox+sx*jj+sx*sy*kk];
+
+			p2.x=kk;
+			p2.y=jj+1;
+			p2.z=buffer_vol[Ox+sx*(jj+1)+sx*sy*kk];
+
+			p3.x=kk+1;
+			p3.y=jj+1;
+			p3.z=buffer_vol[Ox+sx*(jj+1)+sx*sy*(kk+1)];
+
+			p4.x=kk+1;
+			p4.y=jj;
+			p4.z=buffer_vol[Ox+sx*jj+sx*sy*(kk+1)];
+
+
+				T[0].p[0]=p1;
+				T[0].p[1]=p3;
+				T[0].p[2]=p2;
+
+				T[1].p[0]=p1;
+				T[1].p[1]=p4;
+				T[1].p[2]=p3;
+
+
+			for(int iT=0;iT<2;iT++){
+				for(ar=0;ar<3;ar++){ //boucle sur les arêtes
+					if(T[iT].p[ar].z==isoVal && T[iT].p[(ar+1)%3].z==isoVal){ // cas où l'arête est sur le plan
+						S1=T[iT].p[ar];
+						S2=T[iT].p[(ar+1)%3];
+						e2=1;
+						break;
+					}
+					else if((T[iT].p[ar].z-isoVal)*(T[iT].p[(ar+1)%3].z-isoVal)<=0){ // cas où le plan intersecte l'arête en un seul point
+						if(e2){
+							S2=intersection(T[iT].p[ar],T[iT].p[(ar+1)%3],isoVal);
+							break;
+						}
+						else{
+							S1=intersection(T[iT].p[ar],T[iT].p[(ar+1)%3],isoVal);
+							e2=1;
+						}
+					}
+				}
+
+				if(e2){
+					glVertex3f(Ox,S1.y,hz*S1.x);
+					glVertex3f(Ox,S2.y,hz*S2.x);
+				}
+			}
+		}
+	}
+
+	glEnd();
+}
+
+
+void drawIsoCurveY(void)
+{
+	unsigned long i,j;
+
+	glLineWidth(1.);     /* épaisseur 1  */
+	glColor3f(0.,1.,1.); /* couleur cyan */
+	glBegin(GL_LINES);
+
+	/* début du calcul et tracé de la courbe isovaleur            */
+	/* les données de la coupe y=Oy sont données par              */
+	/* buffer_vol[i+sx*Oy+sx*sy*ll] avec 0<=i<=sx-1 et 0<=ll<=sz-1 */
+	/*                                                            */
+	/* Pour tracer un segment [(x1,y1,z1)-(x2,y2,z2)],            */
+	/* insérer les deux instructions OpenGL suivantes :           */
+	/*    glVertex3f( x1 , y1 , z1 );                             */
+	/*    glVertex3f( x2 , y2 , z2 );                             */
+	/*                                                            */
+	/* PARTIE A COMPLETER                                         */
+	int ii;
+	int ll;
+	int ar;
+
+	Point3 S1;
+	Point3 S2;
+	Point3 p1;
+	Point3 p2;
+	Point3 p3;
+	Point3 p4;
+	int e2;
+	Triangle T[2];
+
+	for(ii=0;ii<sx-1;ii++){
+		for(ll=0;ll<sz-1;ll++){
+			e2=0;
+
+			p1.x=ii;
+			p1.y=ll;
+			p1.z=buffer_vol[ii+sx*Oy+sx*sy*ll];
+
+			p2.x=ii;
+			p2.y=ll+1;
+			p2.z=buffer_vol[ii+sx*Oy+sx*sy*(ll+1)];
+
+			p3.x=ii+1;
+			p3.y=ll+1;
+			p3.z=buffer_vol[ii+1+sx*Oy+sx*sy*(ll+1)];
+
+			p4.x=ii+1;
+			p4.y=ll;
+			p4.z=buffer_vol[ii+1+sx*Oy+sx*sy*ll];
+
+				T[0].p[0]=p1;
+				T[0].p[1]=p3;
+				T[0].p[2]=p2;
+
+				T[1].p[0]=p1;
+				T[1].p[1]=p4;
+				T[1].p[2]=p3;
+
+
+			for(int iT=0;iT<2;iT++){
+				for(ar=0;ar<3;ar++){ //boucle sur les arêtes
+					if(T[iT].p[ar].z==isoVal && T[iT].p[(ar+1)%3].z==isoVal){ // cas où l'arête est sur le plan
+						S1=T[iT].p[ar];
+						S2=T[iT].p[(ar+1)%3];
+						e2=1;
+						break;
+					}
+					else if((T[iT].p[ar].z-isoVal)*(T[iT].p[(ar+1)%3].z-isoVal)<=0){ // cas où le plan intersecte l'arête en un seul point
+						if(e2){
+							S2=intersection(T[iT].p[ar],T[iT].p[(ar+1)%3],isoVal);
+							break;
+						}
+						else{
+							S1=intersection(T[iT].p[ar],T[iT].p[(ar+1)%3],isoVal);
+							e2=1;
+						}
+					}
+				}
+
+				if(e2){
+					glVertex3f(S1.x,Oy /*S1.y*/,S1.y*hz);
+					glVertex3f(S2.x,Oy /*S2.y*/,S2.y*hz);
+				}
+			}
+		}
+	}
+
+	glEnd();
+}
+
 
 
 /****************************************/
@@ -838,7 +1017,9 @@ void redraw(void)
 
       drawSlices();
       drawSlicesBoundary();
-	  drawIsoCurveZ();
+	drawIsoCurveZ();
+	drawIsoCurveX();
+	drawIsoCurveY();
 
   if (reportSpeed) {
     glFinish();
