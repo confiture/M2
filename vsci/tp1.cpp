@@ -7,7 +7,6 @@
 #include<cstdio>
 #include<cstdlib>
 #include<cstring>
-#include<iostream>
 
 // le type Point3
 // les 3 coordonnées
@@ -219,22 +218,6 @@ int ecrire_segments_VECT(Point3 E1[], Point3 E2[], int N,
 	return 0;
 }
 
-/**
- *Retourne l'intersection du segment [p1,p2] avec le plan z=v.
- *
- */
-Point3 intersection(const Point3& p1,const Point3& p2,int v){
-	if(v==p1.z)return p1;
-	if(v==p2.z)return p2;
-
-	double a = (v-p2.z)/(p1.z-p2.z);
-	return a*p1+(1-a)*p2;
-}
-
-<<<<<<< HEAD:vsci/tp1/src/tp1.cpp
-
-=======
->>>>>>> avant pull:vsci/tp1.cpp
 //////////////////////////////////////////////////////////////////
 // calcul d'isocourbe sur données triangulée
 // Entrée : S = tableau des sommets, tableau de nS Point3
@@ -267,21 +250,18 @@ int calcul_isocourbe(Point3 *S, int nS, Triangle *T, int nT, double v,
 	}
 
 	N=0;
-	bool e2; // booléen qui indique si on est sur le deuxième sommet du segment (E2[N])
-	for(int iT=0;iT<nT;iT++){ // boucle sur les mailles
+	bool e2;
+	for(int iT=0;iT<nT;iT++){
 		e2=false;
-		for(int ar=0;ar<3;ar++){ //boucle sur les arêtes
-			if(S[T[iT][ar]].z==v && S[T[iT][(ar+1)%3]].z==v){ // cas où l'arête est sur le plan
+		for(int ar=0;ar<3;ar++){
+			if(S[T[iT][ar]].z==v && S[T[iT][(ar+1)%3]].z==v){
 				E1[N]=S[T[iT][ar]];
 				E2[N]=S[T[iT][(ar+1)%3]];
-				N++;
 				break;
 			}
-			else if((S[T[iT][ar]].z-v)*(S[T[iT][(ar+1)%3]].z-v)<=0){ // cas où le plan intersecte l'arête en un seul point
+			else if((S[T[iT][ar]].z-v)*(S[T[iT][(ar+1)%3]].z-v)<=0){
 				if(e2){
 					E2[N]=intersection(S[T[iT][ar]],S[T[iT][(ar+1)%3]],v);
-					N++;
-					break;
 				}
 				else{
 					E1[N]=intersection(S[T[iT][ar]],S[T[iT][(ar+1)%3]],v);
@@ -289,34 +269,38 @@ int calcul_isocourbe(Point3 *S, int nS, Triangle *T, int nT, double v,
 				}
 			}
 		}
+
+		N++;
 	}
 
 	return 0;
 }
 
+/**
+ *Retourne l'intersection du segment [p1,p2] avec le plan z=v.
+ *
+ */
+Point3 intersection(const Point3& p1,const Point3& p2,int v){
+	if(v==p1.z)return p1;
+	if(v==p2.z)return p2;
+
+	double a = (v-p2.z)/(p1.z-p2.z);
+	return a*p1+(1-a)*p2;
+}
+
 	//////////////////////////////////////////////////////////////////
 	//////////////////////////////////////////////////////////////////
 	// routine principale
-int main(int argc,char* argv[])
+	int main()
 	{
 		Point3 *S;
 		int nS;
 		Triangle *T;
 		int nT;
-		float v; // le plan des isovaleurs
-		sscanf(argv[1],"%f",&v);
-		std::cout<<v<<std::endl;
-		char* ficE=argv[2];
-		char* ficS=argv[3];
-		float r,g,b;
-		sscanf(argv[4],"%f",&r);
-		sscanf(argv[5],"%f",&g);
-		sscanf(argv[6],"%f",&b);
-		Couleur coul(r,g,b);
 
 		// lecture du fichier Geomview au format OFF
 		fprintf(stdout, "Lecture des données ...\n");
-		if (lire_fichier_OFF(/*"ex_triangulation.off"*/ficE, S, nS, T, nT)!=0)
+		if (lire_fichier_OFF("ex_triangulation.off", S, nS, T, nT)!=0)
 			return 1;
 
 		// calcul de la courbe isovaleur sous la forme de nE segments
@@ -326,7 +310,7 @@ int main(int argc,char* argv[])
 		Point3 *E2;
 		int nE;
 		fprintf(stdout, "Calcul de la courbe isovaleur...\n");
-		if (calcul_isocourbe(S,nS,T,nT,/*1.0*/v,E1,E2,nE)!=0)
+		if (calcul_isocourbe(S,nS,T,nT,1.0,E1,E2,nE)!=0)
 		{
 			free((void *)T);
 			free((void *)S);
@@ -335,7 +319,7 @@ int main(int argc,char* argv[])
 
 		// écriture du fichier Geomview au format VECT
 		fprintf(stdout, "Ecriture du fichier segments ...\n");
-		if (ecrire_segments_VECT(E1,E2,nE,/*"ex_isoligne1.vect"*/ficS,coul)!=0)
+		if (ecrire_segments_VECT(E1,E2,nE,"ex_isoligne1.vect")!=0)
 		{
 			free((void *)T);
 			free((void *)S);
