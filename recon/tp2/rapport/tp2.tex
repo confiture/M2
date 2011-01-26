@@ -1,0 +1,276 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage{pdfpages}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage[francais]{babel}
+\usepackage[dvips,lmargin=3cm,rmargin=3cm,tmargin=3cm,bmargin=4cm]{geometry}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage[utf8]{inputenc}
+\usepackage{listings}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{float}
+\usepackage[T1]{fontenc}
+%\usepackage[nottoc, notlof, notlot]{tocbibind}
+\usepackage{graphicx}
+
+\usepackage{subfig}
+
+% Macros pratique pour les maths.
+\newcommand{\bs}{\symbol{92}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\K}{\mathbb{K}}
+\newcommand{\B}{\mathcal{B}}
+\newcommand{\tab}{\hspace*{1cm}}
+\newcommand{\norm}[1]{\left\vert \left\vert {#1}  \right\vert \right\vert}
+\newcommand{\abs}[1]{ \left\vert {#1}  \right\vert}
+\newcommand{\vect}[1]{\overrightarrow{#1}}
+\newcommand{\scal}[2]{\langle #1 \vert #2 \rangle}
+\newcommand{\exems}{$ $ \\ \noindent{{\textbf{Exemples.~}}}}
+\newcommand{\exem}{$ $ \\ \noindent{{\textbf{Exemple.~}}}}
+\newcommand{\rem}{$ $\\\ \noindent{{\textbf{Remarque.~}}}}
+\newcommand{\rems}{$ $ \\ \noindent{{\textbf{Remarques.~}}}}
+\newcommand{\rap}{$ $ \\ \noindent{{\textbf{Rappel.~}}}}
+\newcommand{\car}[1]{|#1|}
+\newcommand{\card}{\mbox{card}}
+\newcommand{\stab}{\mbox{Stab}}
+\newcommand{\ba}[1]{\overline{#1}}
+\newcommand{\inte}[1]{ [\![{#1} ]\!]}
+
+% Configuration du package lstlisting pour du C++.
+% \lstset{
+%   basicstyle=\small,
+%   breaklines=true,
+%   commentstyle=\color[rgb]{0.3,0.3,0.3}\textit,
+%   emphstyle=\rmfamily\color{blue},
+%   frame=single,
+%   keywordstyle=\color{blue},
+%   language=C++,
+%   lineskip=0pt,
+%   numbers=left,
+%   numbersep=5pt,
+%   numberstyle=\tt\small\color{gray},
+%   showstringspaces=false,
+%   tabsize=4,
+%   texcl=true
+% }
+\definecolor{colKeys}{rgb}{0,0,1}
+\definecolor{colIdentifier}{rgb}{0,0,0}
+\definecolor{colComments}{rgb}{0,0.5,1}
+\definecolor{colString}{rgb}{0.6,0.1,0.1}
+
+\lstset{%configuration de listings
+float=hbp, %
+basicstyle=\ttfamily \small, %
+identifierstyle=\color{colIdentifier}, %
+keywordstyle=\color{colKeys}, %
+stringstyle=\color{colString}, %
+commentstyle=\color{colComments}, %
+columns=flexible, %
+tabsize=4, %
+frame=trBL, %
+frameround=tttt, %
+extendedchars=true, %
+showspaces=false, %
+showstringspaces=false, %
+numbers=left, %
+numberstyle=\tiny, %
+breaklines=true, %
+breakautoindent=true, %
+captionpos=b, %
+xrightmargin=0cm, %
+xleftmargin=0cm,
+language=scilab,
+commentstyle=\textit
+}
+
+
+
+\title{
+  \huge{\bf TP2 - Reconstruction de surfaces}
+}
+
+\author{
+    \textsc{Trlin} Moreno \\
+}
+
+\date{25 janvier 2011}
+
+\begin{document}
+
+ \maketitle
+  \begin{center}
+   \includegraphics[height=4cm]{../images/imag.png}
+
+  \end{center}
+ \tableofcontents
+
+\section{EXERCICE-SM 1}
+\subsection{Résultats}
+
+\begin{tabular}{|c|c|}
+\hline
+\includegraphics[width=8cm]{../images/SM1-init.png} & \includegraphics[width=8cm]{../images/SM1-dp.png} \\
+Surface initiale                         & Dérivée première modifiée. \\
+\hline
+\includegraphics[width=8cm]{../images/SM1-init.png} & \includegraphics[width=8cm]{../images/SM1-ds.png} \\
+Surface initiale                         & Twists légèrement modifiés. \\
+\hline
+\includegraphics[width=8cm]{../images/SM1-init.png} & \includegraphics[width=8cm]{../images/SM1-dsG.png} \\
+Surface initiale                         & Grande modification des twists. \\
+\hline
+\end{tabular}
+
+\paragraph{Observations :} On voit que la modification de la dérivée première conduit à une modification de
+la surface. Une petite modification des twists ne change pas beaucoup la surface. Une grande modification
+des twists tord la surface.
+
+\section{EXERCICE-SM 2}
+\subsection{Le code}
+
+\begin{lstlisting}
+function [SX,SY,SZ,X1,Y1,Z1] = ...
+  interp_prod_tensoriel2(X,Y,Z,u,v,Su,Sv,methode_u,methode_v)
+
+  // verification du nombre d'arguments
+  nargin = argn(2);
+  if nargin<7
+    error('syntaxe [SX,SY,SZ] = interp_prod_tensoriel(X,Y,Z,u,v,Su,Sv[,methode_u[,methode_v]])');
+  end
+  if nargin<8
+    methode_u = 'natural';
+  end
+  if nargin<9
+    methode_v = methode_u;
+  end
+
+  // verification des arguments
+  M = length(u);
+  N = length(v);
+  P = length(Su);
+  Q = length(Sv);
+  if (M<2 | N<2 | P<2 | Q<2)
+    error('les vecteurs u, v, Su, Sv doivent avoir au moins 2 valeurs');
+  end
+  if (min(diff(u))<=0 | min(diff(v))<=0 | min(diff(Su))<=0 | min(diff(Sv))<=0)
+    error('les vecteurs u, v, Su, Sv doivent etre composees de valeurs strictement croissantes');
+  end
+
+  if (size(X,1)~=N | size(X,2)~=M | ...
+      size(Y,1)~=N | size(Y,2)~=M | ...
+      size(Z,1)~=N | size(Z,2)~=M)
+    error('les tableaux (X,Y,Z) doivent avoir des dimensions correspondant a (u,v)');
+  end
+
+  // mettre u et Su en ligne, v et Sv en colonne
+  u  = u(:)' ;
+  Su = Su(:)';
+  v  = v(:)  ;
+  Sv = Sv(:) ;
+
+  ////// interpolation 1-D suivant le parametre v
+  // selection de la routine Scilab suivant la methode
+  select methode_v
+    case 'not_a_knot'
+      routine_interp = 'splin1'; methode_interp = '''not_a_knot''';
+    case 'natural'
+      routine_interp = 'splin1'; methode_interp = '''natural''';
+    case 'periodic'
+      routine_interp = 'splin1'; methode_interp = '''periodic''';
+    case 'fast'
+      routine_interp = 'splin1'; methode_interp = '''fast''';
+    case 'fast_periodic'
+      routine_interp = 'splin1'; methode_interp = '''fast_periodic''';
+    else
+      routine_interp = 'splin1'; methode_interp = '''natural''';
+  end
+
+  X1 = zeros(Q,M);
+  Y1 = zeros(Q,M);
+  Z1 = zeros(Q,M);
+  s_interp_X = ['X1(:,i) = '+ routine_interp+ '(v, X(:,i), Sv,'+ methode_interp+ ');'];
+  s_interp_Y = ['Y1(:,i) = '+ routine_interp+ '(v, Y(:,i), Sv,'+ methode_interp+ ');'];
+  s_interp_Z = ['Z1(:,i) = '+ routine_interp+ '(v, Z(:,i), Sv,'+ methode_interp+ ');'];
+  for i=1:M
+    execstr([s_interp_X;s_interp_Y;s_interp_Z]);
+  end
+
+  ////// interpolation 1-D suivant le parametre u
+  // selection de la routine Scilab suivant la methode
+  select methode_u
+    case 'not_a_knot'
+      routine_interp = 'splin1'; methode_interp = '''not_a_knot''';
+    case 'natural'
+      routine_interp = 'splin1'; methode_interp = '''natural''';
+    case 'periodic'
+      routine_interp = 'splin1'; methode_interp = '''periodic''';
+    case 'fast'
+      routine_interp = 'splin1'; methode_interp = '''fast''';
+    case 'fast_periodic'
+      routine_interp = 'splin1'; methode_interp = '''fast_periodic''';
+    else
+      routine_interp = 'splin1'; methode_interp = '''natural''';
+  end
+
+  s_interp_X = ['SX(i,:) = '+ routine_interp+ '(u, X1(i,:), Su,'+ methode_interp+ ');'];
+  s_interp_Y = ['SY(i,:) = '+ routine_interp+ '(u, Y1(i,:), Su,'+ methode_interp+ ');'];
+  s_interp_Z = ['SZ(i,:) = '+ routine_interp+ '(u, Z1(i,:), Su,'+ methode_interp+ ');'];
+  for i=1:Q
+    execstr([s_interp_X;s_interp_Y;s_interp_Z]);
+  end
+
+endfunction
+\end{lstlisting}
+
+\subsection{Résultats}
+
+\begin{tabular}{|c|c|}
+\hline
+$u$ puis $v$                                        & $v$ puis $u$\\
+\hline
+\includegraphics[width=8cm]{../images/SM2-uv-i.png} & \includegraphics[width=8cm]{../images/SM2-vu-i.png} \\
+\includegraphics[width=8cm]{../images/SM2-uv-ii-1.png} & \includegraphics[width=8cm]{../images/SM2-vu-ii-1.png} \\
+\includegraphics[width=8cm]{../images/SM2-uv-ii-2.png} & \includegraphics[width=8cm]{../images/SM2-vu-ii-2.png} \\
+\hline
+\end{tabular}
+
+\paragraph{Observations :} Les interpolations sont bien les mêmes.\\ \\
+
+Les différents schémas d'interpolation :\\
+\begin{tabular}{|c|c|}
+\hline
+\includegraphics[width=8cm]{../images/SM2-notknot.png} & \includegraphics[width=8cm]{../images/SM2-fast.png} \\
+not\_a\_knot                                             & fast \\
+\hline
+\includegraphics[width=8cm]{../images/SM2-uPervnat.png} & \includegraphics[width=8cm]{../images/SM2-fast_per.png} \\
+periodic en $u$ et natural en $v$                       & fast\_periodic \\
+\hline
+\end{tabular}
+
+\begin{center}
+\begin{tabular}{|c|}
+\hline
+\includegraphics[width=8cm]{../images/SM2-fast.png} \\
+natural \\
+\hline
+\end{tabular}
+\end{center}
+
+
+\paragraph{Observations :} Les interpolations fast et natural sont quasiment les mêmes : elles interpolent
+le polygone de contrôle avec une forme plutôt quadrangulaire et elles possèdent une discontinuité en la dérivée
+première. Les autres interpolations sont régulières. L'interpolation not\_a\_knot a une forme plutôt triangulaire.
+L'interpolation periodic en $u$ et natural $v$ a une forme circulaire. L'interpolation fast\_periodic est comme
+l'interpolation fast (ou natural) sans la discontinuité en la dérivée première.
+
+ \pagebreak
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ \end{document}
