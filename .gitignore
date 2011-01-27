@@ -4,6 +4,16 @@
 #*
 *~*
 
+*.exe
+*.bin
+*.raw
+
+*.zip
+*.gz
+*.tgz
+*.tar
+*.sphere
+
 *.jpg
 *.jpeg
 *.png
@@ -13,4 +23,17 @@
 *.ppm
 *.xcf
 *.DS
+
+*.vect
+*.mesh
+*.off
+
+*.log
+*.aux
+*.toc
+*.out
+*.bbl
+*.bbx
+*.nav
+
 bin/
