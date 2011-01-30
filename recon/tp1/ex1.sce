@@ -167,9 +167,9 @@ endfunction
 
 
 function SM4()
-  t=[0 2 4 5 6 7 9 11 12]
-  x=[4 2 0 2 4 4 3 1 0]
-  y=[0 0 0 1 2 3 4 4 3]
+  t=[0 1 2 3]
+  x=[0 1 1 0]
+  y=[0 0 1 1]
     
   px=polyfit(t,x)  
   py=polyfit(t,y)  
@@ -181,98 +181,47 @@ function SM4()
   scf()
   plot(x,y,'ro')
   plot(x,y,'g--')
-  plot(xtrace,ytrace,'b-')
-  a=gca()
-  a.isoview = "on"
-  
-  xs2png(0,"SM4--simple.png")
-    
-  clf
-  
-  scf()
-  plot(x,y,'ro')
-  plot(x,y,'g--')
-  a=gca()
-  a.isoview = "on"
-  
-  dx = splin(t,x,"not_a_knot")
-  dy = splin(t,y,"not_a_knot")
-  
-  xtrace = interp(ttrace,t,x,dx)
-  ytrace = interp(ttrace,t,y,dy)
-  
-  plot(xtrace,ytrace,'b-')
-  xs2png(1,"SM4--notaknot.png")
-  
-  
-  clf
-  
-  scf()
-  plot(x,y,'ro')
-  plot(x,y,'g--')
-  a=gca()
-  a.isoview = "on"
-  
-  dx = splin(t,x,"natural")
-  dy = splin(t,y,"natural")
-  
-  xtrace = interp(ttrace,t,x,dx)
-  ytrace = interp(ttrace,t,y,dy)
-  
-  plot(xtrace,ytrace,'b-')
-  xs2png(2,"SM4--natural.png")
-  
-  
-  clf
-  
-  scf()
-  plot(x,y,'ro')
-  plot(x,y,'g--')
-  a=gca()
-  a.isoview = "on"
-  
-  dx = splin(t,x,"monotone")
-  dy = splin(t,y,"monotone")
-  
-  xtrace = interp(ttrace,t,x,dx)
-  ytrace = interp(ttrace,t,y,dy)
-  
-  plot(xtrace,ytrace,'b-')
-  xs2png(3,"SM4--monotone.png")
-  
-  clf
-  
-  scf()
-  plot(x,y,'ro')
-  plot(x,y,'g--')
-  a=gca()
-  a.isoview = "on"
-  
-  dx = splin(t,x,"fast")
-  dy = splin(t,y,"fast")
-  
-  xtrace = interp(ttrace,t,x,dx)
-  ytrace = interp(ttrace,t,y,dy)
-  
-  plot(xtrace,ytrace,'b-')
-  xs2png(4,"SM4--fast.png")
-  
-  clf
-  
-  scf()
-  plot(x,y,'ro')
-  plot(x,y,'g--')
+  plot(xtrace,ytrace,'k-')
   a=gca()
   a.isoview = "on"
   
   dx = splin(t,x,"clamped",[1 -1])
-  dy = splin(t,y,"clamped",[0  0])
+  dy = splin(t,y,"clamped",[0 0])
   
   xtrace = interp(ttrace,t,x,dx)
   ytrace = interp(ttrace,t,y,dy)
   
   plot(xtrace,ytrace,'b-')
-  xs2png(5,"SM4--clamped")
+  xs2png(0,"SM4little.png")
+  
+  clf
+    
+  t=[0 2 4 5 6 7 9 11 12]
+  x=[4 2 0 2 4 4 3 1 0]
+  y=[0 0 0 1 2 3 4 4 3]
+  
+  px=polyfit(t,x)  
+  py=polyfit(t,y)  
+  
+  ttrace = linspace(t(1),t($),1000)
+  xtrace = polyval(px,ttrace)
+  ytrace = polyval(py,ttrace);
+  
+  scf()
+  plot(x,y,'ro')
+  plot(x,y,'g--')
+  plot(xtrace,ytrace,'k-')
+  a=gca()
+  a.isoview = "on"
+  
+  dx = splin(t,x,"clamped",[1 -1])
+  dy = splin(t,y,"clamped",[0 0])
+  
+  xtrace = interp(ttrace,t,x,dx)
+  ytrace = interp(ttrace,t,y,dy)
+  
+  plot(xtrace,ytrace,'b-')
+  xs2png(1,"SM4max.png")
 endfunction
 
 
@@ -294,54 +243,16 @@ function SM5()
   plot(xtrace,ytrace)
   a=gca()
   a.isoview = "on"
-  xs2png(0,"SM5--natural-little")
+  
+  plot(xtrace,ytrace)
   
   dx = splin(t,x,"periodic")
   dy = splin(t,y,"periodic")
   
   xtrace = interp(ttrace,t,x,dx)
   ytrace = interp(ttrace,t,y,dy)
-  scf()
-  plot(x,y,'ro')
-  plot(x,y,'g--')
-  plot(xtrace,ytrace)
-  a=gca()
-  a.isoview = "on"
-  xs2png(1,"SM5--periodic-little.png")
-  
-  a=sqrt(0.5)
-  t = 0:1:8
-  x = [1 a 0 -a -1 -a 0 a 1]
-  y = [0 a 1 a 0 -a -1 -a 0]
-    
-  dx = splin(t,x,"natural")
-  dy = splin(t,y,"natural")
-  
-  ttrace = linspace(t(1),t($),1000)
-  xtrace = interp(ttrace,t,x,dx)
-  ytrace = interp(ttrace,t,y,dy)
-  
-  scf()
-  plot(x,y,'ro')
-  plot(x,y,'g--')
-  plot(xtrace,ytrace)
-  a=gca()
-  a.isoview = "on"
-  xs2png(2,"SM5--natural-more.png")
-  
-  
-  dx = splin(t,x,"periodic")
-  dy = splin(t,y,"periodic")
-  
-  xtrace = interp(ttrace,t,x,dx)
-  ytrace = interp(ttrace,t,y,dy)
-  scf()
-  plot(x,y,'ro')
-  plot(x,y,'g--')
-  plot(xtrace,ytrace)
-  a=gca()
-  a.isoview = "on"
-  xs2png(3,"SM5--periodic-more.png")
+  plot(xtrace,ytrace,'r')
+  xs2png(0,"SM5.png")
 endfunction
 
 function SM52()
@@ -684,17 +595,6 @@ function [C,r]=cercle_mc2(x,y)
 endfunction
 
 function SM8()
-  x = [1 ; 2 ; 3]
-  y = [4 ; 0 ; 1]
-  t=0:0.01:2*%pi
-  [C,r]=cercle_mc2(x,y)
-  scf()
-  plot(x,y,'r+')
-  plot(C(1)+r*cos(t),C(2)+r*sin(t),'k-')
-  set(gca(),'isoview','on')
-  xs2png(0,"sm8--0-2pi-3pts.png")
-  
-  
   t=0:0.01:2*%pi
   x=cos(t)+rand(t)*0.4-0.2
   y=sin(t)+rand(t)*0.4-0.2
@@ -703,7 +603,7 @@ function SM8()
   plot(x,y,'r+')
   plot(C(1)+r*cos(t),C(2)+r*sin(t),'k-')
   set(gca(),'isoview','on')
-  xs2png(1,"sm8--0-2pi.png")
+  xs2png(0,"sm8--0-2pi.png")
   
   
   t=0:0.01:%pi
@@ -714,7 +614,7 @@ function SM8()
   plot(x,y,'r+')
   plot(C(1)+r*cos(t),C(2)+r*sin(t),'k-')  
   set(gca(),'isoview','on')
-  xs2png(2,"sm8--0-pi.png")
+  xs2png(1,"sm8--0-pi.png")
   
   t=0:0.01:%pi/2
   x=cos(t)+rand(t)*0.4-0.2
@@ -724,56 +624,28 @@ function SM8()
   plot(x,y,'r+')
   plot(C(1)+r*cos(t),C(2)+r*sin(t),'k-')
   set(gca(),'isoview','on')
-  xs2png(3,"sm8--0-piSur2.png")
+  xs2png(2,"sm8--0-piSur2.png")
 endfunction
 
 
-function [xyOrig]=approxim_parabole(x,y)
+function [XY]=approxim_parabole(x,y)
   [B,v,n]=droite_mc(x,y)
   M=[v n]
   XY=(M')*[x-B(1) ; y-B(2)]
-  p=polyfit(XY(1,:),XY(2,:),2)
+  p=polyfit(X(1,:),X(2,:),2)
   
   //xyOrig=M*XY+b
-  xtrace=linspace(XY(1,1),XY(1,$),1000)
+  xtrace=linspace(x(1),x($),1000)
   ytrace=polyval(p,xtrace);
   
   xyOrig=M*[xtrace ; ytrace]+[B(1)*ones(1,1000) ; B(2)*ones(1,1000)]
+  
+  scf()
+  plot(x,y,'ro')
+  plot(xyOrig(1,:),xyOrig(2,:),'k-')
 endfunction 
   
-function SM9()
-  t=linspace(-%pi/2,%pi/2,20);
-  x=cos(t)
-  y=sin(t)
-  scf()
-  plot(x,y,'r+')
-  XY=approxim_parabole(x,y)
-  plot(XY(1,:),XY(2,:),'b-')
-  set(gca(),'isoview','on')
-  xs2png(0,"sm9---piS2-piS2.png")
   
-  
-  t=linspace(0,%pi/2,20);
-  x=cos(t)
-  y=sin(t)
-  scf()
-  plot(x,y,'r+')
-  XY=approxim_parabole(x,y)
-  plot(XY(1,:),XY(2,:),'b-')
-  set(gca(),'isoview','on')
-  xs2png(1,"sm9--0-piS2.png")
-  
-  
-  t=linspace(0,%pi,20);
-  x=cos(t)
-  y=sin(t)
-  scf()
-  plot(x,y,'r+')
-  XY=approxim_parabole(x,y)
-  plot(XY(1,:),XY(2,:),'b-')
-  set(gca(),'isoview','on')
-  xs2png(2,"sm9--0-pi.png")
-endfunction
 
 
 

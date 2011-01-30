@@ -1,13 +1,13 @@
 /////////////////////////////////////////////////////////////////////////////
 // interface avec le programmes qdelaunay 
-// a) rï¿½cupï¿½rer les programmes sources sur le site http://www.qhull.org
+// a) récupérer les programmes sources sur le site http://www.qhull.org
 // b) compiler les programmes
-//    -> exï¿½cutables qhull qvoronoi rbox qconvex qdelaunay qhalf
-// Seul le programme exï¿½cutable qdelaunay est utilisï¿½ dans ce script
+//    -> exécutables qhull qvoronoi rbox qconvex qdelaunay qhalf
+// Seul le programme exécutable qdelaunay est utilisé dans ce script
 /////////////////////////////////////////////////////////////////////////////
 
 /////////////////////////////////////////////////////////////////////////////
-// rï¿½cupï¿½rer la date actuelle sous forme d'un chaine de caractere
+// récupérer la date actuelle sous forme d'un chaine de caractere
 // au format AAMMJJhhmmss
 function s = datestring()
   dt = getdate();
@@ -15,7 +15,7 @@ function s = datestring()
 endfunction
 
 /////////////////////////////////////////////////////////////////////////////
-// calcul du centre de la sphere circonscrite ï¿½ une d-cellule de R^d
+// calcul du centre de la sphere circonscrite à une d-cellule de R^d
 // Entree : S = d+1 points de dimension d, sommets de la d-cellule
 //              tableau de d+1 lignes et d colonnes (1 point par ligne)
 // Sortie : C = point de R^d (ligne de d colonnes)
@@ -50,18 +50,18 @@ endfunction
 
 /////////////////////////////////////////////////////////////////////////////
 // calcul de la triangulation de Delaunay en dimension d
-// Entrï¿½e : S = tableau des nS sommets 
+// Entrée : S = tableau des nS sommets 
 //               matrice de nS lignes et d colonnes
 //               une ligne = les d coordonnees d'un sommet 
 // Sortie : T = tableau des nT cellules de la triangulation
 //               matrice de nT lignes et d+1 colonnes
 //               une ligne = les indices des d+1 sommets de la cellule
-//               l'indiï¿½age fait rï¿½fï¿½rence au tableau S et commence ï¿½ 1
-//          C = centre des sphï¿½res circonscrites aux cellules
+//               l'indiçage fait référence au tableau S et commence à 1
+//          C = centre des sphères circonscrites aux cellules
 //               matrice de nT lignes et d colonnes 
 //               une ligne = les d coordonnees d'un centre
-//          r = rayon des sphï¿½res circonscrites aux cellules
-//               vecteur de nT rï¿½els
+//          r = rayon des sphères circonscrites aux cellules
+//               vecteur de nT réels
 function [T,C,r] = delaunay(S)
 
   nargout = argn(1);
@@ -79,7 +79,7 @@ function [T,C,r] = delaunay(S)
   nom_fichier_sommets = msprintf("qhullS-%s.tmp.o", date_s);
   nom_fichier_triangles = msprintf("qhullT-%s.tmp.o", date_s);
   
-  // ï¿½criture du tableau de sommets dans le fichier nom_fichier_sommets
+  // écriture du tableau de sommets dans le fichier nom_fichier_sommets
   f = mopen(nom_fichier_sommets,"w");
   mfprintf(f, "%d\n%d\n", d, nS);
   for i=1:nS
@@ -193,7 +193,7 @@ function test_delaunay(num_test)
     
     case 1
   //// test 1 
-  // les donnï¿½es
+  // les données
   S = [
     0 0;
     2 0;
@@ -204,14 +204,14 @@ function test_delaunay(num_test)
     2 3];
   [T,C,r] = delaunay(S);
   
-  // tracï¿½ de la triangulation de Delaunay
+  // tracé de la triangulation de Delaunay
   scf();
   dessin_delaunay(S,T);
   
-  // tracï¿½ des centres des cercles circonscrits
+  // tracé des centres des cercles circonscrits
   plot(C(:,1),C(:,2),'g+');
   
-  // tracï¿½ des cercles circonscrits  
+  // tracé des cercles circonscrits  
   t = linspace(0,2*%pi,1000);
   for i=1:size(C,1)
     plot(C(i,1)+r(i)*cos(t),C(i,2)+r(i)*sin(t),'g-');
@@ -219,14 +219,14 @@ function test_delaunay(num_test)
   
   
     case 2 then
-  //// test 2 - points alï¿½atoires
+  //// test 2 - points aléatoires
   S = rand(100,2);
   T = delaunay(S);
   scf();
   dessin_delaunay(S,T);
   
     case 3 then
-  //// test 3 - points suivant une grille rï¿½guliï¿½re
+  //// test 3 - points suivant une grille régulière
   S = zeros(100,2);
   for i=0:9
     for j=1:10
@@ -239,14 +239,14 @@ function test_delaunay(num_test)
   
     case 4 then
   
-  //// test 4 - points entrï¿½s ï¿½ la souris
+  //// test 4 - points entrés à la souris
   S = inputpoints()';
   [T,C] = delaunay(S);
   
-  // tracï¿½ de la triangulation de Delaunay
+  // tracé de la triangulation de Delaunay
   dessin_delaunay(S,T);
   
-  // tracï¿½ des centres des cercles circonscrits
+  // tracé des centres des cercles circonscrits
   plot(C(:,1),C(:,2),'g+');
     
   end // select
@@ -254,7 +254,7 @@ function test_delaunay(num_test)
 endfunction
 
 //////////////////////////////////////////////////////////////////////////////
-// entrï¿½e d'un ensemble de points ï¿½ la souris
+// entrée d'un ensemble de points à la souris
 // en sortie, le tableau X avec p points du plan (dimensions 2 x p)
 function X = inputpoints()
 
@@ -279,29 +279,5 @@ while but==3 | but==0 | but==10 | but==20
 end;
 
 endfunction
-
-function SM10()
-   S = inputpoints()';
-   [T,C] = delaunay(S);
-   
-   [D,E] = delaunay([S;C])
-   nS=size(S,1)
-   n=size(D,1)
-   
-   for i=1:n,
-     if(D(i,2)<=nS & D(i,1)<=nS) then
-       plot([S(D(i,1),1) S(D(i,2),1)],[S(D(i,1),2) S(D(i,2),2)])
-     end
-     if(D(i,3)<=nS & D(i,1)<=nS) then
-           plot([S(D(i,1),1) S(D(i,3),1)],[S(D(i,1),2) S(D(i,3),2)])
-     end     
-     if(D(i,2)<=nS & D(i,3)<=nS) then
-       plot([S(D(i,2),1) S(D(i,3),1)],[S(D(i,2),2) S(D(i,3),2)])
-     end
-   end
-   
-   xs2png(0,"SM10.png")
-endfunction
-   
 
 
