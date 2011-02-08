@@ -5,7 +5,7 @@
 
 #include"lib_base2d.hpp"
 
-// écrit la liste d'entiers I 
+// écrit la liste d'entiers I
 void ecrire(vint I)
 {
 	printf("vint : %d valeur(s)\n", I.size());
@@ -59,19 +59,19 @@ Point operator/(Point A, double r)
 }
 
 // calcule le produit scalaire A.B
-double dot(Point A, Point B) 
+double dot(Point A, Point B)
 {
 	return (A.x * B.x + A.y * B.y);
 }
 
 // calcule la norme de A
-double norm(Point A) 
+double norm(Point A)
 {
 	return sqrt(A.x * A.x + A.y * A.y);
 }
 
 // calcule la distance entre A et B
-double distance_point(Point A, Point B) 
+double distance_point(Point A, Point B)
 {
 	return norm(A-B);
 }
@@ -80,7 +80,7 @@ double distance_point(Point A, Point B)
 // Entree : P = tableay de Point
 //          n = nombre de points
 // Sortie : Pxmin, Pxmax, Pymin, Pymax = bornes de la boite englobante
-void boite_englobante(Point *P, int n, 
+void boite_englobante(Point *P, int n,
    double &Pxmin, double &Pxmax, double &Pymin, double &Pymax)
 {
 	Pxmin = Pxmax = P[0].x;
@@ -101,26 +101,26 @@ void boite_englobante(Point *P, int n,
 //     ( A12 A22 )
 // Entrée : A11,A12,A22 = les trois valeurs définissant la matrice symetrique
 // Sortie : l1,l2 = les deux valeurs propres avec l1 <= l2
-//          v1,v2 =  les vecteurs propres unitaires associés 
+//          v1,v2 =  les vecteurs propres unitaires associés
 void elements_propres_mat_sym(double A11, double A12, double A22,
  double &l1, double &l2, Point &v1, Point &v2)
 {
 	if ( ABS(A12) < 1.0e-8*MAX(ABS(A11),ABS(A22)) )
 	{
-		// A12 considéré comme nul par rapport à A11 et A22 
+		// A12 considéré comme nul par rapport à A11 et A22
 		// -> la matrice est diagonale :
 		//  les valeurs propres sont les éléments de la diagonale
 		//  les vecteurs propres sont les colonnes de la matrice identité
 		if (A11 <= A22)
 		{
-			l1 = A11; v1.x = 1.0; v1.y = 0.0; 
-			l2 = A22; v2.x = 0.0; v2.y = 1.0; 
+			l1 = A11; v1.x = 1.0; v1.y = 0.0;
+			l2 = A22; v2.x = 0.0; v2.y = 1.0;
 		}
 		else
 		{
-			l1 = A22; v1.x = 0.0; v1.y = 1.0; 
-			l2 = A11; v2.x = 1.0; v2.y = 0.0; 
-		}		
+			l1 = A22; v1.x = 0.0; v1.y = 1.0;
+			l2 = A11; v2.x = 1.0; v2.y = 0.0;
+		}
 	}
 	else
 	{
@@ -134,11 +134,11 @@ void elements_propres_mat_sym(double A11, double A12, double A22,
 		w2 = ABS(A22-l1);
 		w3 = ABS(A11-l2);
 		w4 = ABS(A22-l2);
-		
+
 		if (w1 >= w2 && w1 >= w3 && w1 >= w4)
 		{
 			// calcul de v1 à partir de A12 et A11-l1
-			
+
 			// calcul de v1 unitaire
 			y = A11-l1; x = -A12;
 			nV = sqrt(x*x+y*y);
@@ -151,7 +151,7 @@ void elements_propres_mat_sym(double A11, double A12, double A22,
 		else if (w2 >= w1 && w2 >= w3 && w2 >= w4)
 		{
 			// calcul de v1 à partir de A12 et A22-l1
-			
+
 			// calcul de v1 unitaire
 			x = A22-l1; y = -A12;
 			nV = sqrt(x*x+y*y);
@@ -164,7 +164,7 @@ void elements_propres_mat_sym(double A11, double A12, double A22,
 		else if (w3 >= w1 && w3 >= w2 && w3 >= w4)
 		{
 			// calcul de v2 à partir de A12 et A11-l2
-			
+
 			// calcul de v2 unitaire
 			y = A11-l2; x = -A12;
 			nV = sqrt(x*x+y*y);
@@ -177,7 +177,7 @@ void elements_propres_mat_sym(double A11, double A12, double A22,
 		else //if (w4 >= w1 && w4 >= w2 && w4 >= w3)
 		{
 			// calcul de v2 à partir de A12 et A22-l2
-			
+
 			// calcul de v2 unitaire
 			x = A22-l2; y = -A12;
 			nV = sqrt(x*x+y*y);
@@ -187,12 +187,12 @@ void elements_propres_mat_sym(double A11, double A12, double A22,
 			v1.x = -v2.y;
 			v1.y =  v2.x;
 		}
-		
+
 	}
 }
 
 ///////////////////////////////////////////////////////////////////
-// calcule l'arbre couvrant minimal correspondant à 
+// calcule l'arbre couvrant minimal correspondant à
 // d'un graphe à n sommets dont les aretes valuees sont triees
 // par ordre croissant
 Arbre calcule_ACM(Graphe G)
@@ -213,21 +213,21 @@ Arbre calcule_ACM(Graphe G)
   		// sommets de l'arete iA
   		int s1 = A[iA].s1;
   		int s2 = A[iA].s2;
-  
+
   		// numeros associes aux sommets
   		// pour un sommet, le numero est :
   		//   >0 si le sommet appartient au sous-arbre de meme numero
   		//   =0 si le sommet n'appartient à aucun sous-arbre
 		int num1 = noeuds[s1].num;
 		int num2 = noeuds[s2].num;
-  
+
 		if (num1==0 && num2==0)
 		{
 		    // creer un nouveau sous-arbre réduit à l'arete [s1,s2]
 		    num_sous_arbre++;
 		    noeuds[s1].num = num_sous_arbre;
 		    noeuds[s2].num = num_sous_arbre;
-			
+
 			// ajouter l'arete [s1,s2]
 		    noeuds[s1].voisins.push_back(s2);
 		    noeuds[s2].voisins.push_back(s1);
@@ -237,7 +237,7 @@ Arbre calcule_ACM(Graphe G)
 		{
 			// ajouter le sommet s1 au sous-arbre de s2
 			noeuds[s1].num = num2;
-			
+
 			// ajouter l'arete [s1,s2]
 		    noeuds[s1].voisins.push_back(s2);
 		    noeuds[s2].voisins.push_back(s1);
@@ -247,7 +247,7 @@ Arbre calcule_ACM(Graphe G)
 		{
 			// ajouter le sommet s2 au sous-arbre de s1
 			noeuds[s2].num = num1;
-			
+
 			// ajouter l'arete [s1,s2]
 		    noeuds[s1].voisins.push_back(s2);
 		    noeuds[s2].voisins.push_back(s1);
@@ -255,9 +255,9 @@ Arbre calcule_ACM(Graphe G)
 		}
 		else if (num1 != num2)
 		{
-			// fusionner les arbres de s1 et s2 : 
+			// fusionner les arbres de s1 et s2 :
 			// changer le numero de l'arbre contenant s2
-			// i.e. parcourir l'arbre a partir de s2 et 
+			// i.e. parcourir l'arbre a partir de s2 et
 			// remplacer le numero des noeuds par num1
 			lint L;
 			L.push_back(s2);
@@ -273,17 +273,17 @@ Arbre calcule_ACM(Graphe G)
 						L.push_back(j);
 				}
 			}
-			
+
 			// ajouter l'arete [s1,s2]
 		    noeuds[s1].voisins.push_back(s2);
 		    noeuds[s2].voisins.push_back(s1);
 		    nb_aretes_ajoutees++;
 		}
-// 		printf("iA = %4d, nb_aretes_ajoutees = %d, n = %d\n", 
+// 		printf("iA = %4d, nb_aretes_ajoutees = %d, n = %d\n",
 // 		  iA, nb_aretes_ajoutees, n);
 		iA++;
 	}
-	
+
 // 	// ecrit l'ACM
 // 	for (int i=0; i<n; i++)
 // 	{
@@ -295,7 +295,7 @@ Arbre calcule_ACM(Graphe G)
 // 		}
 // 		printf(" ]\n");
 // 	}
-	
+
 	// retourner l'arbre CM
 	Arbre ACM;
 	ACM.n = n;
