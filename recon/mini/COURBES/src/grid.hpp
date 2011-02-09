@@ -8,13 +8,25 @@
 #include <iostream>
 
 inline double calc_pas(int n,Point * pts){
-	double h=numeric_limits<double>::infinity();
+	int indMinDist;
+	double nrm;
+	double dist[n];
+	double h=-numeric_limits<double>::infinity();
+	for(int i=0;i<n;i++)
+		dist[i]=numeric_limits<double>::infinity();
 
 	for(int i=0;i<n-1;i++){
-		for(int j=i+1;j<n;j++){
-			double nrm=norm(pts[i]-pts[j]);
-			if(nrm<h)
-				h=nrm;
+		if(dist[i]==numeric_limits<double>::infinity()){
+			for(int j=i+1;j<n;j++){
+				nrm=norm(pts[i]-pts[j]);
+				if(nrm<dist[i]){
+					dist[i]=nrm;
+					indMinDist=j;
+				}
+			}
+			dist[indMinDist]=dist[i];
+
+			if(h<dist[i])h=dist[i];
 		}
 	}
 

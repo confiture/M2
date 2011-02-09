@@ -8,8 +8,8 @@ grille calc_grille_dist(int n,Point * pts,Point * normales){
 	boite_englobante(pts,n,xmin,xmax,ymin,ymax);
 	xmin-=2*pas;xmax+=2*pas;ymin-=2*pas;ymax+=2*pas;
 
-	int dimx=(int)((xmax-xmin)/pas);
-	int dimy=(int)((ymax-ymin)/pas);
+	int dimx=(int)((xmax-xmin)/pas+0.5);
+	int dimy=(int)((ymax-ymin)/pas+0.5);
 
 	grille grDist(dimy,dimx,pas,xmin,xmax,ymin,ymax);
 
@@ -22,29 +22,54 @@ grille calc_grille_dist(int n,Point * pts,Point * normales){
 	for(int i=0;i<n;i++){
 		int indi;
 		int indj;
-
-		if(pts[i].x-((int)(pts[i].x-xmin)/pas)*pas<=pas/2){
+		std::cout<<"=========="<<std::endl;
+		if(pts[i].x-((int)((pts[i].x-xmin)/pas))*pas-xmin<=pas/2.0){
 			indj=((int)((pts[i].x-xmin)/pas));
+			std::cout<<"pts[i].x "<<pts[i].x<<std::endl;
+			std::cout<<"((int)((pts[i].x-xmin)/pas))*pas+xmin "
+			         <<((int)((pts[i].x-xmin)/pas))*pas+xmin
+			         <<std::endl;
+			std::cout<<"cas 1 x"<<std::endl;
 		}
 		else{
 			indj=1+((int)((pts[i].x-xmin)/pas));
+			std::cout<<"pts[i].x "<<pts[i].x<<std::endl;
+			std::cout<<"((int)((pts[i].x-xmin)/pas))*pas+xmin "
+			         <<((int)((pts[i].x-xmin)/pas))*pas+xmin
+			         <<std::endl;
+			std::cout<<"cas 2 x"<<std::endl;
 		}
 
-		if(pts[i].y-((int)(pts[i].y-ymin)/pas)*pas<=pas/2){
+		if(pts[i].y-((int)((pts[i].y-ymin)/pas))*pas-ymin<=pas/2.0){
 			indi=((int)((pts[i].y-ymin)/pas));
+			std::cout<<"cas 1 y"<<std::endl;
 		}
 		else{
 			indi=1+((int)((pts[i].y-ymin)/pas));
+			std::cout<<"pts[i].y "<<pts[i].y<<std::endl;
+			std::cout<<"(1+(int)((pts[i].y-ymin)/pas))*pas+ymin "
+			         <<(1+(int)((pts[i].y-ymin)/pas))*pas+ymin
+			         <<std::endl;
+			std::cout<<"cas 2 y"<<std::endl;
 		}
+
+		std::cout<<"verifs===="
+		         <<std::endl
+		         <<"indi "<<indi<<std::endl
+		         <<"indj "<<indj<<std::endl
+		         <<"dimy "<<dimy<<std::endl
+		         <<"dimx "<<dimx<<std::endl
+		         <<"====verifs"<<std::endl;
 
 		for(int ig=-1;ig<=1;ig++){
 			for(int jg=-1;jg<=1;jg++){
-				Point ptGrille(indi*pas+ig*pas,
-				               indj*pas+jg*pas);
+				Point ptGrille(indj*pas+jg*pas+xmin,
+				               indi*pas+ig*pas+ymin);
 
 				double d=dot(ptGrille-pts[i],normales[i])/dot(normales[i],normales[i]);
 
 				if(d<grDist(indi+ig,indj+jg))grDist(indi+ig,indj+jg)=d;
+				std::cout<<"not here2"<<std::endl;
 			}
 		}
 	}
@@ -67,10 +92,10 @@ void grille::calc_iso_courbe(double v,vPoint & E1,vPoint & E2){
 
 	for(int i=1;i<this->nl-1;i++){
 		for(int j=1;j<this->nc-1;j++){// boucle sur les mailles
-			pt1=Point3(i*pas+xmin,j*pas+ymin,(*this)(i,j));
-			pt2=Point3((i+1)*pas+xmin,j*pas+ymin,(*this)(i+1,j));
-			pt3=Point3((i+1)*pas+xmin,(j+1)*pas+ymin,(*this)(i+1,j+1));
-			pt4=Point3(i*pas+xmin,(j+1)*pas+ymin,(*this)(i,j+1));
+			pt1=Point3(j*pas+xmin,i*pas+ymin,(*this)(i,j));
+			pt2=Point3(j*pas+xmin,(i+1)*pas+ymin,(*this)(i+1,j));
+			pt3=Point3((j+1)*pas+xmin,(i+1)*pas+ymin,(*this)(i+1,j+1));
+			pt4=Point3((j+1)*pas+xmin,i*pas+ymin,(*this)(i,j+1));
 
 			T[0][0]=pt1;T[0][1]=pt3;T[0][2]=pt4;
 			T[1][0]=pt1;T[1][1]=pt2;T[1][2]=pt3;
