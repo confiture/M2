@@ -9,6 +9,7 @@
 *.png
 *.pgm
 *.bmp
+*.eps
 *.gif
 *.ppm
 *.xcf
