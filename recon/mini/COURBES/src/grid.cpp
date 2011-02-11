@@ -11,71 +11,80 @@ grille calc_grille_dist(int n,Point * pts,Point * normales){
 	int dimx=(int)((xmax-xmin)/pas+0.5);
 	int dimy=(int)((ymax-ymin)/pas+0.5);
 
-	grille grDist(dimy,dimx,pas,xmin,xmax,ymin,ymax);
+	double grDist[dimy][dimx];
+	grille grDistSig(dimy,dimx,pas,xmin,xmax,ymin,ymax);
 
 	for(int i=0;i<dimy;i++){
 		for(int j=0;j<dimx;j++){
-			grDist(i,j)=numeric_limits<double>::infinity();
+			grDist[i][j]=numeric_limits<double>::infinity();
+			grDistSig(i,j)=numeric_limits<double>::infinity();
 		}
 	}
 
 	for(int i=0;i<n;i++){
 		int indi;
 		int indj;
-		std::cout<<"=========="<<std::endl;
 		if(pts[i].x-((int)((pts[i].x-xmin)/pas))*pas-xmin<=pas/2.0){
 			indj=((int)((pts[i].x-xmin)/pas));
-			std::cout<<"pts[i].x "<<pts[i].x<<std::endl;
-			std::cout<<"((int)((pts[i].x-xmin)/pas))*pas+xmin "
-			         <<((int)((pts[i].x-xmin)/pas))*pas+xmin
-			         <<std::endl;
-			std::cout<<"cas 1 x"<<std::endl;
 		}
 		else{
 			indj=1+((int)((pts[i].x-xmin)/pas));
-			std::cout<<"pts[i].x "<<pts[i].x<<std::endl;
-			std::cout<<"((int)((pts[i].x-xmin)/pas))*pas+xmin "
-			         <<((int)((pts[i].x-xmin)/pas))*pas+xmin
-			         <<std::endl;
-			std::cout<<"cas 2 x"<<std::endl;
 		}
 
 		if(pts[i].y-((int)((pts[i].y-ymin)/pas))*pas-ymin<=pas/2.0){
 			indi=((int)((pts[i].y-ymin)/pas));
-			std::cout<<"cas 1 y"<<std::endl;
 		}
 		else{
 			indi=1+((int)((pts[i].y-ymin)/pas));
-			std::cout<<"pts[i].y "<<pts[i].y<<std::endl;
-			std::cout<<"(1+(int)((pts[i].y-ymin)/pas))*pas+ymin "
-			         <<(1+(int)((pts[i].y-ymin)/pas))*pas+ymin
-			         <<std::endl;
-			std::cout<<"cas 2 y"<<std::endl;
 		}
 
-		std::cout<<"verifs===="
-		         <<std::endl
-		         <<"indi "<<indi<<std::endl
-		         <<"indj "<<indj<<std::endl
-		         <<"dimy "<<dimy<<std::endl
-		         <<"dimx "<<dimx<<std::endl
-		         <<"====verifs"<<std::endl;
 
 		for(int ig=-1;ig<=1;ig++){
 			for(int jg=-1;jg<=1;jg++){
 				Point ptGrille(indj*pas+jg*pas+xmin,
 				               indi*pas+ig*pas+ymin);
 
-				double d=dot(ptGrille-pts[i],normales[i])/dot(normales[i],normales[i]);
+				double d=norm(ptGrille-pts[i]);
 
-				if(d<grDist(indi+ig,indj+jg))grDist(indi+ig,indj+jg)=d;
-				std::cout<<"not here2"<<std::endl;
+				if(d<grDist[indi+ig][indj+jg])grDist[indi+ig][indj+jg]=d;
 			}
 		}
 	}
 
-	return grDist;
+	for(int i=0;i<n;i++){
+		int indi;
+		int indj;
+		if(pts[i].x-((int)((pts[i].x-xmin)/pas))*pas-xmin<=pas/2.0){
+			indj=((int)((pts[i].x-xmin)/pas));
+		}
+		else{
+			indj=1+((int)((pts[i].x-xmin)/pas));
+		}
+
+		if(pts[i].y-((int)((pts[i].y-ymin)/pas))*pas-ymin<=pas/2.0){
+			indi=((int)((pts[i].y-ymin)/pas));
+		}
+		else{
+			indi=1+((int)((pts[i].y-ymin)/pas));
+		}
+
+
+		for(int ig=-1;ig<=1;ig++){
+			for(int jg=-1;jg<=1;jg++){
+				Point ptGrille(indj*pas+jg*pas+xmin,
+				               indi*pas+ig*pas+ymin);
+
+				double d=norm(ptGrille-pts[i]);
+
+				if(d<=grDist[indi+ig][indj+jg])grDistSig(indi+ig,indj+jg)=dot(ptGrille-pts[i],normales[i])/dot(normales[i],normales[i]);
+			}
+		}
+	}
+
+
+	return grDistSig;
 }
+
 
 
 void grille::calc_iso_courbe(double v,vPoint & E1,vPoint & E2){
