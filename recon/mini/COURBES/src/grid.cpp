@@ -93,6 +93,7 @@ void grille::calc_iso_courbe(double v,vPoint & E1,vPoint & E2){
 	E2.resize((this->nl)*(this->nc)*2);
 
 	int N=0;
+	int deb=0;
 	bool e2; // booléen qui indique si on est sur le deuxième sommet du segment (E2[N])
 
 	Point3 T[2][3];//les triangles
@@ -111,23 +112,27 @@ void grille::calc_iso_courbe(double v,vPoint & E1,vPoint & E2){
 
 			for(int iT=0;iT<2;iT++){
 				e2=false;
+				deb=0;
 				for(int ar=0;ar<3;ar++){ //boucle sur les arêtes
-					if(T[iT][ar].z < numeric_limits<double>::infinity() && T[iT][(ar+1)%3].z < numeric_limits<double>::infinity()){
+					if(T[iT][ar].z != numeric_limits<double>::infinity() && T[iT][(ar+1)%3].z != numeric_limits<double>::infinity()){
 						if(T[iT][ar].z==v && T[iT][(ar+1)%3].z==v){ // cas où l'arête est sur le plan
-							E1[N]=Point(T[iT][ar].x,T[iT][ar].y);;
+							E1[N]=Point(T[iT][ar].x,T[iT][ar].y);
 							E2[N]=Point(T[iT][(ar+1)%3].x,T[iT][(ar+1)%3].y);
 							N++;
 							break;
 						}
 						else if((T[iT][ar].z-v)*(T[iT][(ar+1)%3].z-v)<=0){ // cas où le plan intersecte l'arête en un seul point
-							inter=intersection(T[iT][ar],T[iT][(ar+1)%3],v);
+							//inter=intersection(T[iT][ar],T[iT][(ar+1)%3],v);
+							inter=intersection(T[iT][(ar+1)%3],T[iT][ar],v);
 							if(e2){
 								E2[N]=Point(inter.x,inter.y);
+								deb++;
 								N++;
 								break;
 							}
 							else{
 								E1[N]=Point(inter.x,inter.y);
+								deb++;
 								e2=true;
 							}
 						}
@@ -137,8 +142,42 @@ void grille::calc_iso_courbe(double v,vPoint & E1,vPoint & E2){
 		}
 	}
 
+	std::cout<<"NNNN "<<N<<std::endl;
+
 	E1.resize(N);
 	E2.resize(N);
+}
+
+
+void normales(int n,Point * pts,Point * normales,double r){
+	double dist[n][n];
+	std::list<Arete> aretes;
+	Point B,v;
+
+	for(int i=0;i<n;i++){
+		dist[i][i]=0;
+		for(int j=i+1;j<n;j++){
+				dist[i][j]=distance_point(pts[i],pts[j]);
+				dist[j][i]=distance_point(pts[i],pts[j]);
+		}
+	}
+
+	for(int i=0;i<n;i++){
+		std::list<Point> voisinage;
+		for(int j=0;j<n;j++){
+			if(i!=j && dist[i][j]<=r){
+				Arete ac;
+				ac.v=dist[i][j];
+				ac.s1=i;
+				ac.s2=j;
+
+				aretes.push_back(ac);
+				voisinage.push_back(pts[j]);
+			}
+		}
+
+		droite_mc(voisinage,B,v,normales[i]);
+	}
 }
 
 Point3 operator+(Point3 A, Point3 B)

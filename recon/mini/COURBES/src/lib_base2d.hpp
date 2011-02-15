@@ -35,7 +35,7 @@ class Point
 {
 	public:
 	double x,y; // coordonnees
-	
+
 	// constructeurs
 	Point(): x(0.0),y(0.0){}
 	Point(double x0, double y0): x(x0),y(y0){}
@@ -83,7 +83,7 @@ struct Arbre
 // DECLARATION DES ROUTINES
 //////////////////////////////////////////////////////////////////////////////
 
-// écrit la liste d'entiers I 
+// écrit la liste d'entiers I
 void ecrire(vint I);
 
 // ecrit les n points du tableau P
@@ -91,7 +91,7 @@ void ecrire(Point *P, int n);
 
 ///////////////////////////////////////////////////////////////////
 // routines de calcul sur des points 2D
- 
+
 // calcule le point égal à A+B
 Point operator+(Point A, Point B);
 
@@ -110,6 +110,9 @@ Point operator*(Point A, double r);
 // calcule le point égal à A/r avec r scalaire réel
 Point operator/(Point A, double r);
 
+// a1<a2 si a1.v < a2.v
+bool operator<(Arete a1,Arete a2);
+
 // calcule le produit scalaire A.B
 double dot(Point A, Point B) ;
 
@@ -119,8 +122,13 @@ double norm(Point A) ;
 // calcule la distance entre A et B
 double distance_point(Point A, Point B) ;
 
+// Construit la droite aux moindres carrres a partir de la liste
+// de points pts. En sortie, B est le barycentre des points, v est le
+// vecteur directeur de la droite, et n est la normale de la droite.
+void droite_mc(const std::list<Point> & pts,Point & B,Point & v,Point & n);
+
 // calcule la boite englobante des n points du tableau P
-void boite_englobante(Point *P, int n, 
+void boite_englobante(Point *P, int n,
    double &Pxmin, double &Pxmax, double &Pymin, double &Pymax);
 
 
@@ -131,13 +139,13 @@ void boite_englobante(Point *P, int n,
 //     ( A12 A22 )
 // Entrée : A11,A12,A22 = les trois valeurs définissant la matrice symetrique
 // Sortie : l1,l2 = les deux valeurs propres avec l1 <= l2
-//          v1,v2 =  les vecteurs propres unitaires associés 
+//          v1,v2 =  les vecteurs propres unitaires associés
 void elements_propres_mat_sym(double A11, double A12, double A22,
  double &l1, double &l2, Point &v1, Point &v2);
 
 
 ///////////////////////////////////////////////////////////////////
-// calcule l'arbre couvrant minimal correspondant à 
+// calcule l'arbre couvrant minimal correspondant à
 // d'un graphe G non oriente dont les aretes valuees sont triees
 // par ordre croissant
 Arbre calcule_ACM(Graphe G);

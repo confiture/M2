@@ -47,6 +47,7 @@
 #include"lib_base2d.hpp"
 #include"xfig.hpp"
 #include "grid.hpp"
+#include <algorithm>
 //////////////////////////////////////////////////////////////////////////////
 // test 1 : un exemple de figure XFIG avec différents objets
 // et différentes profondeurs
@@ -689,9 +690,22 @@ void test_test()
 	}
 
 	grille gr=calc_grille_dist(n,pTab,nTab);
-	for(int i=0;i<gr.nl;i++){
+	for(int i=gr.nl-1;i>=0;i--){
 		for(int j=0;j<gr.nc;j++){
-			std::cout<<gr(i,j)<<" ";
+			if(gr(i,j)==numeric_limits<double>::infinity()){
+				std::cout<<"  ";
+			}
+			else if(gr(i,j)==0){
+				std::cout<<" 0";
+			}
+			else if(gr(i,j)>=0){
+				std::cout<<" +";
+			}
+			else{
+				std::cout<<" -";
+			}
+
+			//std::cout<<gr(i,j)<<" ";
 		}
 		std::cout<<std::endl;
 	}
@@ -731,9 +745,154 @@ void test_test()
 	// export du fichier au format JPEG avec une échelle de 2
 	//   et qualité 95
 	printf("Création du fichier test_test.jpg\n");
-	XFIG_export_JPG("test_test.fig", "test_test.jpg", 2.0, 100);
+	XFIG_export_JPG("test_test.fig", "test_test.jpg", 2.0, 95);
 }
 
+void test_normales()
+{
+	printf("Création d'un ensemble de points et normales orientées\n");
+	printf("et export aux formats EPS, JPG, GIF\n");
+
+	int num_test=0;
+	while (num_test<1 || num_test>3)
+	{
+		printf("Choisir le jeux de données à créer :\n");
+		printf("1 : points sur un oval   						 \n");
+		printf("2 : points sur une courbe de subdivision ouverte \n");
+		printf("3 : points sur une courbe de subdivision fermée  \n");
+		scanf("%i", &num_test);
+
+	}
+
+	// création du jeu de données
+	vPoint P ,NP;
+	switch (num_test)
+	{
+		case 1 :
+		{
+		// point sur un oval
+		int n=50;
+		double rx=1.5, ry=1.0;
+		P.resize(n);
+		NP.resize(n);
+		for (int i=0; i<n; i++)
+		{
+			double a = 2.0*i*M_PI/n;
+			P[i] = Point(rx*cos(a),ry*sin(a));
+		}
+
+		break;
+		}
+
+		case 2 :
+		{
+		// points issus d'une courbe de subdivision ouverte
+		P.resize(6);
+		int k=0;
+		bool ferme=false;
+		P[k++] = Point(0,0);
+		P[k++] = Point(0,1);
+		P[k++] = Point(1,1);
+		P[k++] = Point(1,0);
+		P[k++] = Point(3,0);
+		P[k++] = Point(3,1);
+		// création de points par subdivision
+		for (int i=1; i<=4; i++)
+			P=chaikin(P,ferme);
+		// calcul des normales orientées par différences finies
+		break;
+		}
+		case 3 :
+		{
+		// points issus d'une courbe de subdivision fermée
+		P.resize(4);
+		int k=0;
+		bool ferme=true;
+		P[k++] = Point(0,0);
+		P[k++] = Point(1,0);
+		P[k++] = Point(1,1);
+		P[k++] = Point(0,1);
+		// création de points par subdivision
+		for (int i=1; i<=4; i++)
+			P=chaikin(P,ferme);
+		// calcul des normales orientées par différences finies
+		break;
+		}
+	}
+
+	int n=P.size();
+	Point pTab[n];
+	Point nTab[n];
+	for(int i=0;i<n;i++){
+		pTab[i]=P[i];
+	}
+
+	normales(n,pTab,nTab,calc_pas(n,pTab));
+
+	grille gr=calc_grille_dist(n,pTab,nTab);
+	for(int i=0;i<gr.nl;i++){
+		for(int j=0;j<gr.nc;j++){
+			std::cout<<gr(i,j)<<" ";
+		}
+		std::cout<<std::endl;
+	}
+
+	vPoint E1,E2;
+	gr.calc_iso_courbe(0,E1,E2);
+	int N=E1.size();
+
+	// calcul des écarts
+	double dmin, dmax;
+	ecart_min_max(P, dmin, dmax);
+	printf("dmin = %f\n", dmin);
+	printf("dmax = %f\n", dmax);
+
+	// création du fichier FIG
+	printf("Création du fichier test_test.fig\n");
+	XFIG_open("test_normales.fig");
+
+	// tracé des n points, chaque point sur la forme
+	// d'un cercle	rouge de rayon dmin/3, d'épaisseur 2,
+	// les points sont tracés  à la profondeur 49
+	XFIG_thickness=2;
+	XFIG_depth = 49;
+	XFIG_pen_color = XFIG_COLOR_RED;
+	for (int i=0; i<n; i++)
+		XFIG_circle(P[i],dmin/3.0);
+
+	for (int i=0; i<n; i++)
+		XFIG_arrow(P[i],P[i]+0.3*nTab[i]);
+
+
+// 	vPoint segm(2);
+// 	for(int i=0;i<N;i++){
+// 		segm[0]=E1[i];
+// 		segm[1]=E2[i];
+// 		XFIG_polygon(segm); // version vector<Point> P
+// 	}
+
+	XFIG_close();
+
+	// export du fichier au format JPEG avec une échelle de 2
+	//   et qualité 95
+	printf("Création du fichier test_normales.jpg\n");
+	XFIG_export_JPG("test_normales.fig", "test_normales.jpg", 2.0, 95);
+}
+
+
+void testBidon(){
+	int myints[] = {32,71,12,45,26,80,53,33};
+	int* it=myints;
+	int* end=&myints[7];
+	end++;
+	sort(it,end);
+
+	for(int i=0;i<8;i++){
+		std::cout<<myints[i]<<" ";
+	}
+
+	std::cout<<endl;
+}
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -741,7 +900,11 @@ void test_test()
 int main(int argc, char *argv[])
 {
 
+	//testBidon();
+
 	test_test();
+
+	//test_normales();
 
 	int num_test=1;
 	if (argc>=2)

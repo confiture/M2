@@ -76,6 +76,31 @@ double distance_point(Point A, Point B)
 	return norm(A-B);
 }
 
+bool operator<(Arete a1,Arete a2){
+	return a1.v<a2.v;
+}
+
+void droite_mc(const std::list<Point> & pts,Point & B,Point & v,Point & n){
+	std::list<Point>::const_iterator it=pts.begin();
+	std::list<Point>::const_iterator end=pts.end();
+	B.x=0;
+	B.y=0;
+	for(it;it!=end;it++)
+		B=B+(*it);
+
+	B=B/pts.size();
+
+	double A11,A12,A22;A11=A12=A22=0;
+	for(it=pts.begin();it!=end;it++){
+		A11+=(it->x-B.x)*(it->x-B.x);
+		A12+=(it->x-B.x)*(it->y-B.y);
+		A22+=(it->y-B.y)*(it->y-B.y);
+	}
+
+	double l1,l2;
+	elements_propres_mat_sym(A11,A12,A22,l1,l2,n,v);
+}
+
 // calcule la boite englobante des n points du tableau P
 // Entree : P = tableay de Point
 //          n = nombre de points
@@ -93,7 +118,6 @@ void boite_englobante(Point *P, int n,
 		if (Pymax < P[i].y) Pymax = P[i].y;
 	}
 }
-
 
 // calcul des elements propres de la matrice carree symetrique A
 //     ( A11 A12 )
