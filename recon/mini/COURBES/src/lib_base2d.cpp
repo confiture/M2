@@ -4,7 +4,7 @@
 // Implementation
 
 #include"lib_base2d.hpp"
-
+#include <iostream>
 // écrit la liste d'entiers I
 void ecrire(vint I)
 {
@@ -224,8 +224,10 @@ Arbre calcule_ACM(Graphe G)
 	int n = G.nS;
 	Noeud *noeuds = new Noeud[n];
 
+	std::cout<<"here 1"<<std::endl;
 	for (int i=0; i<n; i++)
 		noeuds[i].num = 0;
+	std::cout<<"here 2"<<std::endl;
 
 	int nb_aretes_ajoutees=0;
 	int iA = 0;
@@ -236,12 +238,15 @@ Arbre calcule_ACM(Graphe G)
 	{
   		// sommets de l'arete iA
   		int s1 = A[iA].s1;
+		Arete ac;
+		//A[iA]=ac;
   		int s2 = A[iA].s2;
 
   		// numeros associes aux sommets
   		// pour un sommet, le numero est :
   		//   >0 si le sommet appartient au sous-arbre de meme numero
   		//   =0 si le sommet n'appartient à aucun sous-arbre
+		std::cout<<"s1 "<<s1<<std::endl;
 		int num1 = noeuds[s1].num;
 		int num2 = noeuds[s2].num;
 
@@ -303,24 +308,24 @@ Arbre calcule_ACM(Graphe G)
 		    noeuds[s2].voisins.push_back(s1);
 		    nb_aretes_ajoutees++;
 		}
-// 		printf("iA = %4d, nb_aretes_ajoutees = %d, n = %d\n",
-// 		  iA, nb_aretes_ajoutees, n);
+		printf("iA = %4d, nb_aretes_ajoutees = %d, n = %d\n",
+		  iA, nb_aretes_ajoutees, n);
 		iA++;
 	}
 
-// 	// ecrit l'ACM
-// 	for (int i=0; i<n; i++)
-// 	{
-// 		printf("sommet %d (%d) : [", i, noeuds[i].num);
-// 		for (int k=0; k<noeuds[i].voisins.size(); k++)
-// 		{
-// 			int j = noeuds[i].voisins[k];
-// 			printf(" %d",j);
-// 		}
-// 		printf(" ]\n");
-// 	}
+	// ecrit l'ACM
+	for (int i=0; i<n; i++)
+	{
+		printf("sommet %d (%d) : [", i, noeuds[i].num);
+		for (int k=0; k<noeuds[i].voisins.size(); k++)
+		{
+			int j = noeuds[i].voisins[k];
+			printf(" %d",j);
+		}
+		printf(" ]\n");
+	}
 
-	// retourner l'arbre CM
+// 	retourner l'arbre CM
 	Arbre ACM;
 	ACM.n = n;
 	ACM.noeuds = noeuds;

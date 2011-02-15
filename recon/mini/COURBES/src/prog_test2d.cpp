@@ -902,9 +902,9 @@ int main(int argc, char *argv[])
 
 	//testBidon();
 
-	test_test();
+	//test_test();
 
-	//test_normales();
+	test_normales();
 
 	int num_test=1;
 	if (argc>=2)

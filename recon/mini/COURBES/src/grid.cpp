@@ -142,8 +142,6 @@ void grille::calc_iso_courbe(double v,vPoint & E1,vPoint & E2){
 		}
 	}
 
-	std::cout<<"NNNN "<<N<<std::endl;
-
 	E1.resize(N);
 	E2.resize(N);
 }
@@ -151,7 +149,6 @@ void grille::calc_iso_courbe(double v,vPoint & E1,vPoint & E2){
 
 void normales(int n,Point * pts,Point * normales,double r){
 	double dist[n][n];
-	std::list<Arete> aretes;
 	Point B,v;
 
 	for(int i=0;i<n;i++){
@@ -166,18 +163,46 @@ void normales(int n,Point * pts,Point * normales,double r){
 		std::list<Point> voisinage;
 		for(int j=0;j<n;j++){
 			if(i!=j && dist[i][j]<=r){
-				Arete ac;
-				ac.v=dist[i][j];
-				ac.s1=i;
-				ac.s2=j;
-
-				aretes.push_back(ac);
 				voisinage.push_back(pts[j]);
 			}
 		}
 
 		droite_mc(voisinage,B,v,normales[i]);
 	}
+
+	int nA = 0;
+	for (int i=0; i<n; i++)
+		for (int j=i+1; j<n; j++)
+			if (dist[i][j]<=r)
+				nA ++;
+
+	Arete aretes[nA];
+
+	int k;
+	for(int i=0;i<n-1;i++){
+		for(int j=i+1;j<n;j++){
+			if(dist[i][j]<=r){
+				Arete ac;
+				ac.v=dist[i][j];
+				ac.s1=i;
+				ac.s2=j;
+
+				aretes[k]=ac;
+				k++;
+			}
+		}
+	}
+
+	Arete* begin=&aretes[0];
+	Arete* end=&aretes[nA];
+
+	sort(begin,end);
+
+	Graphe G = {&aretes[0],nA,n};
+	Arbre ACM = calcule_ACM(G);
+
+	for(int i=0;i<n;i++){
+
 }
 
 Point3 operator+(Point3 A, Point3 B)
