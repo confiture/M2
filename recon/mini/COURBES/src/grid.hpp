@@ -6,7 +6,7 @@
 #include <map>
 #include "coords.hpp"
 #include <iostream>
-
+#include <vector>
 inline double calc_pas(int n,Point * pts){
 	int indMinDist;
 	double nrm;

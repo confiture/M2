@@ -1,5 +1,5 @@
 #include "grid.hpp"
-
+#include"xfig.hpp"
 
 grille calc_grille_dist(int n,Point * pts,Point * normales){
 	double pas=calc_pas(n,pts);
@@ -107,13 +107,14 @@ void grille::calc_iso_courbe(double v,vPoint & E1,vPoint & E2){
 			pt3=Point3((j+1)*pas+xmin,(i+1)*pas+ymin,(*this)(i+1,j+1));
 			pt4=Point3((j+1)*pas+xmin,i*pas+ymin,(*this)(i,j+1));
 
-			T[0][0]=pt1;T[0][1]=pt3;T[0][2]=pt4;
+			T[0][0]=pt1;T[0][1]=pt4;T[0][2]=pt3;
 			T[1][0]=pt1;T[1][1]=pt2;T[1][2]=pt3;
 
 			for(int iT=0;iT<2;iT++){
 				e2=false;
 				deb=0;
-				for(int ar=0;ar<3;ar++){ //boucle sur les arêtes
+				int ar=0;
+				for(ar=0;ar<3;ar++){ //boucle sur les arêtes
 					if(T[iT][ar].z != numeric_limits<double>::infinity() && T[iT][(ar+1)%3].z != numeric_limits<double>::infinity()){
 						if(T[iT][ar].z==v && T[iT][(ar+1)%3].z==v){ // cas où l'arête est sur le plan
 							E1[N]=Point(T[iT][ar].x,T[iT][ar].y);
@@ -121,9 +122,8 @@ void grille::calc_iso_courbe(double v,vPoint & E1,vPoint & E2){
 							N++;
 							break;
 						}
-						else if((T[iT][ar].z-v)*(T[iT][(ar+1)%3].z-v)<=0){ // cas où le plan intersecte l'arête en un seul point
-							//inter=intersection(T[iT][ar],T[iT][(ar+1)%3],v);
-							inter=intersection(T[iT][(ar+1)%3],T[iT][ar],v);
+						else if((T[iT][ar].z-v)*(T[iT][(ar+1)%3].z-v)<0 || T[iT][ar].z-v==0){ // cas où le plan intersecte l'arête en un seul point
+							inter=intersection(T[iT][ar],T[iT][(ar+1)%3],v);
 							if(e2){
 								E2[N]=Point(inter.x,inter.y);
 								deb++;

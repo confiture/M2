@@ -745,7 +745,7 @@ void test_test()
 	// export du fichier au format JPEG avec une échelle de 2
 	//   et qualité 95
 	printf("Création du fichier test_test.jpg\n");
-	XFIG_export_JPG("test_test.fig", "test_test.jpg", 2.0, 95);
+	XFIG_export_JPG("test_test.fig", "test_test.jpg", 2.0, 100);
 }
 
 void test_normales()
