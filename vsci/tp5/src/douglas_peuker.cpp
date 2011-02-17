@@ -13,6 +13,7 @@
 #include<cstdlib>
 #include<cstring>
 #include <limits>
+#include <fstream>
 
 #ifndef ABS
 #define ABS(x) ((x)<0 ? -(x) : (x))
@@ -57,7 +58,11 @@ double dist(Point2 p1,Point2 p2){
 }
 
 
-
+/**
+ *Exécute l'algorithme de Douglas-Parker pour la distance d sur la liste de points lpts.
+ *Lorsque la procédure est lancée, deb doit pointer sur le premier élément de la liste,
+ *et fin doit pointer sur le dernier élément de la liste et non sur lpts.end().
+ */
 void douglas(double d,std::list<Point2> & lpts,std::list<Point2>::iterator deb,std::list<Point2>::iterator fin){
 	if(deb!=fin){
 		double a,b,h,l,s,dj;
@@ -243,7 +248,18 @@ int main(int argc, char *argv[])
 	std::list<Point2>::iterator deb=L.begin();
 	std::list<Point2>::iterator fin=L.end();fin--;
 
+	std::string compressS(argv[3]);
+	compressS+=".txt";
+	std::ofstream compres(compressS.c_str(),std::ios::out);
+
+	double tailleInit=L.size();
 	douglas(d,L,deb,fin);
+	double tailleFin=L.size();
+	compres<<"taille initiale "<<tailleInit<<std::endl;
+	compres<<"taille finale "<<tailleFin<<std::endl;
+	compres<<"compression "<<tailleInit/tailleFin<<std::endl;
+
+	compres.close();
 // 	while(deb!=L.end()){
 // 		std::cout<<"x "<<deb->x<<std::endl;
 // 	}
@@ -251,9 +267,9 @@ int main(int argc, char *argv[])
 	ecrire_polyline_XFIG(argv[3],L, 2,7);
 
 
-	image_polyline(argv[3], L, 2.0, XFIG_COLOR_BLACK, "eps");
-	image_polyline(argv[3], L, 4.0, XFIG_COLOR_BLACK, "jpeg");
-	image_polyline(argv[3], L, 4.0, XFIG_COLOR_BLACK, "gif");
+	// 	image_polyline(argv[3], L, 2.0, XFIG_COLOR_BLACK, "eps");
+//  	image_polyline(argv[3], L, 4.0, XFIG_COLOR_BLACK, "jpeg");
+ 	image_polyline(argv[3], L, 4.0, XFIG_COLOR_BLACK, "gif");
 
 	return 0;
 }
