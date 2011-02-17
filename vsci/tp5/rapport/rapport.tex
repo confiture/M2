@@ -1,0 +1,515 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage{pdfpages}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage[francais]{babel}
+\usepackage[dvips,lmargin=3cm,rmargin=3cm,tmargin=3cm,bmargin=4cm]{geometry}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage[utf8]{inputenc}
+\usepackage{listings}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{float}
+\usepackage[T1]{fontenc}
+%\usepackage[nottoc, notlof, notlot]{tocbibind}
+\usepackage{graphicx}
+
+\usepackage{subfig}
+
+% Macros pratique pour les maths.
+\newcommand{\bs}{\symbol{92}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\K}{\mathbb{K}}
+\newcommand{\B}{\mathcal{B}}
+\newcommand{\tab}{\hspace*{1cm}}
+\newcommand{\norm}[1]{\left\vert \left\vert {#1}  \right\vert \right\vert}
+\newcommand{\abs}[1]{ \left\vert {#1}  \right\vert}
+\newcommand{\vect}[1]{\overrightarrow{#1}}
+\newcommand{\scal}[2]{\langle #1 \vert #2 \rangle}
+\newcommand{\exems}{$ $ \\ \noindent{{\textbf{Exemples.~}}}}
+\newcommand{\exem}{$ $ \\ \noindent{{\textbf{Exemple.~}}}}
+\newcommand{\rem}{$ $\\\ \noindent{{\textbf{Remarque.~}}}}
+\newcommand{\rems}{$ $ \\ \noindent{{\textbf{Remarques.~}}}}
+\newcommand{\rap}{$ $ \\ \noindent{{\textbf{Rappel.~}}}}
+\newcommand{\car}[1]{|#1|}
+\newcommand{\card}{\mbox{card}}
+\newcommand{\stab}{\mbox{Stab}}
+\newcommand{\ba}[1]{\overline{#1}}
+\newcommand{\inte}[1]{ [\![{#1} ]\!]}
+
+% Configuration du package lstlisting pour du C++.
+% \lstset{
+%   basicstyle=\small,
+%   breaklines=true,
+%   commentstyle=\color[rgb]{0.3,0.3,0.3}\textit,
+%   emphstyle=\rmfamily\color{blue},
+%   frame=single,
+%   keywordstyle=\color{blue},
+%   language=C++,
+%   lineskip=0pt,
+%   numbers=left,
+%   numbersep=5pt,
+%   numberstyle=\tt\small\color{gray},
+%   showstringspaces=false,
+%   tabsize=4,
+%   texcl=true
+% }
+\definecolor{colKeys}{rgb}{0,0,1}
+\definecolor{colIdentifier}{rgb}{0,0,0}
+\definecolor{colComments}{rgb}{0,0.5,1}
+\definecolor{colString}{rgb}{0.6,0.1,0.1}
+
+\lstset{%configuration de listings
+float=hbp, %
+basicstyle=\ttfamily \small, %
+identifierstyle=\color{colIdentifier}, %
+keywordstyle=\color{colKeys}, %
+stringstyle=\color{colString}, %
+commentstyle=\color{colComments}, %
+columns=flexible, %
+tabsize=4, %
+frame=trBL, %
+frameround=tttt, %
+extendedchars=true, %
+showspaces=false, %
+showstringspaces=false, %
+numbers=left, %
+numberstyle=\tiny, %
+breaklines=true, %
+breakautoindent=true, %
+captionpos=b, %
+xrightmargin=0cm, %
+xleftmargin=0cm,
+language=scilab,
+commentstyle=\textit
+}
+
+
+
+\title{
+  \huge{\bf TP5 - Simplification de lignes polygonales}
+}
+
+\author{
+    \textsc{Koraa} Galel \\
+    \textsc{Trlin} Moreno \\
+}
+
+\date{17 février 2011}
+
+\begin{document}
+
+ \maketitle
+  \begin{center}
+   \includegraphics[height=4cm]{../images/imag.png}
+ 
+  \end{center}
+ \tableofcontents
+ 
+ \pagebreak
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  \section{Objectif} 
+  Le but de ce TP est de comparer l'algorithme de décimation et l'algorithme de Douglas-Peuker pour la simplification de lignes polygonales à l'aide de différents exemples.
+  \section{Simplification par décimation}
+
+\subsection{Même jeu de données et un même taux de compression}
+
+\subsubsection{arbre.data}
+
+\begin{center}
+ \begin{tabular}{|c|c|}
+\hline
+ \includegraphics[width=8cm]{../images/arbre_init.png} & \includegraphics[width=8cm]{../images/arbre_simpl_1_280.png} \\
+image initiale   &  déviation et taux de compression = 80 \\
+\hline
+ \includegraphics[width=8cm]{../images/arbre_simpl_2_280.png} & \includegraphics[width=8cm]{../images/arbre_simpl_3_280.png} \\
+longueur et taux de compression = 80   &  angle et taux de compression = 80   \\
+\hline
+ \end{tabular}
+ \end{center}
+\subsubsection{hippocampe.data}
+\begin{center}
+ \begin{tabular}{|c|c|}
+\hline
+ \includegraphics[height=10cm]{../images/hippocampe.png} & \includegraphics[height=10cm]{../images/hippo_simp_1_235.png} \\
+image initiale   &  déviation et taux de compression = 35 \\
+\hline
+ \includegraphics[height=10cm]{../images/hippo_simp_2_235.png} & \includegraphics[height=10cm]{../images/hippo_simp_3_235.png} \\
+longueur et taux de compression = 35  &  angle et taux de compression =35  \\
+\hline
+ \end{tabular}
+ \end{center}
+
+\paragraph{Observations :}
+On peut observer que les résultats obtenus avec la fonction critère déviation sont les meilleurs. Ceux obtenus avec la fonction
+critère angle sont les moins bons.
+
+
+\subsection{Même jeu de données et une même fonction-critère}
+
+\subsubsection{fleur.data}
+Fonction critère : déviation.
+\begin{center}
+ \begin{tabular}{|c|c|}
+\hline
+ \includegraphics[width=8cm]{../images/fleur.png} & \includegraphics[width=8cm]{../images/fleur_simp_1_225.png} \\
+image initiale   &  déviation et taux de compression = 25 \\
+\hline
+ \includegraphics[width=8cm]{../images/fleur_simp_1_250} & \includegraphics[width=8cm]{../images/fleur_simp_1_275.png} \\
+déviation et taux de compression = 50   &  déviation et taux de compression = 75   \\
+\hline
+ \end{tabular}
+ \end{center}
+\pagebreak
+
+Fonction critère : longueur.
+\begin{center}
+ \begin{tabular}{|c|c|}
+\hline
+ \includegraphics[width=8cm]{../images/fleur.png} & \includegraphics[width=8cm]{../images/fleur_simp_2_225.png} \\
+image initiale   &  longueur et taux de compression = 25 \\
+\hline
+ \includegraphics[width=8cm]{../images/fleur_simp_2_250} & \includegraphics[width=8cm]{../images/fleur_simp_2_275.png} \\
+longueur et taux de compression = 50   &  longueur et taux de compression = 75   \\
+\hline
+ \end{tabular}
+ \end{center}
+\pagebreak
+
+Fonction critère : angle.
+\begin{center}
+ \begin{tabular}{|c|c|}
+\hline
+ \includegraphics[width=8cm]{../images/fleur.png} & \includegraphics[width=8cm]{../images/fleur_simp_3_225.png} \\
+image initiale   &  angle et taux de compression = 25 \\
+\hline
+ \includegraphics[width=8cm]{../images/fleur_simp_3_250} & \includegraphics[width=8cm]{../images/fleur_simp_3_275.png} \\
+angle et taux de compression = 50   &  angle et taux de compression = 75   \\
+\hline
+ \end{tabular}
+ \end{center}
+\pagebreak
+
+\subsubsection{france.data}
+
+Fonction critère : déviation.
+\begin{center}
+ \begin{tabular}{|c|c|}
+\hline
+ \includegraphics[width=8cm]{../images/france.png} & \includegraphics[width=8cm]{../images/france_simp_1_225.png} \\
+image initiale   &  déviation et taux de compression = 25 \\
+\hline
+ \includegraphics[width=8cm]{../images/france_simp_1_250} & \includegraphics[width=8cm]{../images/france_simp_1_275} \\
+déviation et taux de compression = 50   & déviation et taux de compression = 75   \\
+\hline
+ \end{tabular}
+ \end{center}
+
+
+\pagebreak
+Fonction critère : longueur.
+\begin{center}
+ \begin{tabular}{|c|c|}
+\hline
+ \includegraphics[width=8cm]{../images/france.png} & \includegraphics[width=8cm]{../images/france_simp_2_225.png} \\
+image initiale   &  longueur et taux de compression = 25 \\
+\hline
+ \includegraphics[width=8cm]{../images/france_simp_2_250} & \includegraphics[width=8cm]{../images/france_simp_2_275} \\
+longueur et taux de compression = 50   & longueur et taux de compression = 75   \\
+\hline
+ \end{tabular}
+ \end{center}
+
+\pagebreak
+Fonction critère : angle.
+\begin{center}
+ \begin{tabular}{|c|c|}
+\hline
+ \includegraphics[width=8cm]{../images/france.png} & \includegraphics[width=8cm]{../images/france_simp_3_225.png} \\
+image initiale   &  angle et taux de compression = 25 \\
+\hline
+ \includegraphics[width=8cm]{../images/france_simp_3_250} & \includegraphics[width=8cm]{../images/france_simp_3_275} \\
+angle et taux de compression = 50   & angle et taux de compression = 75   \\
+\hline
+ \end{tabular}
+ \end{center}
+
+\paragraph{Observations :}
+On remarque que plus le taux de compression est grand et moins il y a de sommets. On perd de l'information sur l'image donc
+en qualité.
+En effet le taux de compression étant le rapport entre le nombre de sommets du polygone initial et le nombre de sommets du polygone simplifié, 
+plus celui-ci augmente et plus le nombre de sommets du polygone simplifié diminue. 
+
+ \section{Simplification par la méthode de Douglas-Peuker}
+
+
+\subsection{Algorithme de Douglas-Peuker}
+   \subsubsection{Le code}
+\begin{lstlisting}[language=c++]
+ /**                                                                                                                                           
+ *Exécute l'algorithme de Douglas-Parker pour la distance d sur la liste de points lpts.                                                      
+ *Lorsque la procédure est lancée, deb doit pointer sur le premier élément de la liste,                                                       
+ *et fin doit pointer sur le dernier élément de la liste et non sur lpts.end().                                                               
+ */
+void douglas(double d,std::list<Point2> & lpts,std::list<Point2>::iterator deb,std::list<Point2>::iterator fin){
+    if(deb!=fin){
+        double a,b,h,l,s,dj;
+        dj=0;
+        std::list<Point2>::iterator it=deb;
+        std::list<Point2>::iterator ptLoin=deb;
+
+        it++;
+        if(it!=fin){
+            while(it!=fin){
+                a=dist((*deb),(*it));
+                b=dist((*fin),(*it));
+                l=dist((*deb),(*fin));
+                s=(a*a-b*b+l*l)/(2*l);
+
+                if(0<=s && s<=l){
+                    h=sqrt(a*a-s*s);
+                }
+                else if(s<0){
+                    h=a;
+                }
+                else{
+                    h=b;
+                }
+
+                if(h>dj){
+                    dj=h;
+                    ptLoin=it;
+                }
+
+                it++;
+            }
+
+            if(dj<d){
+                it=deb;
+                it++;
+                lpts.erase(it,fin);
+            }
+            else{
+                douglas(d,lpts,deb,ptLoin);
+                douglas(d,lpts,ptLoin,fin);
+            }
+        }
+    }
+}
+\end{lstlisting}
+
+
+\subsection{Tests}
+\subsubsection{demicercle.data}
+
+\begin{center}
+ \begin{tabular}{|c|c|}
+\hline
+ \includegraphics[width=8cm]{../images/demicercle.png} & \includegraphics[width=8cm]{../imagesDoug/demicercle1.png} \\
+image initiale   &  d=1, taux de compression = 1.53846\\
+\hline
+ \includegraphics[width=8cm]{../imagesDoug/demicercle2.png} & \includegraphics[width=8cm]{../imagesDoug/demicercle5.png} \\
+d=2, taux de compression = 2.77778&  d=5, taux de compression = 5 \\
+\hline
+ \includegraphics[width=8cm]{../imagesDoug/demicercle10.png} & \includegraphics[width=8cm]{../imagesDoug/demicercle20.png} \\
+d=10, taux de compression = 5.88235&  d=20, taux de compression = 8.33333\\
+\hline
+ \includegraphics[width=8cm]{../imagesDoug/demicercle50.png} & \includegraphics[width=8cm]{../imagesDoug/demicercle100.png} \\
+d=50, taux de compression = 11.1111   &  d=100, taux de compression = 20 \\
+\hline
+ \end{tabular}
+ \end{center}
+
+\begin{center}
+  \begin{tabular}{|c|}
+  \hline
+ \includegraphics[width=8cm]{../imagesDoug/demicercle200.png} \\
+d=200, taux de compression = 20\\
+\hline
+ \end{tabular}
+\end{center}
+
+\subsubsection{France.data}
+
+\begin{center}
+ \begin{tabular}{|c|c|}
+\hline
+ \includegraphics[width=8cm]{../images/france.png} & \includegraphics[width=8cm]{../imagesDoug/France1.png} \\
+image initiale   &  d=1, taux de compression = 11.4682  \\
+\hline
+ \includegraphics[width=8cm]{../imagesDoug/France2.png} & \includegraphics[width=8cm]{../imagesDoug/France5.png} \\
+d=2, taux de compression = 18.2564    &  d=5, taux de compression = 34.7255  \\
+\hline
+ \end{tabular}
+ \end{center}
+
+\begin{center}
+ \begin{tabular}{|c|c|}
+\hline
+ \includegraphics[width=8cm]{../imagesDoug/France10.png} & \includegraphics[width=8cm]{../imagesDoug/France20.png} \\
+d=10, taux de compression = 62.8576  &  d=20, taux de compression = 127.327 \\
+\hline
+ \includegraphics[width=8cm]{../imagesDoug/France50.png} & \includegraphics[width=8cm]{../imagesDoug/France100.png} \\
+d=50, taux de compression = 348.474   &  d=100, taux de compression = 945.857  \\
+\hline
+ \end{tabular}
+ \end{center}
+
+\begin{center}
+ \begin{tabular}{|c|}
+  \hline
+ \includegraphics[width=8cm]{../imagesDoug/France200.png} \\
+d=200, taux de compression = 1655.25\\
+\hline
+ \end{tabular}
+\end{center}
+
+
+\subsubsection{fleur.data}
+
+\begin{center}
+ \begin{tabular}{|c|c|}
+\hline
+ \includegraphics[width=8cm]{../images/fleur.png} & \includegraphics[width=8cm]{../imagesDoug/fleur1.png} \\
+image initiale   &  d=1, taux de compression = 3.62319  \\
+\hline
+ \includegraphics[width=8cm]{../imagesDoug/fleur2.png} & \includegraphics[width=8cm]{../imagesDoug/fleur5.png} \\
+d=2, taux de compression = 5.61798    &  d=5, taux de compression = 9.17431  \\
+\hline
+ \end{tabular}
+ \end{center}
+
+\begin{center}
+ \begin{tabular}{|c|c|}
+\hline
+ \includegraphics[width=8cm]{../imagesDoug/fleur10.png} & \includegraphics[width=8cm]{../imagesDoug/fleur20.png} \\
+d=10, taux de compression = 13.3333  &  d=20, taux de compression = 17.5439 \\
+\hline
+ \includegraphics[width=8cm]{../imagesDoug/fleur50.png} & \includegraphics[width=8cm]{../imagesDoug/fleur100.png} \\
+d=50, taux de compression = 29.4118   &  d=100, taux de compression = 40  \\
+\hline
+ \end{tabular}
+ \end{center}
+
+\begin{center}
+ \begin{tabular}{|c|}
+  \hline
+ \includegraphics[width=8cm]{../imagesDoug/fleur200.png} \\
+d=200, taux de compression = 66.6667\\
+\hline
+ \end{tabular}
+\end{center}
+
+
+\subsubsection{arbre.data}
+
+\begin{center}
+ \begin{tabular}{|c|c|}
+\hline
+ \includegraphics[width=8cm]{../images/arbre_init.png} & \includegraphics[width=8cm]{../imagesDoug/arbre1.png} \\
+image initiale   &  d=1, taux de compression = 7.7723  \\
+\hline
+ \includegraphics[width=8cm]{../imagesDoug/arbre2.png} & \includegraphics[width=8cm]{../imagesDoug/arbre5.png} \\
+d=2, taux de compression = 14.6547    &  d=5, taux de compression = 32.9658  \\
+\hline
+ \end{tabular}
+ \end{center}
+
+\begin{center}
+ \begin{tabular}{|c|c|}
+\hline
+ \includegraphics[width=8cm]{../imagesDoug/arbre10.png} & \includegraphics[width=8cm]{../imagesDoug/arbre20.png} \\
+d=10, taux de compression = 50.7245 &  d=20, taux de compression = 80.3137\\
+\hline
+ \includegraphics[width=8cm]{../imagesDoug/arbre50.png} & \includegraphics[width=8cm]{../imagesDoug/arbre100.png} \\
+d=50, taux de compression = 121.363   &  d=100, taux de compression = 190.512  \\
+\hline
+ \end{tabular}
+ \end{center}
+
+\begin{center}
+ \begin{tabular}{|c|}
+  \hline
+ \includegraphics[width=8cm]{../imagesDoug/arbre200.png} \\
+d=200, taux de compression = 455.111\\
+\hline
+ \end{tabular}
+\end{center}
+\paragraph{Observations :}
+On remarque que plus la distance-seuil augmente et moins il y a de sommets. On perd de l'information sur l'image donc
+en qualité.
+
+\subsection{Comparaison des algorithmes de décimation et de Douglas-Peuker} 
+\subsubsection{France.data}
+
+
+\begin{center}
+ \begin{tabular}{|c|c|}
+\hline
+algorithme de décimation & algorithme de Douglas-Peuker \\
+\hline
+ \includegraphics[width=8cm]{../images/france_decim1.png} & \includegraphics[width=8cm]{../imagesDoug/France1.png} \\
+déviation, taux de compression = 11.4682   &  d=1, taux de compression = 11.4682  \\
+\hline
+ \includegraphics[width=8cm]{../images/france_decim2.png} & \includegraphics[width=8cm]{../imagesDoug/France2.png} \\
+déviation, taux de compression = 18.2564   & d=2, taux de compression = 18.2564  \\
+\hline
+ \end{tabular}
+ \end{center}
+
+\begin{center}
+ \begin{tabular}{|c|c|}
+\hline
+algorithme de décimation & algorithme de Douglas-Peuker \\
+\hline
+ \includegraphics[width=8cm]{../images/france_decim5.png} & \includegraphics[width=8cm]{../imagesDoug/France5.png} \\
+déviation, taux de compression = 34.7255   &  d=5, taux de compression = 34.7255  \\
+\hline
+ \includegraphics[width=8cm]{../images/france_decim10.png} & \includegraphics[width=8cm]{../imagesDoug/France10.png} \\
+déviation, taux de compression = 62.8576 & d=10, taux de compression = 62.8576 \\
+\hline
+ \end{tabular}
+ \end{center}
+
+\begin{center}
+ \begin{tabular}{|c|c|}
+\hline
+algorithme de décimation & algorithme de Douglas-Peuker \\
+\hline
+ \includegraphics[width=8cm]{../images/france_decim20.png} & \includegraphics[width=8cm]{../imagesDoug/France20.png} \\
+déviation, taux de compression = 127.327  &  d=20, taux de compression = 127.327  \\
+\hline
+ \includegraphics[width=8cm]{../images/france_decim50.png} & \includegraphics[width=8cm]{../imagesDoug/France50.png} \\
+déviation, taux de compression = 348.474 & d=50, taux de compression = 348.474 \\
+\hline
+ \end{tabular}
+ \end{center}
+
+\begin{center}
+ \begin{tabular}{|c|c|}
+\hline
+algorithme de décimation & algorithme de Douglas-Peuker \\
+\hline
+ \includegraphics[width=8cm]{../images/france_decim100.png} & \includegraphics[width=8cm]{../imagesDoug/France100.png} \\
+déviation, taux de compression = 945.857  &  d=100, taux de compression = 945.857  \\
+\hline
+ \includegraphics[width=8cm]{../images/france_decim200.png} & \includegraphics[width=8cm]{../imagesDoug/France200.png} \\
+déviation, taux de compression = 1655.25 & d=200, taux de compression = 1655.25 \\
+\hline
+ \end{tabular}
+ \end{center}
+
+\paragraph{Observations :}
+On remarque des différences entre les deux algorithmes, mais celles-ci ne sont pas notables.
+
+
+ \end{document}
