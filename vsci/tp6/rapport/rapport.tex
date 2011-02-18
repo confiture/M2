@@ -1,0 +1,254 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage{pdfpages}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage[francais]{babel}
+\usepackage[dvips,lmargin=3cm,rmargin=3cm,tmargin=3cm,bmargin=4cm]{geometry}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage[utf8]{inputenc}
+\usepackage{listings}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{float}
+\usepackage[T1]{fontenc}
+%\usepackage[nottoc, notlof, notlot]{tocbibind}
+\usepackage{graphicx}
+
+\usepackage{subfig}
+
+% Macros pratique pour les maths.
+\newcommand{\bs}{\symbol{92}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\K}{\mathbb{K}}
+\newcommand{\B}{\mathcal{B}}
+\newcommand{\tab}{\hspace*{1cm}}
+\newcommand{\norm}[1]{\left\vert \left\vert {#1}  \right\vert \right\vert}
+\newcommand{\abs}[1]{ \left\vert {#1}  \right\vert}
+\newcommand{\vect}[1]{\overrightarrow{#1}}
+\newcommand{\scal}[2]{\langle #1 \vert #2 \rangle}
+\newcommand{\exems}{$ $ \\ \noindent{{\textbf{Exemples.~}}}}
+\newcommand{\exem}{$ $ \\ \noindent{{\textbf{Exemple.~}}}}
+\newcommand{\rem}{$ $\\\ \noindent{{\textbf{Remarque.~}}}}
+\newcommand{\rems}{$ $ \\ \noindent{{\textbf{Remarques.~}}}}
+\newcommand{\rap}{$ $ \\ \noindent{{\textbf{Rappel.~}}}}
+\newcommand{\car}[1]{|#1|}
+\newcommand{\card}{\mbox{card}}
+\newcommand{\stab}{\mbox{Stab}}
+\newcommand{\ba}[1]{\overline{#1}}
+\newcommand{\inte}[1]{ [\![{#1} ]\!]}
+
+% Configuration du package lstlisting pour du C++.
+% \lstset{
+%   basicstyle=\small,
+%   breaklines=true,
+%   commentstyle=\color[rgb]{0.3,0.3,0.3}\textit,
+%   emphstyle=\rmfamily\color{blue},
+%   frame=single,
+%   keywordstyle=\color{blue},
+%   language=C++,
+%   lineskip=0pt,
+%   numbers=left,
+%   numbersep=5pt,
+%   numberstyle=\tt\small\color{gray},
+%   showstringspaces=false,
+%   tabsize=4,
+%   texcl=true
+% }
+\definecolor{colKeys}{rgb}{0,0,1}
+\definecolor{colIdentifier}{rgb}{0,0,0}
+\definecolor{colComments}{rgb}{0,0.5,1}
+\definecolor{colString}{rgb}{0.6,0.1,0.1}
+
+\lstset{%configuration de listings
+float=hbp, %
+basicstyle=\ttfamily \small, %
+identifierstyle=\color{colIdentifier}, %
+keywordstyle=\color{colKeys}, %
+stringstyle=\color{colString}, %
+commentstyle=\color{colComments}, %
+columns=flexible, %
+tabsize=4, %
+frame=trBL, %
+frameround=tttt, %
+extendedchars=true, %
+showspaces=false, %
+showstringspaces=false, %
+numbers=left, %
+numberstyle=\tiny, %
+breaklines=true, %
+breakautoindent=true, %
+captionpos=b, %
+xrightmargin=0cm, %
+xleftmargin=0cm,
+language=scilab,
+commentstyle=\textit
+}
+
+
+
+\title{
+  \huge{\bf TP6 - Simplification de triangulation}
+}
+
+\author{
+    \textsc{Koraa} Galel \\
+    \textsc{Trlin} Moreno \\
+}
+
+\date{18 février 2011}
+
+\begin{document}
+
+ \maketitle
+  \begin{center}
+   \includegraphics[height=4cm]{../images/imag.png}
+
+  \end{center}
+ \tableofcontents
+
+ \pagebreak
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  \section{Objectif}
+Le but de ce TP est d'illustrer le cours par l'utilisation d'un programme de simplification de triangulation basé sur la méthode QEM
+
+  \section{Simplification sur différents modèles}
+
+ \begin{tabular}{|c|c|}
+\hline
+ \includegraphics[width=8cm]{../images/horse.png} & \includegraphics[width=8cm]{../images/horse_t10000.png} \\
+image initiale, 39698 triangles   &  10 000 triangles \\
+\hline
+ \includegraphics[width=8cm]{../images/horse_t1000.png} & \includegraphics[width=8cm]{../images/horse_t250.png} \\
+1 000 triangles  &  250 triangles   \\
+\hline
+ \end{tabular}
+
+
+\begin{tabular}{|c|c|}
+\hline
+ \includegraphics[width=8cm]{../images/mannequin.png} & \includegraphics[width=8cm]{../images/mannequin_t800.png} \\
+image initiale, 1355 triangles   &  800 triangles \\
+\hline
+ \includegraphics[width=8cm]{../images/mannequin_t500.png} & \includegraphics[width=8cm]{../images/mannequin_t200.png} \\
+500 triangles  &  200 triangles   \\
+\hline
+\end{tabular}
+
+\begin{tabular}{|c|c|}
+\hline
+ \includegraphics[width=8cm]{../images/dragon.png} & \includegraphics[width=8cm]{../images/dragon_t50000.png} \\
+image initiale, 200 000 triangles   &  50 000 triangles \\
+\hline
+\includegraphics[width=8cm]{../images/dragon_t5000.png} & \includegraphics[width=8cm]{../images/dragon_t1000.png} \\
+5 000 triangles  &  1 000 triangles   \\
+\hline
+\end{tabular}
+
+\section{Simplification du modèle hypersheet.smf avec différentes options}
+
+\begin{center}
+\begin{tabular}{|l||c|c|}
+\hline
+Image initiale, 897 triangles & \includegraphics[width=5.5cm]{../images/hypersheet.png} & \includegraphics[width=5.5cm]{../images/hypersheet_vue2.png} \\
+\hline
+\begin{tabular}{l}
+Simplification avec\\
+préservation des\\
+bords, 200 triangles
+\end{tabular} & \includegraphics[width=5.5cm]{../images/hypersheet_defaut_t200.png}  & \includegraphics[width=5.5cm]{../images/hypersheet_defaut_t200_vue2.png} \\
+\hline
+\begin{tabular}{l}
+Simplification sans\\
+préservation des\\
+bords, 200 triangles
+\end{tabular} & \includegraphics[width=5.5cm]{../images/hypersheet_option_t200.png}  & \includegraphics[width=5.5cm]{../images/hypersheet_option_t200_vue2.png} \\
+\hline
+\end{tabular}
+\end{center}
+
+
+
+\section{Simplification du modèle mannequin.smf avec différentes options}
+
+\begin{center}
+\begin{tabular}{|l||c|c|}
+\hline
+Image initiale, 1350 triangles & \includegraphics[width=5.5cm]{../images/mannequin.png} & \includegraphics[width=5.5cm]{../images/mannequin_vue2.png} \\
+\hline
+\begin{tabular}{l}
+Simplification avec\\
+placement optimal \\
+des sommets, 400 triangles
+\end{tabular} & \includegraphics[width=5.5cm]{../images/mannequin_defaut_t400.png}  & \includegraphics[width=5.5cm]{../images/mannequin_defaut_t400_vue2.png} \\
+\hline
+\begin{tabular}{l}
+Simplification sans\\
+placement optimal \\
+des sommets, 400 triangles
+\end{tabular} & \includegraphics[width=5.5cm]{../images/mannequin_option_t400.png}  & \includegraphics[width=5.5cm]{../images/mannequin_option_t400_vue2.png} \\
+\hline
+\end{tabular}
+\end{center}
+
+
+\section{Simplification d'images}
+
+\begin{center}
+\begin{tabular}{|l||c|c|}
+\hline
+        & Sans affichage de la triangulation & Zoom sur la triangulation \\
+\hline
+Image initiale & \includegraphics[width=5.5cm]{../images/image1.png} &  \includegraphics[width=5.5cm]{../images/image1_wire.png}\\
+\hline
+Simplification, 10 000 triangles & \includegraphics[width=5.5cm]{../images/image1_t10000.png} &  \includegraphics[width=5.5cm]{../images/image1_t10000_wire.png}\\
+\hline
+Simplification, 5 000 triangles & \includegraphics[width=5.5cm]{../images/image1_t5000.png} &  \includegraphics[width=5.5cm]{../images/image1_t5000_wire.png}\\
+\hline
+\end{tabular}
+\end{center}
+
+\begin{center}
+\begin{tabular}{|c|c|}
+\hline
+\includegraphics[width=8cm]{../images/image1_t10000_wire_vue2.png} & \includegraphics[width=8cm]{../images/image1_t5000_wire_vue2.png}\\
+Simplification, 10 000 triangles & Simplification, 5 000 triangles \\
+\hline
+\end{tabular}
+\end{center}
+
+\pagebreak
+
+\begin{center}
+\begin{tabular}{|l||c|c|}
+\hline
+        & Sans affichage de la triangulation & Zoom sur la triangulation \\
+\hline
+Image initiale & \includegraphics[width=5.5cm]{../images/image2.png} &  \includegraphics[width=5.5cm]{../images/image2_wire.png}\\
+\hline
+Simplification, 10 000 triangles & \includegraphics[width=5.5cm]{../images/image2_t10000.png} &  \includegraphics[width=5.5cm]{../images/image2_t10000_wire.png}\\
+\hline
+Simplification, 2 500 triangles & \includegraphics[width=5.5cm]{../images/image2_t2500.png} &  \includegraphics[width=5.5cm]{../images/image2_t2500_wire.png}\\
+\hline
+\end{tabular}
+\end{center}
+
+\begin{center}
+\begin{tabular}{|c|c|}
+\hline
+\includegraphics[width=8cm]{../images/image2_t10000_wire_vue2.png} & \includegraphics[width=8cm]{../images/image2_t2500_wire_vue2.png}\\
+Simplification, 10 000 triangles & Simplification, 2 500 triangles \\
+\hline
+\end{tabular}
+\end{center}
+
+
+\end{document}

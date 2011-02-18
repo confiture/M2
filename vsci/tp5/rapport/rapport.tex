@@ -103,21 +103,21 @@ commentstyle=\textit
     \textsc{Trlin} Moreno \\
 }
 
-\date{17 février 2011}
+\date{18 février 2011}
 
 \begin{document}
 
  \maketitle
   \begin{center}
    \includegraphics[height=4cm]{../images/imag.png}
- 
+
   \end{center}
  \tableofcontents
- 
+
  \pagebreak
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-  \section{Objectif} 
+  \section{Objectif}
   Le but de ce TP est de comparer l'algorithme de décimation et l'algorithme de Douglas-Peuker pour la simplification de lignes polygonales à l'aide de différents exemples.
   \section{Simplification par décimation}
 
@@ -246,8 +246,8 @@ angle et taux de compression = 50   & angle et taux de compression = 75   \\
 \paragraph{Observations :}
 On remarque que plus le taux de compression est grand et moins il y a de sommets. On perd de l'information sur l'image donc
 en qualité.
-En effet le taux de compression étant le rapport entre le nombre de sommets du polygone initial et le nombre de sommets du polygone simplifié, 
-plus celui-ci augmente et plus le nombre de sommets du polygone simplifié diminue. 
+En effet le taux de compression étant le rapport entre le nombre de sommets du polygone initial et le nombre de sommets du polygone simplifié,
+plus celui-ci augmente et plus le nombre de sommets du polygone simplifié diminue.
 
  \section{Simplification par la méthode de Douglas-Peuker}
 
@@ -255,10 +255,10 @@ plus celui-ci augmente et plus le nombre de sommets du polygone simplifié dimin
 \subsection{Algorithme de Douglas-Peuker}
    \subsubsection{Le code}
 \begin{lstlisting}[language=c++]
- /**                                                                                                                                           
- *Exécute l'algorithme de Douglas-Parker pour la distance d sur la liste de points lpts.                                                      
- *Lorsque la procédure est lancée, deb doit pointer sur le premier élément de la liste,                                                       
- *et fin doit pointer sur le dernier élément de la liste et non sur lpts.end().                                                               
+ /**
+ *Exécute l'algorithme de Douglas-Parker pour la distance d sur la liste de points lpts.
+ *Lorsque la procédure est lancée, deb doit pointer sur le premier élément de la liste,
+ *et fin doit pointer sur le dernier élément de la liste et non sur lpts.end().
  */
 void douglas(double d,std::list<Point2> & lpts,std::list<Point2>::iterator deb,std::list<Point2>::iterator fin){
     if(deb!=fin){
@@ -448,7 +448,7 @@ d=200, taux de compression = 455.111\\
 On remarque que plus la distance-seuil augmente et moins il y a de sommets. On perd de l'information sur l'image donc
 en qualité.
 
-\subsection{Comparaison des algorithmes de décimation et de Douglas-Peuker} 
+\subsection{Comparaison des algorithmes de décimation et de Douglas-Peuker}
 \subsubsection{France.data}
 
 
