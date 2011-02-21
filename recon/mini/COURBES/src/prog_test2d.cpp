@@ -899,46 +899,46 @@ int main(int argc, char *argv[])
 
 	test_normales();
 
-	int num_test=1;
-	if (argc>=2)
-	{
-		sscanf(argv[1],"%i",&num_test);
-	}
-	fprintf(stdout, "TEST DES LIBRAIRIES lib_base2 ET xfig - test %d\n\n",
-	  num_test);
+// 	int num_test=1;
+// 	if (argc>=2)
+// 	{
+// 		sscanf(argv[1],"%i",&num_test);
+// 	}
+// 	fprintf(stdout, "TEST DES LIBRAIRIES lib_base2 ET xfig - test %d\n\n",
+// 	  num_test);
 
-	switch(num_test)
-	{
-		case 1 :
-		{
-			test_xfig_et_exports();
-			break;
-		}
-		case 2 :
-		{
-			test_trace_points_normales_orientees();
-			break;
-		}
-		case 3 :
-		{
-			test_graphe_et_arbre_couvrant_minimal();
-			break;
-		}
-		case 4 :
-		{
-			test_elements_propres_mat_sym();
-			break;
-		}
-		case 5 :
-		{
-			test_jeux_donnees_normales_orientees();
-			break;
-		}
-		default :
-		{
-			printf("num_test incorrect\n");
-		}
-	}
+// 	switch(num_test)
+// 	{
+// 		case 1 :
+// 		{
+// 			test_xfig_et_exports();
+// 			break;
+// 		}
+// 		case 2 :
+// 		{
+// 			test_trace_points_normales_orientees();
+// 			break;
+// 		}
+// 		case 3 :
+// 		{
+// 			test_graphe_et_arbre_couvrant_minimal();
+// 			break;
+// 		}
+// 		case 4 :
+// 		{
+// 			test_elements_propres_mat_sym();
+// 			break;
+// 		}
+// 		case 5 :
+// 		{
+// 			test_jeux_donnees_normales_orientees();
+// 			break;
+// 		}
+// 		default :
+// 		{
+// 			printf("num_test incorrect\n");
+// 		}
+// 	}
 	return 0;
 }
 
