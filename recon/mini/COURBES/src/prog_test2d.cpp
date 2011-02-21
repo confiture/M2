@@ -737,8 +737,7 @@ void test_test()
 	for(int i=0;i<N;i++){
 		segm[0]=E1[i];
 		segm[1]=E2[i];
-		XFIG_polygon(segm); // version vector<Point> P
-	}
+		XFIG_polygon(segm);
 
 	XFIG_close();
 
@@ -830,12 +829,6 @@ void test_normales()
 	normales(n,pTab,nTab,calc_pas(n,pTab));
 
 	grille gr=calc_grille_dist(n,pTab,nTab);
-	for(int i=0;i<gr.nl;i++){
-		for(int j=0;j<gr.nc;j++){
-			std::cout<<gr(i,j)<<" ";
-		}
-		std::cout<<std::endl;
-	}
 
 	vPoint E1,E2;
 	gr.calc_iso_courbe(0,E1,E2);
@@ -864,12 +857,12 @@ void test_normales()
 		XFIG_arrow(P[i],P[i]+0.3*nTab[i]);
 
 
-// 	vPoint segm(2);
-// 	for(int i=0;i<N;i++){
-// 		segm[0]=E1[i];
-// 		segm[1]=E2[i];
-// 		XFIG_polygon(segm); // version vector<Point> P
-// 	}
+	vPoint segm(2);
+	for(int i=0;i<N;i++){
+		segm[0]=E1[i];
+		segm[1]=E2[i];
+		XFIG_polygon(segm); // version vector<Point> P
+	}
 
 	XFIG_close();
 

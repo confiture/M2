@@ -178,12 +178,12 @@ void normales(int n,Point * pts,Point * normales,double r){
 
 	Arete aretes[nA];
 
-	int k;
+	int k=0;
 	for(int i=0;i<n-1;i++){
 		for(int j=i+1;j<n;j++){
 			if(dist[i][j]<=r){
 				Arete ac;
-				ac.v=dist[i][j];
+				ac.v=1-ABS(dot(pts[i],pts[j]));
 				ac.s1=i;
 				ac.s2=j;
 
@@ -194,15 +194,33 @@ void normales(int n,Point * pts,Point * normales,double r){
 	}
 
 	Arete* begin=&aretes[0];
-	Arete* end=&aretes[nA];
+	Arete* end=&aretes[nA-1];
+	end++;
 
 	sort(begin,end);
 
-	Graphe G = {&aretes[0],nA,n};
+	Graphe G = {aretes,nA,n};
 	Arbre ACM = calcule_ACM(G);
 
-	for(int i=0;i<n;i++){
+	bool visite[n];
+	for(int i=0;i<n;i++)
+		visite[i]=false;
 
+	oriente_normales(ACM,0,normales,visite);
+}
+
+void oriente_normales(Arbre ACM,int numNoeud,Point * normales,bool * visite){
+	if(!visite[numNoeud]){
+		visite[numNoeud]=true;
+
+		int n=ACM.noeuds[numNoeud].voisins.size();
+		for(int i=0;i<n;i++){
+			if(dot(normales[numNoeud],normales[ACM.noeuds[numNoeud].voisins[i]]) < 0)
+				normales[ACM.noeuds[numNoeud].voisins[i]]=-1*normales[ACM.noeuds[numNoeud].voisins[i]];
+
+			oriente_normales(ACM,ACM.noeuds[numNoeud].voisins[i],normales,visite);
+		}
+	}
 }
 
 Point3 operator+(Point3 A, Point3 B)

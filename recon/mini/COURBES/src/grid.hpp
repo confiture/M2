@@ -104,6 +104,7 @@ inline Point3 intersection(const Point3& p1,const Point3& p2,int v){
 	return a*p1+(1-a)*p2;
 }
 
+void oriente_normales(Arbre ACM,int numNoeud,Point * normales,bool * visite);
 
 void normales(int n,Point * pts,Point * normales,double r);
 
