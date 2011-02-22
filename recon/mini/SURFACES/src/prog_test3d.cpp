@@ -47,6 +47,7 @@
 #include "surface.hpp"
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 ///////////////////////////////////////////////////////////////////////////////
 // lecture d'un fichier de nS points
 // Entrée : nom_f = le nom du fichier à créer
@@ -431,6 +432,45 @@ void saisir(char* nom_f,Point * & S,Point * & NS,ULONG & nS,double & r)
 	}
 }
 
+void perturbe(int n,Point * pts,double amplitude){
+	for(int i=0;i<n;i++){
+		pts[i].x+=(double)rand()/RAND_MAX*amplitude-amplitude/2.0;
+		pts[i].y+=(double)rand()/RAND_MAX*amplitude-amplitude/2.0;
+		pts[i].z+=(double)rand()/RAND_MAX*amplitude-amplitude/2.0;
+	}
+}
+
+void makeSurf(Point * S,Point * & NS,ULONG nS,double r,
+              Point * & pts,ULONG & npts,Triangle * & Trs,ULONG & nT){
+
+	if(NS==NULL){
+		NS=new Point[nS];
+		normales(nS,S,NS,r);
+	}
+
+	grille gr=calc_grille_dist(nS,S,NS);
+	gr(2,0,0)=gr(2,0,0);
+
+	std::list<Triangle> T;
+	std::list<Point> SS;
+	gr.calc_iso_courbe(0,T,SS);
+
+	nT=T.size();
+	Trs=new Triangle[nT];
+	std::list<Triangle>::iterator itT=T.begin();
+	for(int i=0;i<nT;i++){
+		Trs[i]=(*itT);
+		itT++;
+	}
+
+	npts=SS.size();
+	pts=new Point[npts];
+	std::list<Point>::iterator itS=SS.begin();
+	for(int i=0;i<npts;i++){
+		pts[i]=(*itS);
+		itS++;
+	}
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 // PROGRAMME PRINCIPAL
@@ -438,41 +478,13 @@ int main(int argc, char *argv[])
 {
 	Point * S=NULL;
 	Point * NS=NULL;
-	ULONG nS;
+	Point * pts=NULL;
+	Triangle * Trs=NULL;
+	ULONG nS,nSS,nT;
 	double r;
 	saisir(argv[1],S,NS,nS,r);
 
-	if(NS==NULL){
-		NS=new Point[nS];
-		std::cout<<"ici"<<std::endl;
-		normales(nS,S,NS,r);
-		std::cout<<"pas ici"<<std::endl;
-	}
-
-	grille gr=calc_grille_dist(nS,S,NS);
-
-	std::list<Triangle> T;
-	std::list<Point> SS;
-	gr.calc_iso_courbe(0,T,SS);
-
-	std::cout<<"sizeof T "<<T.size()<<std::endl;
-	std::cout<<"sizeof SS "<<SS.size()<<std::endl;
-
-	ULONG nT=T.size();
-	Triangle Trs[nT];
-	std::list<Triangle>::iterator itT=T.begin();
-	for(int i=0;i<nT;i++){
-		Trs[i]=(*itT);
-		itT++;
-	}
-
-	int nSS=SS.size();
-	Point pts[nSS];
-	std::list<Point>::iterator itS=SS.begin();
-	for(int i=0;i<nSS;i++){
-		pts[i]=(*itS);
-		itS++;
-	}
+	makeSurf(S,NS,nS,r,pts,nSS,Trs,nT);
 
 	GEOMVIEW_open("test_isosurf.list");
 

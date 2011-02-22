@@ -57,6 +57,16 @@ struct grille{
 		this->zmax=zmax;
 	}
 
+	~grille(){
+		for(int i=0;i<nl;i++){
+			for(int j=0;j<nc;j++){
+				delete[] vals[i][j];
+			}
+			delete[] vals[i];
+		}
+		delete[] vals;
+	}
+
 	double& operator()(int i,int j,int k){
 		return vals[i][j][k];
 	}
