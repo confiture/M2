@@ -479,6 +479,20 @@ int main(int argc, char *argv[])
 	// fichiers des points : en rouge, d'épaisseur 10
 	GEOMVIEW_points(S, nS, Couleur(1.0,0.0,0.0), 10);
 
+	Point S2[gr.nl*gr.nc*gr.nt];
+	int iS2=0;
+	for(int i=0;i<gr.nl;i++){
+		for(int j=0;j<gr.nc;j++){
+			for(int k=0;k<gr.nt;k++){
+				S2[iS2]=Point(i*gr.pas+gr.xmin,j*gr.pas+gr.ymin,
+				             k*gr.pas+gr.zmin);
+				iS2++;
+			}
+		}
+	}
+
+	//GEOMVIEW_points(S2, gr.nl*gr.nc*gr.nt, Couleur(1.0,0.0,0.0), 10);
+
 	// fichiers des normales : en noir, épaisseur 2, longueur 0.3
 	GEOMVIEW_points_vects(S, NS, nS, Couleur(0.0,0.0,0.0), 2, 0.3);
 

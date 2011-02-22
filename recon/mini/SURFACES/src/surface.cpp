@@ -55,6 +55,15 @@ grille calc_grille_dist(ULONG n,Point * pts,Point * normales){
 			indk=1+((int)((pts[i].z-zmin)/pas));
 		}
 
+		std::cout<<"indi*tralalal "<<indi*pas+xmin<<std::endl;
+		std::cout<<"pts[i].x "<<pts[i].x<<std::endl;
+		std::cout<<"indj*tralalal "<<indj*pas+ymin<<std::endl;
+		std::cout<<"pts[i].y "<<pts[i].y<<std::endl;
+		std::cout<<"indk*tralalal "<<indk*pas+zmin<<std::endl;
+		std::cout<<"pts[i].z "<<pts[i].z<<std::endl;
+
+
+
 		for(int ig=-1;ig<=1;ig++){
 			for(int jg=-1;jg<=1;jg++){
 				for(int kg=-1;kg<=1;kg++){
@@ -156,15 +165,15 @@ void grille::calc_iso_courbe(double v,std::list<Triangle> & T,std::list<Point> &
 				/*   | /          | /          /                    */
 				/*   |/           |/          /                     */
 				/*   2------------1          x                      */
-				p[0]=Point4(i*pas+xmin,(j+1)*pas+ymin,k*pas+zmin,(*this)(i,j+1,k));
+				p[0]=Point4(i    *pas+xmin,(j+1)*pas+ymin,k*pas+zmin,(*this)(i  ,j+1,k));
 				p[1]=Point4((i+1)*pas+xmin,(j+1)*pas+ymin,k*pas+zmin,(*this)(i+1,j+1,k));
-				p[2]=Point4((i+1)*pas+xmin,j*pas+ymin,k*pas+zmin,(*this)(i+1,j,k));
-				p[3]=Point4(i*pas+xmin,j*pas+ymin,k*pas+zmin,(*this)(i,j,k));
+				p[2]=Point4((i+1)*pas+xmin,j    *pas+ymin,k*pas+zmin,(*this)(i+1,j  ,k));
+				p[3]=Point4(i    *pas+xmin,j    *pas+ymin,k*pas+zmin,(*this)(i  ,j  ,k));
 
-				p[4]=Point4(i*pas+xmin,(j+1)*pas+ymin,(k+1)*pas+zmin,(*this)(i,j+1,k+1));
+				p[4]=Point4(i    *pas+xmin,(j+1)*pas+ymin,(k+1)*pas+zmin,(*this)(i  ,j+1,k+1));
 				p[5]=Point4((i+1)*pas+xmin,(j+1)*pas+ymin,(k+1)*pas+zmin,(*this)(i+1,j+1,k+1));
-				p[6]=Point4((i+1)*pas+xmin,j*pas+ymin,(k+1)*pas+zmin,(*this)(i+1,j,k+1));
-				p[7]=Point4(i*pas+xmin,j*pas+ymin,(k+1)*pas+zmin,(*this)(i,j,k+1));
+				p[6]=Point4((i+1)*pas+xmin,j    *pas+ymin,(k+1)*pas+zmin,(*this)(i+1,j  ,k+1));
+				p[7]=Point4(i    *pas+xmin,j    *pas+ymin,(k+1)*pas+zmin,(*this)(i  ,j  ,k+1));
 
 				/* découpage du cube élémentaire */
 				/* calcul des triangles correspondants au cube élémentaire */
