@@ -5,7 +5,7 @@ grille calc_grille_dist(ULONG n,Point * pts,Point * normales){
 	double xmin,xmax,ymin,ymax,zmin,zmax;
 
 	boite_englobante(pts,n,xmin,xmax,ymin,ymax,zmin,zmax);
-	xmin-=2*pas;xmax+=2*pas;ymin-=2*pas;ymax+=2*pas;zmin-=2*pas;zmax+=2*pas;
+	xmin-=2*pas;xmax+=2*pas;ymin-=2*pas;ymax+=2*pas;zmin-=2.0*pas;zmax+=2.0*pas;
 
 	int dimx=(int)((xmax-xmin)/pas+0.5);
 	int dimy=(int)((ymax-ymin)/pas+0.5);
@@ -140,6 +140,13 @@ void grille::calc_iso_courbe(double v,std::list<Triangle> & T,std::list<Point> &
 	S.clear();
 	int numSommet=0;// les numéros des sommets de la liste S
 
+	std::cout<<"xmin "<<xmin<<std::endl;
+	std::cout<<"xmax "<<xmax<<std::endl;
+	std::cout<<"ymin "<<ymin<<std::endl;
+	std::cout<<"ymax "<<ymax<<std::endl;
+	std::cout<<"zmin "<<zmin<<std::endl;
+	std::cout<<"zmax "<<zmax<<std::endl;
+
 	std::cout<<"nl "<<nl<<std::endl;
 	std::cout<<"nc "<<nc<<std::endl;
 	std::cout<<"nt "<<nt<<std::endl;
@@ -175,15 +182,6 @@ void grille::calc_iso_courbe(double v,std::list<Triangle> & T,std::list<Point> &
 				p[6]=Point4((i+1)*pas+xmin,j    *pas+ymin,(k+1)*pas+zmin,(*this)(i+1,j  ,k+1));
 				p[7]=Point4(i    *pas+xmin,j    *pas+ymin,(k+1)*pas+zmin,(*this)(i  ,j  ,k+1));
 
-				/* découpage du cube élémentaire */
-				/* calcul des triangles correspondants au cube élémentaire */
-				/* DEBUT PARTIE A MODIFIER */
-
-				/* PARTIE A ENLEVER/MODIFIER PAR LA SUITE            */
-				/* exemple d'ajout de triangle :                     */
-				/* ajout d'1 triangle par cube intersecté            */
-				/* par la surface iso-valeur                         */
-				/* i.e. cube avec changement de signe en ses sommets */
 
 				Tetraedre4 trs[6];
 				{
@@ -240,14 +238,6 @@ void grille::calc_iso_courbe(double v,std::list<Triangle> & T,std::list<Point> &
 									int length;
 
 									intersectionTetra4(trs[iTrs],v,pts,length);
-
-									/* le cube élémentaire intersecte l'iso-surface   */
-									/* -> affichage d'une face du cube, cette face    */
-									/* est décomposée en 2 triangles                  */
-
-									/* affichage de la face [0 1 2 3]        */
-									/* -> ajout du triangle (p[0],p[1],p[2]) */
-									/* -> ajout du triangle (p[0],p[2],p[3]) */
 
 									for(int is=0;is<3;is++)
 										S.push_back(Point(pts[is].x,pts[is].y,pts[is].z));

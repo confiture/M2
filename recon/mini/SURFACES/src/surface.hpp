@@ -32,12 +32,12 @@ inline double calc_pas(int n,Point * pts){
 		}
 	}
 
-	return h;
+	return 2*h;
 }
 
 struct grille{
 	grille(int nl,int nc,int nt,double pas,double xmin,double xmax,double ymin,double ymax,
-	       int zmin,int zmax){
+	       double zmin,double zmax){
 		vals=new double**[nl];
 		for(int i=0;i<nl;i++){
 			vals[i]=new double*[nc];
@@ -107,9 +107,6 @@ grille calc_grille_dist(ULONG n,Point * pts,Point * normales);
  *
  */
 inline Point4 intersection(const Point4& p1,const Point4& p2,double v){
-	if(v==p1.w)return p1;
-	if(v==p2.w)return p2;
-
 	double a = (v-p2.w)/(p1.w-p2.w);
 	return a*p1+(1-a)*p2;
 }
