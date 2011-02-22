@@ -118,9 +118,10 @@ commentstyle=\textit
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
   \section{Objectif}
-Le but de ce TP est d'illustrer le cours par l'utilisation d'un programme de simplification de triangulation basé sur la méthode QEM
+Le but de ce TP est d'illustrer le cours par l'utilisation d'un programme de simplification de triangulation basé sur la méthode QEM.
 
   \section{Simplification sur différents modèles}
+\subsection{Horse}
 
  \begin{tabular}{|c|c|}
 \hline
@@ -132,7 +133,7 @@ image initiale, 39698 triangles   &  10 000 triangles \\
 \hline
  \end{tabular}
 
-
+\subsection{Mannequin}
 \begin{tabular}{|c|c|}
 \hline
  \includegraphics[width=8cm]{../images/mannequin.png} & \includegraphics[width=8cm]{../images/mannequin_t800.png} \\
@@ -143,6 +144,7 @@ image initiale, 1355 triangles   &  800 triangles \\
 \hline
 \end{tabular}
 
+\subsection{Dragon}
 \begin{tabular}{|c|c|}
 \hline
  \includegraphics[width=8cm]{../images/dragon.png} & \includegraphics[width=8cm]{../images/dragon_t50000.png} \\
@@ -152,6 +154,59 @@ image initiale, 200 000 triangles   &  50 000 triangles \\
 5 000 triangles  &  1 000 triangles   \\
 \hline
 \end{tabular}
+
+\paragraph{Observations :}
+En divisant le nombre de triangles par 4, on observe quasiment aucune différence entre l'image initiale et celle 
+de 50 000 triangles.
+
+\subsection{Bunny}
+ \begin{tabular}{|c|c|}
+\hline
+ \includegraphics[width=8cm]{../images/bunny.png} & \includegraphics[width=8cm]{../images/bunny_t30000.png} \\
+image initiale, 69451 triangles   &  30 000 triangles \\
+\hline
+ \includegraphics[width=8cm]{../images/bunny_t5000.png} & \includegraphics[width=8cm]{../images/bunny_t1000.png} \\
+5 000 triangles  &  1 000 triangles   \\
+\hline
+ \end{tabular}
+
+\subsection{Plane}
+\begin{tabular}{|c|c|}
+\hline
+ \includegraphics[width=8cm]{../images/plane.png} & \includegraphics[width=8cm]{../images/plane_t5000.png} \\
+image initiale, 228 317 triangles   &  5 000 triangles \\
+\hline
+\includegraphics[width=8cm]{../images/plane_t1000.png} & \includegraphics[width=8cm]{../images/plane_t250.png} \\
+1 000 triangles  &  250 triangles   \\
+\hline
+\end{tabular}
+
+\subsection{Happy}
+\begin{tabular}{|c|c|}
+\hline
+ \includegraphics[width=8cm]{../images/happy.png} & \includegraphics[width=8cm]{../images/happy_t5000.png} \\
+image initiale, 228 317 triangles   &  5 000 triangles \\
+\hline
+\includegraphics[width=8cm]{../images/happy_t1000.png} & \includegraphics[width=8cm]{../images/happy_t250.png} \\
+1 000 triangles  &  250 triangles   \\
+\hline
+\end{tabular}
+
+\subsection{Hypersheet}
+\begin{tabular}{|c|c|}
+\hline
+ \includegraphics[width=8cm]{../images/hypersheet2.png} & \includegraphics[width=8cm]{../images/hypersheet_t400.png} \\
+image initiale, 897 triangles   &  400 triangles \\
+\hline
+\includegraphics[width=8cm]{../images/hypersheet_t100.png} & \includegraphics[width=8cm]{../images/hypersheet_t50.png} \\
+100 triangles  &  50 triangles   \\
+\hline
+\end{tabular}
+
+\paragraph{Observations :}
+On voit que lorsqu'on simplifie trop le maillage, la topologie de celui-ci peut être modifiée, plus particulièrement,
+on observe sur cet exemple (50 triangles) que la simplification du maillage à tendance à boucher les trous.
+
 
 \section{Simplification du modèle hypersheet.smf avec différentes options}
 
@@ -175,6 +230,9 @@ bords, 200 triangles
 \end{tabular}
 \end{center}
 
+\paragraph{Observations :}
+Ces images illustrent très bien la différence entre les simplifications avec ou sans préservation des bords.
+La simplification avec préservation des bords conserve bien mieux le maillage.
 
 
 \section{Simplification du modèle mannequin.smf avec différentes options}
@@ -199,9 +257,12 @@ des sommets, 400 triangles
 \end{tabular}
 \end{center}
 
+\paragraph{Observations :}
+On voit que la simplification avec placement optimal des sommets conserve bien mieux le maillage.
 
 \section{Simplification d'images}
 
+\subsection{Image1}
 \begin{center}
 \begin{tabular}{|l||c|c|}
 \hline
@@ -225,8 +286,12 @@ Simplification, 10 000 triangles & Simplification, 5 000 triangles \\
 \end{tabular}
 \end{center}
 
-\pagebreak
 
+
+
+
+\pagebreak
+\subsection{Image2}
 \begin{center}
 \begin{tabular}{|l||c|c|}
 \hline
@@ -246,6 +311,31 @@ Simplification, 2 500 triangles & \includegraphics[width=5.5cm]{../images/image2
 \hline
 \includegraphics[width=8cm]{../images/image2_t10000_wire_vue2.png} & \includegraphics[width=8cm]{../images/image2_t2500_wire_vue2.png}\\
 Simplification, 10 000 triangles & Simplification, 2 500 triangles \\
+\hline
+\end{tabular}
+\end{center}
+
+\pagebreak
+\subsection{Image3}
+\begin{center}
+\begin{tabular}{|l||c|c|}
+\hline
+        & Sans affichage de la triangulation & Zoom sur la triangulation \\
+\hline
+Image initiale & \includegraphics[width=5.5cm]{../images/tigre.png} &  \includegraphics[width=5.5cm]{../images/tigre_wire.png}\\
+\hline
+Simplification, 10 000 triangles & \includegraphics[width=5.5cm]{../images/tigre_t10000.png} &  \includegraphics[width=5.5cm]{../images/tigre_t10000_wire.png}\\
+\hline
+Simplification, 5 000 triangles & \includegraphics[width=5.5cm]{../images/tigre_t5000.png} &  \includegraphics[width=5.5cm]{../images/tigre_t5000_wire.png}\\
+\hline
+\end{tabular}
+\end{center}
+
+\begin{center}
+\begin{tabular}{|c|c|}
+\hline
+\includegraphics[width=8cm]{../images/tigre_t10000_wire_vue2.png} & \includegraphics[width=8cm]{../images/tigre_t5000_wire_vue2.png}\\
+Simplification, 10 000 triangles & Simplification, 5 000 triangles \\
 \hline
 \end{tabular}
 \end{center}
