@@ -129,11 +129,11 @@ class MedicalViewer : public QMainWindow {
 
 	// les couleurs pour le lance de rayon
 	vtkColorTransferFunction *color;
-	int RGBVals[6];
+	int RGBVals[12];
 
 	//l'opacité
 	vtkPiecewiseFunction *opacity;
-	int opacityVals[2];
+	int opacityVals[4];
 
 	vtkVolume *volume;
 	vtkVolumeProperty *volumeProperty;
@@ -226,12 +226,24 @@ class MedicalViewer : public QMainWindow {
 	virtual void slotR1NumberChanged(int);
 	virtual void slotG1NumberChanged(int);
 	virtual void slotB1NumberChanged(int);
-	virtual void slotOp1NumberChanged(int);
 	// Pour le point 2 (R,G,B) et l'opacite
+
 	virtual void slotR2NumberChanged(int);
 	virtual void slotG2NumberChanged(int);
 	virtual void slotB2NumberChanged(int);
+
+	virtual void slotR3NumberChanged(int);
+	virtual void slotG3NumberChanged(int);
+	virtual void slotB3NumberChanged(int);
+
+	virtual void slotR4NumberChanged(int);
+	virtual void slotG4NumberChanged(int);
+	virtual void slotB4NumberChanged(int);
+
+	virtual void slotOp1NumberChanged(int);
 	virtual void slotOp2NumberChanged(int);
+	virtual void slotOp3NumberChanged(int);
+	virtual void slotOp4NumberChanged(int);
 
  public:
 	/*  Constructor / Desctructor **************************************************************/

@@ -170,8 +170,6 @@ void MedicalViewer::initLookupTable()
 	pixMax=0;
 	val1 = 0;
 	val2 = 0;
-	std::cout<<"xmin : "<<xmin<<std::endl;
-	std::cout<<"xmax : "<<xmax<<std::endl;
 	//xmin = 0;
 	//xmax = 255;
 	// On fixe les SpinBox et NumberSlider pour minPix
@@ -251,11 +249,41 @@ void MedicalViewer::initRayCast(){
 	ui.B2_SpinBox->setMinimum(0);
 	ui.B2_SpinBox->setMaximum(100);
 
+	ui.R3_SpinBox->setMinimum(0);
+	ui.R3_SpinBox->setMaximum(100);
+
+	ui.G3_SpinBox->setMinimum(0);
+	ui.G3_SpinBox->setMaximum(100);
+
+	ui.B3_SpinBox->setMinimum(0);
+	ui.B3_SpinBox->setMaximum(100);
+
+	ui.R4_SpinBox->setMinimum(0);
+	ui.R4_SpinBox->setMaximum(100);
+
+	ui.G4_SpinBox->setMinimum(0);
+	ui.G4_SpinBox->setMaximum(100);
+
+	ui.B4_SpinBox->setMinimum(0);
+	ui.B4_SpinBox->setMaximum(100);
+
 	ui.Op1_SpinBox->setMinimum(0);
 	ui.Op1_SpinBox->setMaximum(1000);
 
 	ui.Op2_SpinBox->setMinimum(0);
 	ui.Op2_SpinBox->setMaximum(1000);
+
+	ui.Op3_SpinBox->setMinimum(0);
+	ui.Op3_SpinBox->setMaximum(1000);
+
+	ui.Op4_SpinBox->setMinimum(0);
+	ui.Op4_SpinBox->setMaximum(1000);
+
+	for(int i=0;i<12;i++)
+		RGBVals[i]=0;
+
+	for(int i=0;i<4;i++)
+		opacityVals[i]=0;
 
 	opacity = vtkPiecewiseFunction::New();
 	color = vtkColorTransferFunction::New();
@@ -313,15 +341,12 @@ void MedicalViewer::displayAxialSlice(int sliceNumber)
 
 void MedicalViewer::displayHisto()
 {
-	//std::cout<<"here0"<<std::endl;
-
 	int ignoreZero = 0;
 
 
 
 	int numComponents = reader->GetOutput()->GetNumberOfScalarComponents();
-	//std::cout<<"here0.1 "<<
-	//  std::cout<<"numComponents : "<<numComponents<<std::endl;
+
 	if( numComponents > 3 )
 	{
 		std::cout << "Error: cannot process an image with "
@@ -355,7 +380,6 @@ void MedicalViewer::displayHisto()
 
 	// Process the image, extracting and plotting a histogram for each
 	// component
-	//  std::cout<<"here3"<<std::endl;
 	for( int i = 0; i < numComponents; ++i )
 	{
 		vtkSmartPointer<vtkImageExtractComponents> extract =
@@ -404,7 +428,6 @@ void MedicalViewer::displayHisto()
 
 
 
-	std::cout<<"ymax :"<<ymax<<std::endl;
 	plot->SetXRange( 0,xmax);
 	plot->SetYRange( 0, ymax );
 	plot->SetHeight(1.0);
@@ -416,28 +439,7 @@ void MedicalViewer::displayHisto()
 	vtkSmartPointer<vtkRenderer> renderer =
 		vtkSmartPointer<vtkRenderer>::New();
 	renHisto->AddActor(plot);
-
-
-
-
-
-	/*vtkSmartPointer<vtkRenderWindow> renderWindow =
-	  vtkSmartPointer<vtkRenderWindow>::New();
-	  renderWindow->AddRenderer( renHisto );
-	  renderWindow->SetSize(640, 480);
-
-	  vtkSmartPointer<vtkRenderWindowInteractor> interactor =
-	  vtkSmartPointer<vtkRenderWindowInteractor>::New();
-	  interactor->SetRenderWindow( renderWindow );
-
-	  // Initialize the event loop and then start it
-	  interactor->Initialize();
-	  interactor->Start(); */
-
-	// return EXIT_SUCCESS;
 	ui.HistoLayout->update();
-	// On raffraîchit l'affichage
-	//vtkHistoWidget->update();
 }
 
 void MedicalViewer::displayCoronalSlice(int sliceNumber)
@@ -646,16 +648,23 @@ void MedicalViewer::updateIsoSurface()
 
 void MedicalViewer::updateRayCast(){
 	int i=0;
-	while(i<6 && RGBVals[i]>=0 && RGBVals[i]<=100)
+	while(i<12 && RGBVals[i]>=0 && RGBVals[i]<=100)
 		i++;
 
-	if(i==6){
+	if(i==12){
+		double intervalle=xmax/3.0;
+
 		opacity->RemoveAllPoints();
-		opacity->AddSegment(0, opacityVals[0], 255,opacityVals[1]);
+		opacity->AddSegment(0, opacityVals[0], intervalle,opacityVals[1]);
+		opacity->AddSegment(intervalle,opacityVals[1],2*intervalle,opacityVals[2]);
+		opacity->AddSegment(2*intervalle,opacityVals[2],3*intervalle,opacityVals[3]);
+
 
 		color->RemoveAllPoints();
-		color->AddRGBPoint(64, RGBVals[0]/100.0, RGBVals[1]/100.0, RGBVals[2]/100.0);
-		color->AddRGBPoint(128, RGBVals[3]/100.0, RGBVals[4]/100.0, RGBVals[5]/100.0);
+		color->AddRGBPoint(0, RGBVals[0]/100.0, RGBVals[1]/100.0, RGBVals[2]/100.0);
+		color->AddRGBPoint(1*intervalle, RGBVals[3]/100.0, RGBVals[4]/100.0, RGBVals[5]/100.0);
+		color->AddRGBPoint(2*intervalle, RGBVals[6]/100.0, RGBVals[7]/100.0, RGBVals[8]/100.0);
+		color->AddRGBPoint(3*intervalle, RGBVals[9]/100.0, RGBVals[10]/100.0, RGBVals[11]/100.0);
 	}
 }
 
@@ -679,23 +688,17 @@ void MedicalViewer::slotIsRayonDisplaied(bool disp){
 	dispRayon = disp;
 	if (dispRayon) {
 		displayRayon();
-		std::cout<<"ici1"<<std::endl;
 		updateRayCast();
-		std::cout<<"ici2"<<std::endl;
 		// Place la caméra correctement pour voir le slice
 		ren->ResetCamera();
-		std::cout<<"ici3"<<std::endl;
 	}
 
 	else{
-		std::cout<<"ici4"<<std::endl;
 		ren->RemoveVolume(volume);
 		isDisplayed=false;
 	}
 
-	std::cout<<"ben ici"<<std::endl;
 	vtkWidget->update();
-	std::cout<<"NON ben ici"<<std::endl;
 }
 
 
@@ -807,6 +810,67 @@ void MedicalViewer::slotB2NumberChanged(int b2){
 	}
 }
 
+void MedicalViewer::slotR3NumberChanged(int r3){
+	RGBVals[6]=r3;
+	if(dispRayon){
+		updateRayCast();
+
+		ren->ResetCamera();
+		vtkWidget->update();
+	}
+}
+
+void MedicalViewer::slotG3NumberChanged(int g3){
+	RGBVals[7]=g3;
+	if(dispRayon){
+		updateRayCast();
+
+		ren->ResetCamera();
+		vtkWidget->update();
+	}
+}
+
+void MedicalViewer::slotB3NumberChanged(int b3){
+	RGBVals[8]=b3;
+	if(dispRayon){
+		updateRayCast();
+
+		ren->ResetCamera();
+		vtkWidget->update();
+	}
+}
+
+void MedicalViewer::slotR4NumberChanged(int r4){
+	RGBVals[9]=r4;
+	if(dispRayon){
+		updateRayCast();
+
+		ren->ResetCamera();
+		vtkWidget->update();
+	}
+}
+
+void MedicalViewer::slotG4NumberChanged(int g4){
+	RGBVals[10]=g4;
+	if(dispRayon){
+		updateRayCast();
+
+		ren->ResetCamera();
+		vtkWidget->update();
+	}
+}
+
+void MedicalViewer::slotB4NumberChanged(int b4){
+	RGBVals[11]=b4;
+	if(dispRayon){
+		updateRayCast();
+
+		ren->ResetCamera();
+		vtkWidget->update();
+	}
+}
+
+
 void MedicalViewer::slotOp1NumberChanged(int op1){
 	opacityVals[0]=op1;
 	if(dispRayon){
@@ -819,6 +883,26 @@ void MedicalViewer::slotOp1NumberChanged(int op1){
 
 void MedicalViewer::slotOp2NumberChanged(int op2){
 	opacityVals[1]=op2;
+	if(dispRayon){
+		updateRayCast();
+
+		ren->ResetCamera();
+		vtkWidget->update();
+	}
+}
+
+void MedicalViewer::slotOp3NumberChanged(int op3){
+	opacityVals[2]=op3;
+	if(dispRayon){
+		updateRayCast();
+
+		ren->ResetCamera();
+		vtkWidget->update();
+	}
+}
+
+void MedicalViewer::slotOp4NumberChanged(int op4){
+	opacityVals[3]=op4;
 	if(dispRayon){
 		updateRayCast();
 
