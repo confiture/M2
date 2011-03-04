@@ -1,8 +1,7 @@
 #include "grid.hpp"
 #include"xfig.hpp"
 
-grille calc_grille_dist(int n,Point * pts,Point * normales){
-	double pas=calc_pas(n,pts);
+grille calc_grille_dist(int n,Point * pts,Point * normales,double pas){
 	double xmin,xmax,ymin,ymax;
 
 	boite_englobante(pts,n,xmin,xmax,ymin,ymax);
@@ -183,7 +182,7 @@ void normales(int n,Point * pts,Point * normales,double r){
 		for(int j=i+1;j<n;j++){
 			if(dist[i][j]<=r){
 				Arete ac;
-				ac.v=1-ABS(dot(pts[i],pts[j]));
+				ac.v=1-ABS(dot(normales[i],normales[j]));
 				ac.s1=i;
 				ac.s2=j;
 

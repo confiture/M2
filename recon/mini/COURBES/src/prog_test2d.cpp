@@ -48,6 +48,7 @@
 #include"xfig.hpp"
 #include "grid.hpp"
 #include <algorithm>
+#include <string>
 //////////////////////////////////////////////////////////////////////////////
 // test 1 : un exemple de figure XFIG avec différents objets
 // et différentes profondeurs
@@ -602,10 +603,121 @@ void test_jeux_donnees_normales_orientees()
 	XFIG_export_GIF("test5.fig", "test5.gif", 2.0);
 }
 
-
-
-void test_test()
+void partie1_shell(int num_test,float facteurPas,const char * fic_sortie)
 {
+
+	// création du jeu de données
+	vPoint P ,NP;
+	switch (num_test)
+	{
+	case 1 :
+		{
+			// point sur un oval
+			int n=50;
+			double rx=1.5, ry=1.0;
+			P.resize(n);
+			NP.resize(n);
+			for (int i=0; i<n; i++)
+			{
+				double a = 2.0*i*M_PI/n;
+				P[i] = Point(rx*cos(a),ry*sin(a));
+				Point Ni = Point(ry*cos(a),rx*sin(a));
+				Ni = Ni/norm(Ni);
+				NP[i] = Ni;
+			}
+
+			break;
+		}
+
+	case 2 :
+		{
+			// points issus d'une courbe de subdivision ouverte
+			P.resize(6);
+			int k=0;
+			bool ferme=false;
+			P[k++] = Point(0,0);
+			P[k++] = Point(0,1);
+			P[k++] = Point(1,1);
+			P[k++] = Point(1,0);
+			P[k++] = Point(3,0);
+			P[k++] = Point(3,1);
+			// création de points par subdivision
+			for (int i=1; i<=4; i++)
+				P=chaikin(P,ferme);
+			// calcul des normales orientées par différences finies
+			NP = normale_orientee(P,ferme);
+			break;
+		}
+	case 3 :
+		{
+			// points issus d'une courbe de subdivision fermée
+			P.resize(4);
+			int k=0;
+			bool ferme=true;
+			P[k++] = Point(0,0);
+			P[k++] = Point(1,0);
+			P[k++] = Point(1,1);
+			P[k++] = Point(0,1);
+			// création de points par subdivision
+			for (int i=1; i<=4; i++)
+				P=chaikin(P,ferme);
+			// calcul des normales orientées par différences finies
+			NP = normale_orientee(P,ferme);
+			break;
+		}
+	}
+
+	int n=P.size();
+	Point pTab[n];
+	Point nTab[n];
+	for(int i=0;i<n;i++){
+		pTab[i]=P[i];
+		nTab[i]=NP[i];
+	}
+
+	double pas=calc_pas(n,pTab,facteurPas);
+	grille gr=calc_grille_dist(n,pTab,nTab,pas);
+
+	vPoint E1,E2;
+	gr.calc_iso_courbe(0,E1,E2);
+	int N=E1.size();
+
+	// calcul des écarts
+	double dmin, dmax;
+	ecart_min_max(P, dmin, dmax);
+
+	// création du fichier FIG
+	std::string filename(fic_sortie);
+	filename+=".fig";
+	XFIG_open(filename.c_str());
+
+	// tracé des n points, chaque point sur la forme
+	// d'un cercle	rouge de rayon dmin/3, d'épaisseur 2,
+	// les points sont tracés  à la profondeur 49
+	XFIG_thickness=2;
+	XFIG_depth = 49;
+	XFIG_pen_color = XFIG_COLOR_RED;
+	for (int i=0; i<n; i++)
+		XFIG_circle(P[i],dmin/3.0);
+
+	vPoint segm(2);
+	for(int i=0;i<N;i++){
+		segm[0]=E1[i];
+		segm[1]=E2[i];
+		XFIG_polygon(segm);
+	}
+
+	XFIG_close();
+
+	std::string filenameJPG(fic_sortie);
+	filenameJPG+=".jpg";
+	XFIG_export_JPG(filename.c_str(), filenameJPG.c_str(), 2.0, 100);
+}
+
+
+void partie1()
+{
+	float facteurPas;
 	printf("Création d'un ensemble de points et normales orientées\n");
 	printf("et export aux formats EPS, JPG, GIF\n");
 
@@ -618,66 +730,68 @@ void test_test()
 		printf("3 : points sur une courbe de subdivision fermée  \n");
 		scanf("%i", &num_test);
 
+		printf("Entrez le facteur multiplicatif du pas de la grille :\n");
+		scanf("%f",&facteurPas);
 	}
 
 	// création du jeu de données
 	vPoint P ,NP;
 	switch (num_test)
 	{
-		case 1 :
+	case 1 :
 		{
-		// point sur un oval
-		int n=50;
-		double rx=1.5, ry=1.0;
-		P.resize(n);
-		NP.resize(n);
-		for (int i=0; i<n; i++)
-		{
-			double a = 2.0*i*M_PI/n;
-			P[i] = Point(rx*cos(a),ry*sin(a));
-			Point Ni = Point(ry*cos(a),rx*sin(a));
-			Ni = Ni/norm(Ni);
-			NP[i] = Ni;
+			// point sur un oval
+			int n=50;
+			double rx=1.5, ry=1.0;
+			P.resize(n);
+			NP.resize(n);
+			for (int i=0; i<n; i++)
+			{
+				double a = 2.0*i*M_PI/n;
+				P[i] = Point(rx*cos(a),ry*sin(a));
+				Point Ni = Point(ry*cos(a),rx*sin(a));
+				Ni = Ni/norm(Ni);
+				NP[i] = Ni;
+			}
+
+			break;
 		}
 
-		break;
-		}
-
-		case 2 :
+	case 2 :
 		{
-		// points issus d'une courbe de subdivision ouverte
-		P.resize(6);
-		int k=0;
-		bool ferme=false;
-		P[k++] = Point(0,0);
-		P[k++] = Point(0,1);
-		P[k++] = Point(1,1);
-		P[k++] = Point(1,0);
-		P[k++] = Point(3,0);
-		P[k++] = Point(3,1);
-		// création de points par subdivision
-		for (int i=1; i<=4; i++)
-			P=chaikin(P,ferme);
-		// calcul des normales orientées par différences finies
-		NP = normale_orientee(P,ferme);
-		break;
+			// points issus d'une courbe de subdivision ouverte
+			P.resize(6);
+			int k=0;
+			bool ferme=false;
+			P[k++] = Point(0,0);
+			P[k++] = Point(0,1);
+			P[k++] = Point(1,1);
+			P[k++] = Point(1,0);
+			P[k++] = Point(3,0);
+			P[k++] = Point(3,1);
+			// création de points par subdivision
+			for (int i=1; i<=4; i++)
+				P=chaikin(P,ferme);
+			// calcul des normales orientées par différences finies
+			NP = normale_orientee(P,ferme);
+			break;
 		}
-		case 3 :
+	case 3 :
 		{
-		// points issus d'une courbe de subdivision fermée
-		P.resize(4);
-		int k=0;
-		bool ferme=true;
-		P[k++] = Point(0,0);
-		P[k++] = Point(1,0);
-		P[k++] = Point(1,1);
-		P[k++] = Point(0,1);
-		// création de points par subdivision
-		for (int i=1; i<=4; i++)
-			P=chaikin(P,ferme);
-		// calcul des normales orientées par différences finies
-		NP = normale_orientee(P,ferme);
-		break;
+			// points issus d'une courbe de subdivision fermée
+			P.resize(4);
+			int k=0;
+			bool ferme=true;
+			P[k++] = Point(0,0);
+			P[k++] = Point(1,0);
+			P[k++] = Point(1,1);
+			P[k++] = Point(0,1);
+			// création de points par subdivision
+			for (int i=1; i<=4; i++)
+				P=chaikin(P,ferme);
+			// calcul des normales orientées par différences finies
+			NP = normale_orientee(P,ferme);
+			break;
 		}
 	}
 
@@ -689,7 +803,8 @@ void test_test()
 		nTab[i]=NP[i];
 	}
 
-	grille gr=calc_grille_dist(n,pTab,nTab);
+	double pas=calc_pas(n,pTab,facteurPas);
+	grille gr=calc_grille_dist(n,pTab,nTab,pas);
 	for(int i=gr.nl-1;i>=0;i--){
 		for(int j=0;j<gr.nc;j++){
 			if(gr(i,j)==numeric_limits<double>::infinity()){
@@ -721,8 +836,8 @@ void test_test()
 	printf("dmax = %f\n", dmax);
 
 	// création du fichier FIG
-	printf("Création du fichier test_test.fig\n");
-	XFIG_open("test_test.fig");
+	printf("Création du fichier partie1.fig\n");
+	XFIG_open("partie1.fig");
 
 	// tracé des n points, chaque point sur la forme
 	// d'un cercle	rouge de rayon dmin/3, d'épaisseur 2,
@@ -738,17 +853,130 @@ void test_test()
 		segm[0]=E1[i];
 		segm[1]=E2[i];
 		XFIG_polygon(segm);
+	}
 
 	XFIG_close();
 
 	// export du fichier au format JPEG avec une échelle de 2
 	//   et qualité 95
-	printf("Création du fichier test_test.jpg\n");
-	XFIG_export_JPG("test_test.fig", "test_test.jpg", 2.0, 100);
+	printf("Création du fichier partie1.jpg\n");
+	XFIG_export_JPG("partie1.fig", "partie1.jpg", 2.0, 100);
 }
 
-void test_normales()
+
+
+void partie2_shell(int num_test,float facteurPas,float facteurRay,const char * fic_sortie)
 {
+	// création du jeu de données
+	vPoint P ,NP;
+	switch (num_test)
+	{
+		case 1 :
+		{
+		// point sur un oval
+		int n=50;
+		double rx=1.5, ry=1.0;
+		P.resize(n);
+		NP.resize(n);
+		for (int i=0; i<n; i++)
+		{
+			double a = 2.0*i*M_PI/n;
+			P[i] = Point(rx*cos(a),ry*sin(a));
+		}
+
+		break;
+		}
+
+		case 2 :
+		{
+		// points issus d'une courbe de subdivision ouverte
+		P.resize(6);
+		int k=0;
+		bool ferme=false;
+		P[k++] = Point(0,0);
+		P[k++] = Point(0,1);
+		P[k++] = Point(1,1);
+		P[k++] = Point(1,0);
+		P[k++] = Point(3,0);
+		P[k++] = Point(3,1);
+		// création de points par subdivision
+		for (int i=1; i<=4; i++)
+			P=chaikin(P,ferme);
+
+		break;
+		}
+		case 3 :
+		{
+		// points issus d'une courbe de subdivision fermée
+		P.resize(4);
+		int k=0;
+		bool ferme=true;
+		P[k++] = Point(0,0);
+		P[k++] = Point(1,0);
+		P[k++] = Point(1,1);
+		P[k++] = Point(0,1);
+		// création de points par subdivision
+		for (int i=1; i<=4; i++)
+			P=chaikin(P,ferme);
+		break;
+		}
+	}
+
+	int n=P.size();
+	Point pTab[n];
+	Point nTab[n];
+	for(int i=0;i<n;i++){
+		pTab[i]=P[i];
+	}
+
+	double pas=calc_pas(n,pTab,facteurPas);
+	normales(n,pTab,nTab,pas*facteurRay);
+	grille gr=calc_grille_dist(n,pTab,nTab,pas);
+
+	vPoint E1,E2;
+	gr.calc_iso_courbe(0,E1,E2);
+	int N=E1.size();
+
+	// création du fichier FIG
+	std::string filename(fic_sortie);
+	filename+=".fig";
+	XFIG_open(filename.c_str());
+
+	// tracé des n points, chaque point sur la forme
+	// d'un cercle	rouge de rayon dmin/3, d'épaisseur 2,
+	// les points sont tracés  à la profondeur 49
+	double dmin, dmax;
+	ecart_min_max(P, dmin, dmax);
+
+	XFIG_thickness=2;
+	XFIG_depth = 49;
+	XFIG_pen_color = XFIG_COLOR_RED;
+	for (int i=0; i<n; i++)
+		XFIG_circle(P[i],dmin/3.0);
+
+	for (int i=0; i<n; i++)
+		XFIG_arrow(P[i],P[i]+0.3*nTab[i]);
+
+	vPoint segm(2);
+	for(int i=0;i<N;i++){
+		segm[0]=E1[i];
+		segm[1]=E2[i];
+		XFIG_polygon(segm); // version vector<Point> P
+	}
+
+	XFIG_close();
+
+	std::string filenameJPG(fic_sortie);
+	filenameJPG+=".jpg";
+	XFIG_export_JPG(filename.c_str(), filenameJPG.c_str(), 2.0, 100);
+}
+
+
+void partie2()
+{
+	float facteurPas;
+	float facteurRay;
+
 	printf("Création d'un ensemble de points et normales orientées\n");
 	printf("et export aux formats EPS, JPG, GIF\n");
 
@@ -761,6 +989,11 @@ void test_normales()
 		printf("3 : points sur une courbe de subdivision fermée  \n");
 		scanf("%i", &num_test);
 
+		printf("Entrez le facteur multiplicatif du pas :\n");
+		scanf("%f",&facteurPas);
+
+		printf("Entrez le facteur multiplicatif rayon r :\n");
+		scanf("%f",&facteurRay);
 	}
 
 	// création du jeu de données
@@ -798,7 +1031,7 @@ void test_normales()
 		// création de points par subdivision
 		for (int i=1; i<=4; i++)
 			P=chaikin(P,ferme);
-		// calcul des normales orientées par différences finies
+
 		break;
 		}
 		case 3 :
@@ -814,7 +1047,6 @@ void test_normales()
 		// création de points par subdivision
 		for (int i=1; i<=4; i++)
 			P=chaikin(P,ferme);
-		// calcul des normales orientées par différences finies
 		break;
 		}
 	}
@@ -826,27 +1058,26 @@ void test_normales()
 		pTab[i]=P[i];
 	}
 
-	normales(n,pTab,nTab,calc_pas(n,pTab));
-
-	grille gr=calc_grille_dist(n,pTab,nTab);
+	double pas=calc_pas(n,pTab,facteurPas);
+	normales(n,pTab,nTab,pas*facteurRay);
+	grille gr=calc_grille_dist(n,pTab,nTab,pas);
 
 	vPoint E1,E2;
 	gr.calc_iso_courbe(0,E1,E2);
 	int N=E1.size();
 
-	// calcul des écarts
+	// création du fichier FIG
+	printf("Création du fichier partie2.fig\n");
+	XFIG_open("partie2.fig");
+
+	// tracé des n points, chaque point sur la forme
+	// d'un cercle	rouge de rayon dmin/3, d'épaisseur 2,
+	// les points sont tracés  à la profondeur 49
 	double dmin, dmax;
 	ecart_min_max(P, dmin, dmax);
 	printf("dmin = %f\n", dmin);
 	printf("dmax = %f\n", dmax);
 
-	// création du fichier FIG
-	printf("Création du fichier test_test.fig\n");
-	XFIG_open("test_normales.fig");
-
-	// tracé des n points, chaque point sur la forme
-	// d'un cercle	rouge de rayon dmin/3, d'épaisseur 2,
-	// les points sont tracés  à la profondeur 49
 	XFIG_thickness=2;
 	XFIG_depth = 49;
 	XFIG_pen_color = XFIG_COLOR_RED;
@@ -855,7 +1086,6 @@ void test_normales()
 
 	for (int i=0; i<n; i++)
 		XFIG_arrow(P[i],P[i]+0.3*nTab[i]);
-
 
 	vPoint segm(2);
 	for(int i=0;i<N;i++){
@@ -868,77 +1098,31 @@ void test_normales()
 
 	// export du fichier au format JPEG avec une échelle de 2
 	//   et qualité 95
-	printf("Création du fichier test_normales.jpg\n");
-	XFIG_export_JPG("test_normales.fig", "test_normales.jpg", 2.0, 95);
+	printf("Création du fichier partie2.jpg\n");
+	XFIG_export_JPG("partie2.fig", "partie2.jpg", 2.0, 100);
 }
-
-
-void testBidon(){
-	int myints[] = {32,71,12,45,26,80,53,33};
-	int* it=myints;
-	int* end=&myints[7];
-	end++;
-	sort(it,end);
-
-	for(int i=0;i<8;i++){
-		std::cout<<myints[i]<<" ";
-	}
-
-	std::cout<<endl;
-}
-
 
 ///////////////////////////////////////////////////////////////////////////////
 // PROGRAMME PRINCIPAL
 int main(int argc, char *argv[])
 {
+	if(argc==5){
+		float facteurPas;
+		float facteurRay;
+		sscanf(argv[2],"%f",&facteurPas);
+		sscanf(argv[3],"%f",&facteurRay);
 
-	//testBidon();
+		partie2_shell(atoi(argv[1]),facteurPas,facteurRay,argv[4]);
+	}
+	else if(argc==4){
+		float facteurPas;
+		sscanf(argv[2],"%f",&facteurPas);
 
-	//test_test();
+		partie1_shell(atoi(argv[1]),facteurPas,argv[3]);
+	}
 
-	test_normales();
-
-// 	int num_test=1;
-// 	if (argc>=2)
-// 	{
-// 		sscanf(argv[1],"%i",&num_test);
-// 	}
-// 	fprintf(stdout, "TEST DES LIBRAIRIES lib_base2 ET xfig - test %d\n\n",
-// 	  num_test);
-
-// 	switch(num_test)
-// 	{
-// 		case 1 :
-// 		{
-// 			test_xfig_et_exports();
-// 			break;
-// 		}
-// 		case 2 :
-// 		{
-// 			test_trace_points_normales_orientees();
-// 			break;
-// 		}
-// 		case 3 :
-// 		{
-// 			test_graphe_et_arbre_couvrant_minimal();
-// 			break;
-// 		}
-// 		case 4 :
-// 		{
-// 			test_elements_propres_mat_sym();
-// 			break;
-// 		}
-// 		case 5 :
-// 		{
-// 			test_jeux_donnees_normales_orientees();
-// 			break;
-// 		}
-// 		default :
-// 		{
-// 			printf("num_test incorrect\n");
-// 		}
-// 	}
+	//partie1();
+	//partie2();
 	return 0;
 }
 

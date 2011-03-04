@@ -9,7 +9,10 @@
 #include <vector>
 #include <algorithm>
 
-inline double calc_pas(int n,Point * pts){
+/**
+ *Calcule le pas de la grille max_i(min_(j!=i)(P_i,P_j)) * facteur.
+ */
+inline double calc_pas(int n,Point * pts,double facteur){
 	int indMinDist;
 	double nrm;
 	double dist[n];
@@ -32,9 +35,16 @@ inline double calc_pas(int n,Point * pts){
 		}
 	}
 
-	return h;
+	return h*facteur;
 }
 
+/**
+ *Structure grille en 2 dimensions. La grille est principalement constituée d'un
+ *tableau à 2 dimensions de double. Elle représente une grille régulière. Sa principale
+ *fonction est en fait de contenir beaucoup de champs tel que l'abscisse minimum xmin,
+ *l'abscisse maximum xmax, le pas, le nombre de lignes etc... Cela évite de passer
+ *trop de paramètres aux fonctions.
+ */
 struct grille{
 	grille(int nl,int nc,double pas,double xmin,double xmax,double ymin,double ymax){
 		vals=new double*[nl];
@@ -62,6 +72,9 @@ struct grille{
 	double** vals;
 };
 
+/**
+ *Point a 3 coordonnées.
+ */
 struct Point3
 {
 	double x,y,z; // les 3 coordonnées
@@ -90,7 +103,10 @@ Point3 operator*(Point3 A, double r);
 // calcul de A/r avec r de type double et A de type Point3
 Point3 operator/(Point3 A, double r);
 
-grille calc_grille_dist(int n,Point * pts,Point * normales);
+/**
+ *Retourne la grille régulière des distances signées.
+ */
+grille calc_grille_dist(int n,Point * pts,Point * normales,double pas);
 
 /**
  *Retourne l'intersection du segment [p1,p2] avec le plan z=v.
@@ -104,8 +120,19 @@ inline Point3 intersection(const Point3& p1,const Point3& p2,int v){
 	return a*p1+(1-a)*p2;
 }
 
+/**
+ *Oriente les normales contenues dans normales. ACM est l'arbre couvrant minimal
+ *issu du graphe ou une arete e=(i,j) appartient au graphe G ssi d(P_i,P_j)<=r et ou
+ *cout(e)=1-|normales[i] . normales[j]|. Le tableau visite doit etre de la meme taille
+ *que normales et initialise a false. Il signale qu'un noeud de l'arbre ACM a ete visite.
+ */
 void oriente_normales(Arbre ACM,int numNoeud,Point * normales,bool * visite);
 
+/**
+ *Calcule les normales à partir des points dans le tableau pts. Les normales
+ *sont stockées dans le tableau normales. pts et normales doivent etre de taille
+ *n, r est le rayon utilisé pour le calcul des normales.
+ */
 void normales(int n,Point * pts,Point * normales,double r);
 
 #endif
