@@ -1,0 +1,381 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage{pdfpages}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage[francais]{babel}
+\usepackage[dvips,lmargin=3cm,rmargin=3cm,tmargin=3cm,bmargin=4cm]{geometry}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage[utf8]{inputenc}
+\usepackage{listings}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{float}
+\usepackage[T1]{fontenc}
+%\usepackage[nottoc, notlof, notlot]{tocbibind}
+\usepackage{graphicx}
+
+\usepackage{subfig}
+
+% Macros pratique pour les maths.
+\newcommand{\bs}{\symbol{92}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\K}{\mathbb{K}}
+\newcommand{\B}{\mathcal{B}}
+\newcommand{\tab}{\hspace*{1cm}}
+\newcommand{\norm}[1]{\left\vert \left\vert {#1}  \right\vert \right\vert}
+\newcommand{\abs}[1]{ \left\vert {#1}  \right\vert}
+\newcommand{\vect}[1]{\overrightarrow{#1}}
+\newcommand{\scal}[2]{\langle #1 \vert #2 \rangle}
+\newcommand{\exems}{$ $ \\ \noindent{{\textbf{Exemples.~}}}}
+\newcommand{\exem}{$ $ \\ \noindent{{\textbf{Exemple.~}}}}
+\newcommand{\rem}{$ $\\\ \noindent{{\textbf{Remarque.~}}}}
+\newcommand{\rems}{$ $ \\ \noindent{{\textbf{Remarques.~}}}}
+\newcommand{\rap}{$ $ \\ \noindent{{\textbf{Rappel.~}}}}
+\newcommand{\car}[1]{|#1|}
+\newcommand{\card}{\mbox{card}}
+\newcommand{\stab}{\mbox{Stab}}
+\newcommand{\ba}[1]{\overline{#1}}
+\newcommand{\inte}[1]{ [\![{#1} ]\!]}
+
+% Configuration du package lstlisting pour du C++.
+% \lstset{
+%   basicstyle=\small,
+%   breaklines=true,
+%   commentstyle=\color[rgb]{0.3,0.3,0.3}\textit,
+%   emphstyle=\rmfamily\color{blue},
+%   frame=single,
+%   keywordstyle=\color{blue},
+%   language=C++,
+%   lineskip=0pt,
+%   numbers=left,
+%   numbersep=5pt,
+%   numberstyle=\tt\small\color{gray},
+%   showstringspaces=false,
+%   tabsize=4,
+%   texcl=true
+% }
+\definecolor{colKeys}{rgb}{0,0,1}
+\definecolor{colIdentifier}{rgb}{0,0,0}
+\definecolor{colComments}{rgb}{0,0.5,1}
+\definecolor{colString}{rgb}{0.6,0.1,0.1}
+
+\lstset{%configuration de listings
+float=hbp, %
+basicstyle=\ttfamily \small, %
+identifierstyle=\color{colIdentifier}, %
+keywordstyle=\color{colKeys}, %
+stringstyle=\color{colString}, %
+commentstyle=\color{colComments}, %
+columns=flexible, %
+tabsize=4, %
+frame=trBL, %
+frameround=tttt, %
+extendedchars=true, %
+showspaces=false, %
+showstringspaces=false, %
+numbers=left, %
+numberstyle=\tiny, %
+breaklines=true, %
+breakautoindent=true, %
+captionpos=b, %
+xrightmargin=0cm, %
+xleftmargin=0cm,
+language=scilab,
+commentstyle=\textit
+}
+
+
+
+\title{
+  \huge{\bf Mini-projet de reconstruction}
+}
+
+\author{
+    \textsc{Trlin} Moreno \\
+}
+
+\date{4 masr 2011}
+
+\begin{document}
+
+ \maketitle
+  \begin{center}
+   \includegraphics[height=4cm]{../images/imag.png}
+
+  \end{center}
+ \tableofcontents
+
+\pagebreak
+
+\section{Partie courbes}
+\subsection{Le programme}
+\subsubsection{Structure générale du programme}
+En plus des fichiers sources fournis, le programme est aussi composé des fichiers courbe.cpp et courbe.hpp.
+
+Ces deux fichiers dénifissent une structure Point3 (point de 3 coordonnées) et une structure grille qui est une grille régulière en deux dimensions.
+Cette grille n'est pas indicée en les valeurs réelles des points mais en les indices du tableau qui définit cette grille.
+Je me sers de cette grille pour fabriquer la grille régulière des distances signées ({\tt calc\_dist\_grille}) puis je calcule la courbe
+iso-valeur ({\tt calc\_iso\_courbe}) pour reconstruire la courbe issue à partir des points. Il y a des points à trois coordonnées car je me sers
+de la troisième coordonnée pour stocker la distance signée en (x,y) du point en question. Lorsque je calcule la courbe iso-valeur, je calcule l'intersection
+du plan $z=0$ avec la surface définie par les points à 3 coordonnées.
+
+Pour ce qui est du calcul des normales orientées ({\tt normales}), je me sers des structures fournies {\tt Graph}, {\tt Arbre} et {\tt Arete} ainsi que
+des fonctions définies dessus, plus particulièrment {\tt calcule\_ACM} qui calcule l'arbre couvrant minimal.
+
+\subsubsection{Structure grille}
+La grille est principalement constituée d'un tableau à deux dimension de doubles. Elle est constituée néanmoins des champs :
+\begin{itemize}
+\item {\tt int nl} : le nombre de lignes de la grille régulière
+\item {\tt int nc} : le nombre de colonnes de la grille régulière
+\item {\tt double pas} : le pas de la grille régulière
+\item {\tt double xmin,xmax,ymin,ymax,zmin,zmax} :
+\item {\tt double** vals} : tableau contenant les valeurs de la grille régulière
+\end{itemize}
+
+Les points de cette grille sont donc espacés de {\tt pas}, et on peut associer à chaque point de la grille une valeur {\tt double}.
+Cette n'est pas indicée sur les vrais indices des points mais sur les indices du tableau {\tt vals} contenant les valeurs des en les points
+de la grille. L'indice $(i,j)$ de la grille correspond en réalité au point $(j*pas+xmin,i*pas+ymin $.
+
+Cette grille est utilisé pour calculer la grille régulière des distances signées et à partir de cette grille, on calcule la courbe iso-valeur.
+
+La principale fonction de cette structure est en fait de contenir beaucoup de champs.
+Cela évite de passer trop de paramètres aux fonctions.
+
+\subsubsection{La fonction {\tt calc\_dist\_grid}}
+Cette fonction calcule la grille régulière des distances signées à partir des points, des normales et du pas qu'on lui passe en paramètre.
+
+Les bords de la grille régulière ({\tt xmin, xmax, ymin, ymax}) sont calculés avec la fonction {\tt boite\_enlgobante}. Mais ces bords sont
+repoussés de deux fois le pas afin d'éviter les problèmes sur les bords de la grille. Si {\tt xmin, xmax, ymin, ymax} est le résultat de
+la fonction {\tt boite\_enlgobante} alors $$xmin_{grille}=xmin-2*pas,~xmax_{grille}=xmax+2*pas$$
+$$~ymin_{grille}=ymin-2*pas,~ ymax_{grille}=ymax+2*pas $$
+
+Lors de la construction de la grille régulière des distances signées, il faut trouver pour chaque point le point de la grille le plus proche.
+Voici la méthode que j'ai utilisé :\\
+supposons que nous cherchons les indices $(i,j)$ de la grille représentant le point le plus proche du point $(x,y)$ en entrée. Soit $E$ la fonction
+partie entière.\\ Si $y-(E((y-ymin)/pas))*pas-ymin<=pas/2.0$ alors $i=E((pts[i].y-ymin)/pas)$ sinon $i=E((y-ymin)/pas)+1$ de même pour $j$.
+
+\subsubsection{La méthode {\tt calc\_iso\_courbe}}
+Cette méthode calcule la courbe iso-valeur à partir de la grille régulière des distances signées. L'idée de cette méthode est simple, on parcourt
+toutes les mailles de la grille. Chaque maille est décomposée en deux triangles. Les points des triangles sont en dimension 3. La troisième dimension
+étant la valeur de la grille en $(i,j)$, c'est à dire la distance signée. L'intersection de chaque triangle avec le plan $z=0$ est calculée si elle existe.
+A la suite de cette méthode, nous avons une liste de segments définissant la courbe iso-valeur.
+
+\subsubsection{La fonction {\tt normales}}
+La fonction {\tt normales} calcule les normales en les points donnés en fonction d'un rayon $r$. Pour chaque point $P$, on considère tous l'ensemble $E$
+les points dont la à distance de $P$ est inférieure ou égale à $r$. À partir de $E$, on calcule la droite aux moindres carrés grâce à la fonction {\tt droite\_mc}, à partir
+de ça, on récupère le vecteur normal au vecteur directeur à la droite qui est aussi le vecteur normale au point $P$. Après cette étape, il faut orienter les normales.
+Pour cela, on construit le graphe $G$ définit ainsi : \\
+Arête $e \in G $ ssi $d(P_i,P_j) \leq r$ et $v(e)=1-|\vec{n_i}.\vec{n_j}|$. Les noeuds de $G$ sont donc les numéros de normales.
+On construit ensuite l'arbre couvrant minimal $A$ à partir de $G$. On lance ensuite la fonction {\tt oriente\_normales} sur l'arbre couvrant minimal.
+
+\subsubsection{La fonction {\tt oriente\_normales}}
+Cette fonction est récursive. Elle prend en entrée l'arbre couvrant minimal $A$ et le tableau des normales ainsi que le numéro de noeud à traiter.
+On parcourt récursivement $A$ : pour chaque noeud (numéro de normale), on oriente les normales voisines de la même façon que la normale courante, puis on
+relance cette fonction sur les voisins.
+
+\subsection{Manuel utilisateur}
+Le programme guide entièrement l'utilisateur. Le programme demandera le facteur multiplicatif pour le pas de la grille
+$$g=c_g*Max_i(Min_{i \neq j}(d(P_i,P_j))$$. Le facteur multiplicatif est donc $c_g$.
+Le programme peut aussi demander le facteur du bruit $b=c_b*min_{i \neq j}(d(P_i,P_j))$ qui est donc $c_b$. Soit $bruit$ la fonction
+qui bruite une jeu de données $P_i$. Lorsqu'on bruite un jeu de données $P_i$ de $b$, cela signifie que $bruit(P_i,b) \in [P_i-b, P_i+b]$.
+Le programme peut aussi demander le facteur multiplicatif du rayon $r=c_r*g$ impliqué dans le calcul des normales. Ce facteur est donc $c_r$.
+
+\subsection{Les résultats}
+\subsubsection{Avec les normales orientées}
+On peut observer ici les variations de $g$, le pas de la grille. On prend g comme $$g=c*Max_i(Min_{i \neq j}(d(P_i,P_j))$$
+
+\begin{center}
+\begin{tabular}{|c|c|}
+\hline
+c=1         & c=1.3\\
+\hline
+\hline
+\includegraphics[width=8cm]{../images/partie1-jeu1-fe10.jpg} & \includegraphics[width=8cm]{../images/partie1-jeu1-fe13.jpg} \\
+\hline
+\includegraphics[width=8cm]{../images/partie1-jeu2-fe10.jpg} & \includegraphics[width=8cm]{../images/partie1-jeu2-fe13.jpg} \\
+\hline
+\end{tabular}
+
+\begin{tabular}{|c|c|}
+\hline
+c=1.6         & c=2.8\\
+\hline
+\hline
+\includegraphics[width=8cm]{../images/partie1-jeu1-fe16.jpg} & \includegraphics[width=8cm]{../images/partie1-jeu1-fe28.jpg}\\
+\hline
+\includegraphics[width=8cm]{../images/partie1-jeu2-fe16.jpg} & \includegraphics[width=8cm]{../images/partie1-jeu2-fe28.jpg}\\
+\hline
+\end{tabular}
+\end{center}
+\paragraph{Observations :} Plus $g$ est grand, plus la grille régulière est grossière et plus la courbe est composée de
+grands segments.
+
+\subsubsection{Sans les normales orientées}
+On fait varier ici le rayon $r$ impliqué comme le calcul des normales. On prend r comme $r=c*g$ où g est le pas. Ici
+$$g=Max_i(Min_{i \neq j}(d(P_i,P_j))$$
+
+\begin{center}
+\begin{tabular}{|c|c|}
+\hline
+c=1         & c=1.3\\
+\hline
+\hline
+\includegraphics[width=8cm]{../images/partie2-jeu1-fe10-fr10.jpg} & \includegraphics[width=8cm]{../images/partie2-jeu1-fe10-fr13.jpg}\\
+\hline
+\includegraphics[width=8cm]{../images/partie2-jeu2-fe10-fr10.jpg} & \includegraphics[width=8cm]{../images/partie2-jeu2-fe10-fr13.jpg}\\
+\hline
+\end{tabular}
+
+\begin{tabular}{|c|c|}
+\hline
+c=1.6  & c=2.8\\
+\hline
+\hline
+\includegraphics[width=8cm]{../images/partie2-jeu1-fe10-fr16.jpg} & \includegraphics[width=8cm]{../images/partie2-jeu1-fe10-fr28.jpg}\\
+\hline
+\includegraphics[width=8cm]{../images/partie2-jeu2-fe10-fr16.jpg} & \includegraphics[width=8cm]{../images/partie2-jeu2-fe10-fr28.jpg}\\
+\hline
+\end{tabular}
+\end{center}
+
+\paragraph{Observations :} On voit sur la courbe ouverte que si $r$ n'est pas assez grand, lorsque les points sont éloignés, ils ne sont
+pas ralliés.
+
+\subsubsection{Avec bruitage et sans les normales orientées}
+On fait varier ici le rayon $r$ impliqué comme le calcul des normales pour différents bruits $b$. On prend r comme $r=c_r*g$ où g est le pas. Ici
+$g=Max_i(Min_{i \neq j}(d(P_i,P_j))$. On prend $b=c_b*min_{i \neq j}(d(P_i,P_j))$.w
+
+\pagebreak
+
+Ici le bruit $b=0.2*min_{i \neq j}(d(P_i,P_j))$
+\begin{center}
+\begin{tabular}{|c|c|}
+\hline
+\includegraphics[width=8cm]{../imagesCB/partie2-jeu1-fr10-bruit2.jpg} & \includegraphics[width=8cm]{../imagesCB/partie2-jeu1-fr11-bruit2.jpg} \\
+$c_r=1.0$                                                             & $c_r=1.1$ \\
+\hline
+\includegraphics[width=8cm]{../imagesCB/partie2-jeu1-fr30-bruit2.jpg} & \includegraphics[width=8cm]{../imagesCB/partie2-jeu1-fr40-bruit2.jpg} \\
+$c_r=3.0$                                                             & $c_r=4.0$ \\
+\hline
+\end{tabular}
+\end{center}
+
+\pagebreak
+
+Ici le bruit $b=0.4*min_{i \neq j}(d(P_i,P_j))$
+\begin{center}
+\begin{tabular}{|c|c|}
+\hline
+\includegraphics[width=8cm]{../imagesCB/partie2-jeu1-fr10-bruit4.jpg} & \includegraphics[width=8cm]{../imagesCB/partie2-jeu1-fr11-bruit4.jpg} \\
+$c_r=1.0$                                                             & $c_r=1.1$ \\
+\hline
+\includegraphics[width=8cm]{../imagesCB/partie2-jeu1-fr30-bruit4.jpg} & \includegraphics[width=8cm]{../imagesCB/partie2-jeu1-fr40-bruit4.jpg} \\
+$c_r=3.0$                                                             & $c_r=4.0$ \\
+\hline
+\end{tabular}
+\end{center}
+
+\pagebreak
+
+Ici le bruit $b=0.6*min_{i \neq j}(d(P_i,P_j))$
+\begin{center}
+\begin{tabular}{|c|c|}
+\hline
+\includegraphics[width=8cm]{../imagesCB/partie2-jeu1-fr10-bruit6.jpg} & \includegraphics[width=8cm]{../imagesCB/partie2-jeu1-fr11-bruit6.jpg} \\
+$c_r=1.0$                                                             & $c_r=1.1$ \\
+\hline
+\includegraphics[width=8cm]{../imagesCB/partie2-jeu1-fr30-bruit6.jpg} & \includegraphics[width=8cm]{../imagesCB/partie2-jeu1-fr40-bruit6.jpg} \\
+$c_r=3.0$                                                             & $c_r=4.0$ \\
+\hline
+\end{tabular}
+\end{center}
+
+\pagebreak
+
+Ici le bruit $b=0.8*min_{i \neq j}(d(P_i,P_j))$
+\begin{center}
+\begin{tabular}{|c|c|}
+\hline
+\includegraphics[width=8cm]{../imagesCB/partie2-jeu1-fr10-bruit8.jpg} & \includegraphics[width=8cm]{../imagesCB/partie2-jeu1-fr11-bruit8.jpg} \\
+$c_r=1.0$                                                             & $c_r=1.1$ \\
+\hline
+\includegraphics[width=8cm]{../imagesCB/partie2-jeu1-fr30-bruit8.jpg} & \includegraphics[width=8cm]{../imagesCB/partie2-jeu1-fr40-bruit8.jpg} \\
+$c_r=3.0$                                                             & $c_r=4.0$ \\
+\hline
+\end{tabular}
+\end{center}
+
+\pagebreak
+
+Ici le bruit $b=0.2*min_{i \neq j}(d(P_i,P_j))$
+\begin{center}
+\begin{tabular}{|c|c|}
+\hline
+\includegraphics[width=8cm]{../imagesCB/partie2-jeu2-fr10-bruit2.jpg} & \includegraphics[width=8cm]{../imagesCB/partie2-jeu2-fr11-bruit2.jpg} \\
+$c_r=1.0$                                                             & $c_r=1.1$ \\
+\hline
+\includegraphics[width=8cm]{../imagesCB/partie2-jeu2-fr12-bruit2.jpg} & \includegraphics[width=8cm]{../imagesCB/partie2-jeu2-fr40-bruit2.jpg} \\
+$c_r=1.2$                                                             & $c_r=4.0$ \\
+\hline
+\end{tabular}
+\end{center}
+
+\pagebreak
+
+Ici le bruit $b=0.4*min_{i \neq j}(d(P_i,P_j))$
+\begin{center}
+\begin{tabular}{|c|c|}
+\hline
+\includegraphics[width=8cm]{../imagesCB/partie2-jeu2-fr10-bruit4.jpg} & \includegraphics[width=8cm]{../imagesCB/partie2-jeu2-fr11-bruit4.jpg} \\
+$c_r=1.0$                                                             & $c_r=1.1$ \\
+\hline
+\includegraphics[width=8cm]{../imagesCB/partie2-jeu2-fr12-bruit4.jpg} & \includegraphics[width=8cm]{../imagesCB/partie2-jeu2-fr40-bruit4.jpg} \\
+$c_r=1.2$                                                             & $c_r=4.0$ \\
+\hline
+\end{tabular}
+\end{center}
+
+\pagebreak
+
+Ici le bruit $b=0.6*min_{i \neq j}(d(P_i,P_j))$
+\begin{center}
+\begin{tabular}{|c|c|}
+\hline
+\includegraphics[width=8cm]{../imagesCB/partie2-jeu2-fr10-bruit6.jpg} & \includegraphics[width=8cm]{../imagesCB/partie2-jeu2-fr11-bruit6.jpg} \\
+$c_r=1.0$                                                             & $c_r=1.1$ \\
+\hline
+\includegraphics[width=8cm]{../imagesCB/partie2-jeu2-fr12-bruit6.jpg} & \includegraphics[width=8cm]{../imagesCB/partie2-jeu2-fr40-bruit6.jpg} \\
+$c_r=1.2$                                                             & $c_r=4.0$ \\
+\hline
+\end{tabular}
+\end{center}
+
+\pagebreak
+
+Ici le bruit $b=0.8*min_{i \neq j}(d(P_i,P_j))$
+\begin{center}
+\begin{tabular}{|c|c|}
+\hline
+\includegraphics[width=8cm]{../imagesCB/partie2-jeu2-fr10-bruit8.jpg} & \includegraphics[width=8cm]{../imagesCB/partie2-jeu2-fr11-bruit8.jpg} \\
+$c_r=1.0$                                                             & $c_r=1.1$ \\
+\hline
+\includegraphics[width=8cm]{../imagesCB/partie2-jeu2-fr12-bruit8.jpg} & \includegraphics[width=8cm]{../imagesCB/partie2-jeu2-fr40-bruit8.jpg} \\
+$c_r=1.2$                                                             & $c_r=4.0$ \\
+\hline
+\end{tabular}
+\end{center}
+
+\paragraph{Observations :} Lorsque le bruit reste raisonnable (en dessous de $0.8*min_{i \neq j}(d(P_i,P_j))$ dans ces exemples), on observe que plus le bruit est grand,
+plus il faut que le rayon $r$ soit grand pour avoir un résultat cohérent. On voit aussi que cela ne sert à rien de trop augmenter $r$.
+Lorsque le bruit devient trop fort, les résultats sont quasiment les mêmes quelque soit $r$.
+
+\section{}
+ \end{document}

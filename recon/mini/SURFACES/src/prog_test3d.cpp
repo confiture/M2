@@ -432,7 +432,7 @@ void saisir(char* nom_f,Point * & S,Point * & NS,ULONG & nS,double & r)
 	}
 }
 
-void perturbe(int n,Point * pts,double amplitude){
+void bruiter(int n,Point * pts,double amplitude){
 	for(int i=0;i<n;i++){
 		pts[i].x+=(double)rand()/RAND_MAX*amplitude-amplitude/2.0;
 		pts[i].y+=(double)rand()/RAND_MAX*amplitude-amplitude/2.0;
@@ -453,7 +453,7 @@ void makeSurf(Point * S,Point * & NS,ULONG nS,double r,
 
 	std::list<Triangle> T;
 	std::list<Point> SS;
-	gr.calc_iso_courbe(0,T,SS);
+	gr.calc_iso_surf(0,T,SS);
 
 	nT=T.size();
 	Trs=new Triangle[nT];

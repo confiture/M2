@@ -50,7 +50,7 @@ LDFLAGS +=
 # Per project configuration #
 #############################
 
-mini_SRCS := src/xfig.cpp src/prog_test2d.cpp src/lib_base2d.cpp src/grid.cpp
+mini_SRCS := src/xfig.cpp src/prog_test2d.cpp src/lib_base2d.cpp src/courbe.cpp
 ###########################################
 # DO NOT MODIFY ANYTHING AFTER THIS LINE. #
 ###########################################

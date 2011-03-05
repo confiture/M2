@@ -7,11 +7,12 @@ grille calc_grille_dist(ULONG n,Point * pts,Point * normales){
 	boite_englobante(pts,n,xmin,xmax,ymin,ymax,zmin,zmax);
 	xmin-=2*pas;xmax+=2*pas;ymin-=2*pas;ymax+=2*pas;zmin-=2.0*pas;zmax+=2.0*pas;
 
+	// On calcule les dimensions de la grille
 	int dimx=(int)((xmax-xmin)/pas+0.5);
 	int dimy=(int)((ymax-ymin)/pas+0.5);
 	int dimz=(int)((zmax-zmin)/pas+0.5);
 
-	double*** grDist=new double**[dimx];
+	double*** grDist=new double**[dimx];// grille des distances des points de la grille aux points reels
 	for(int i=0;i<dimx;i++){
 		grDist[i]=new double*[dimy];
 		for(int j=0;j<dimy;j++){
@@ -19,6 +20,7 @@ grille calc_grille_dist(ULONG n,Point * pts,Point * normales){
 		}
 	}
 
+	// grille des distances signees que l'on va renvoyer
 	grille grDistSig(dimx,dimy,dimz,pas,xmin,xmax,ymin,ymax,zmin,zmax);
 
 	for(int i=0;i<dimx;i++){
@@ -30,10 +32,13 @@ grille calc_grille_dist(ULONG n,Point * pts,Point * normales){
 		}
 	}
 
+	// On calcule les distances minimum des points de la grilles aux points du tableau pts
 	for(int i=0;i<n;i++){
-		int indi;
-		int indj;
-		int indk;
+		int indi;// indice en i du point le plus proche de pts[i] dans la grille reguliere grDist
+		int indj;// indice en j du point le plus proche de pts[i] dans la grille reguliere grDist
+		int indk;// indice en k du point le plus proche de pts[i] dans la grille reguliere grDist
+
+		// On calcule le point de la grille reguliere grDist le plus proche de pts[i]
 		if(pts[i].x-((int)((pts[i].x-xmin)/pas))*pas-xmin<=pas/2.0){
 			indi=((int)((pts[i].x-xmin)/pas));
 		}
@@ -54,16 +59,10 @@ grille calc_grille_dist(ULONG n,Point * pts,Point * normales){
 		else{
 			indk=1+((int)((pts[i].z-zmin)/pas));
 		}
+		// maintenant (indi,indj,indk) minimise norm(pts-(indi*pas+xmin,indi*pas+ymin,indk*pas+zmin))
 
-		std::cout<<"indi*tralalal "<<indi*pas+xmin<<std::endl;
-		std::cout<<"pts[i].x "<<pts[i].x<<std::endl;
-		std::cout<<"indj*tralalal "<<indj*pas+ymin<<std::endl;
-		std::cout<<"pts[i].y "<<pts[i].y<<std::endl;
-		std::cout<<"indk*tralalal "<<indk*pas+zmin<<std::endl;
-		std::cout<<"pts[i].z "<<pts[i].z<<std::endl;
-
-
-
+		// On parcourt les 26 voisins de grDist[indi][indj][indk] et on met à jour
+		// les distances minimum si nécessaire
 		for(int ig=-1;ig<=1;ig++){
 			for(int jg=-1;jg<=1;jg++){
 				for(int kg=-1;kg<=1;kg++){
@@ -80,9 +79,11 @@ grille calc_grille_dist(ULONG n,Point * pts,Point * normales){
 	}
 
 	for(int i=0;i<n;i++){
-		int indi;
-		int indj;
-		int indk;
+		int indi;// indice en i du point le plus proche de pts[i] dans la grille reguliere grDistSig
+		int indj;// indice en j du point le plus proche de pts[i] dans la grille reguliere grDistSig
+		int indk;// indice en k du point le plus proche de pts[i] dans la grille reguliere grDistSig
+
+		// On calcule le point de la grille reguliere grDistSig le plus proche de pts[i]
 		if(pts[i].x-((int)((pts[i].x-xmin)/pas))*pas-xmin<=pas/2.0){
 			indi=((int)((pts[i].x-xmin)/pas));
 		}
@@ -103,8 +104,10 @@ grille calc_grille_dist(ULONG n,Point * pts,Point * normales){
 		else{
 			indk=1+((int)((pts[i].z-zmin)/pas));
 		}
+		// maintenant (indi,indj,indk) minimise norm(pts-(indi*pas+xmin,indi*pas+ymin,indk*pas+zmin))
 
-
+		// On parcourt les 26 voisins de grDistSig[indi][indj][indk] et on met à jour
+		// les distances minimum si nécessaire
 		for(int ig=-1;ig<=1;ig++){
 			for(int jg=-1;jg<=1;jg++){
 				for(int kg=-1;kg<=1;kg++){
@@ -134,30 +137,17 @@ grille calc_grille_dist(ULONG n,Point * pts,Point * normales){
 
 
 
-void grille::calc_iso_courbe(double v,std::list<Triangle> & T,std::list<Point> & S){
-	// allocation mémoire des tableaux E1 et E2
+void grille::calc_iso_surf(double v,std::list<Triangle> & T,std::list<Point> & S){
 	T.clear();
 	S.clear();
 	int numSommet=0;// les numéros des sommets de la liste S
 
-	std::cout<<"xmin "<<xmin<<std::endl;
-	std::cout<<"xmax "<<xmax<<std::endl;
-	std::cout<<"ymin "<<ymin<<std::endl;
-	std::cout<<"ymax "<<ymax<<std::endl;
-	std::cout<<"zmin "<<zmin<<std::endl;
-	std::cout<<"zmax "<<zmax<<std::endl;
-
-	std::cout<<"nl "<<nl<<std::endl;
-	std::cout<<"nc "<<nc<<std::endl;
-	std::cout<<"nt "<<nt<<std::endl;
 	for(int i=1;i<this->nl-1;i++){
 		for(int j=1;j<this->nc-1;j++){// boucle sur les mailles
 			for(int k=1;k<this->nt-1;k++){
 				Point4 p[8];/* coordonnées des sommets du cube élémentaire */
 
 				/* calcul du cube elementaire : 8 sommets (m=0 à 7) */
-				/*   p[m]   : coordonnées du sommet m               */
-				/*   val[m] : valeur au sommet m                    */
 				/* le sommet m du cube élémentaire correspond au    */
 				/* point P(im,jm,km) de la grille de données        */
 				/* les 6 faces du cube sont :                       */
@@ -278,9 +268,6 @@ void grille::calc_iso_courbe(double v,std::list<Triangle> & T,std::list<Point> &
 			}
 		}
 	}
-
-	std::cout<<" numSommet "<<numSommet<<std::endl;
-	std::cout<<"sizeOfSlist "<<S.size()<<std::endl;
 }
 
 /**
@@ -306,8 +293,10 @@ void normales(int n,Point * pts,Point * normales,double r){
 	for(int i=0;i<n;i++)
 		dist[i]=new double[n];
 
+	// B : barycentre et v vecteur normale au plan
 	Point B,v;
 
+	// calcul des distances entre les points de pts
 	for(int i=0;i<n;i++){
 		dist[i][i]=0;
 		for(int j=i+1;j<n;j++){
@@ -316,23 +305,30 @@ void normales(int n,Point * pts,Point * normales,double r){
 		}
 	}
 
+	// on parcourt tous les points
 	for(int i=0;i<n;i++){
-		std::list<Point> voisinage;
+		std::list<Point> voisinage; // voisinage de pts[i], c'est à dire tous les points pts[j] tels
+		                            // que distance(pts[i],pts[j])<=r
 		for(int j=0;j<n;j++){
 			if(i!=j && dist[i][j]<=r){
 				voisinage.push_back(pts[j]);
 			}
 		}
 
+		// evaluation de la normale grace à la fonction qui calcule le plan
+		// aux moindres carres des points dans voisinage, la normale du
+		// du plan est la normale du point
 		plan_mc(voisinage,B,normales[i]);
 	}
 
+	// on compte le nombre d'aretes
 	int nA = 0;
 	for (int i=0; i<n; i++)
 		for (int j=i+1; j<n; j++)
 			if (dist[i][j]<=r)
 				nA ++;
 
+	// On fabrique le graphe G de l'algorithme
 	Arete aretes[nA];
 
 	int k=0;
@@ -358,15 +354,17 @@ void normales(int n,Point * pts,Point * normales,double r){
 	Arete* end=&aretes[nA-1];
 	end++;
 
+	// on ordonne les aretes selon leur cout
 	sort(begin,end);
 
 	Graphe G = {aretes,nA,n};
-	Arbre ACM = calcule_ACM(G);
+	Arbre ACM = calcule_ACM(G);// on calcule l'arbre couvrant minimal
 
 	bool visite[n];
 	for(int i=0;i<n;i++)
 		visite[i]=false;
 
+	// on oriente les normales
 	oriente_normales(ACM,0,normales,visite);
 }
 

@@ -8,7 +8,9 @@
 #include <vector>
 #include <algorithm>
 
-
+/**
+ *Retourne le pas de la grille max_i(min_(j!=i)(P_i,P_j)) * facteur.
+ */
 inline double calc_pas(int n,Point * pts){
 	int indMinDist;
 	double nrm;
@@ -35,7 +37,23 @@ inline double calc_pas(int n,Point * pts){
 	return 2*h;
 }
 
+/**
+ *Structure grille en 3 dimensions. La grille est principalement constituée d'un
+ *tableau à 3 dimensions de double. Elle représente une grille régulière. Sa principale
+ *fonction est en fait de contenir beaucoup de champs tel que l'abscisse minimum xmin,
+ *l'abscisse maximum xmax, le pas, le nombre de lignes etc... Cela évite de passer
+ *trop de paramètres aux fonctions.
+ */
 struct grille{
+
+	/**
+	 *Constructeur de la grille.
+	 * nl : le nombre de lignes de la grille
+	 * nc : le nombre de colonnes de la grille
+	 * nt : dimension en la troisieme coordonnee
+	 * pas : le pas de la grille
+	 * xmin,xmax,ymin,ymax,zmin,zmax : Respectivement : minimum des abscisses, maximum des abscisses, minimum des ordonnees, maximum des ordonnees, minimum des cotes, maximum des cotes
+	 */
 	grille(int nl,int nc,int nt,double pas,double xmin,double xmax,double ymin,double ymax,
 	       double zmin,double zmax){
 		vals=new double**[nl];
@@ -57,6 +75,9 @@ struct grille{
 		this->zmax=zmax;
 	}
 
+	/**
+	 *Destructeur
+	 */
 	~grille(){
 		for(int i=0;i<nl;i++){
 			for(int j=0;j<nc;j++){
@@ -67,23 +88,36 @@ struct grille{
 		delete[] vals;
 	}
 
+	/**
+	 *Retourne la reference de la grille en (i,j,k). Attention (i,j,k) ne sont pas les
+	 *coordonnes réelles du point mais les coordonnes du tableau vals[i][j][k].
+	 *Donc (i,j,k) correspond en realite a (i*pas+xmin,j*pas+ymin,k*pas+zmin).
+	 */
 	double& operator()(int i,int j,int k){
 		return vals[i][j][k];
 	}
 
-	void calc_iso_courbe(double v,std::list<Triangle> & T,std::list<Point> & S);
+	/**
+	 *Calcule la surface isovaleur de la grille régulière. T est la liste des triangles
+	 *qui composent la surface iso-valeur à l'issue de cette méthode. S sont les coordonnées
+	 *des sommets des triangles. L'odre de S doit être préservé.
+	 */
+	void calc_iso_surf(double v,std::list<Triangle> & T,std::list<Point> & S);
 
-	int nl;
-	int nc;
-	int nt;
-	double pas;
-	double xmin,xmax,ymin,ymax,zmin,zmax;
-	double*** vals;
+	int nl; // le nombre de lignes de la grille
+	int nc; // le nombre de colonnes de la grille
+	int nt; // dimension en la troisieme coordonnee
+	double pas;// le pas de la grille
+	double xmin,xmax,ymin,ymax,zmin,zmax;// Respectivement : minimum des abscisses, maximum des abscisses, minimum des ordonnees, maximum des ordonnees, minimum des cotes, maximum des cotes
+	double*** vals; // tableau 3 dimensions definissant la grille
 };
 
+/**
+ *Points a 4 coordonnees.
+ */
 struct Point4
 {
-	double x,y,z,w; // les 3 coordonnées
+	double x,y,z,w; // les 4 coordonnées
 	Point4()
 	{
 		x=0.0; y=0.0; z=0.0; w=0.0;
@@ -113,26 +147,50 @@ Point4 operator/(Point4 A, double r);
 grille calc_grille_dist(ULONG n,Point * pts,Point * normales);
 
 /**
- *Retourne l'intersection du segment [p1,p2] avec le plan z=v.
+ *Retourne l'intersection du segment [p1,p2] avec le plan w=v.
  *
  */
 inline Point4 intersection(const Point4& p1,const Point4& p2,double v){
 	double a = (v-p2.w)/(p1.w-p2.w);
 	return a*p1+(1-a)*p2;
 }
-
+/**
+ *Un tetraedre en dimension 4 constitue donc d'un tableau de 4 points
+ *en dimension 4.
+ */
 struct Tetraedre4{
 	Point4 p[4];
 };
 
+/**
+ *Un triangle en dimension 4 constitue donc d'un tableau de 3 points
+ *en dimension 4.
+ */
 struct Triangle4{
 	Point4 p[3];
 };
 
+/**
+ *Calcule l'intersection de l'hyperplan w=v avec le tetetraedre te. Les points
+ *d'intersection sont stockés dans le tableau de points tr. Le nombre de points
+ *intersectés est enregistré dans taille.
+ */
 void intersectionTetra4(Tetraedre4 te,double v,Point4* tr,int & taille);
 
+
+/**
+ *Oriente les normales contenues dans normales. ACM est l'arbre couvrant minimal
+ *issu du graphe ou une arete e=(i,j) appartient au graphe G ssi d(P_i,P_j)<=r et ou
+ *cout(e)=1-|normales[i] . normales[j]|. Le tableau visite doit etre de la meme taille
+ *que normales et initialise a false. Il signale qu'un noeud de l'arbre ACM a ete visite.
+ */
 void oriente_normales(Arbre ACM,int numNoeud,Point * normales,bool * visite);
 
+/**
+ *Calcule les normales à partir des points dans le tableau pts. Les normales
+ *sont stockées dans le tableau normales. pts et normales doivent etre de taille
+ *n, r est le rayon utilisé pour le calcul des normales.
+ */
 void normales(int n,Point * pts,Point * normales,double r);
 
 #endif

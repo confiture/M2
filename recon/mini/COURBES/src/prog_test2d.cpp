@@ -43,12 +43,23 @@
 //  (inclure de préférence des fichiers EPS dans un document Open Office)
 //
 //////////////////////////////////////////////////////////////////////////////
-
+#include <iostream>
 #include"lib_base2d.hpp"
 #include"xfig.hpp"
-#include "grid.hpp"
+#include "courbe.hpp"
 #include <algorithm>
 #include <string>
+#include <stdlib.h>
+
+// bruitage des points
+void bruiter(vPoint & pts,double amplitude){
+	int n=pts.size();
+	for(int i=0;i<n;i++){
+		pts[i].x+=(double)rand()/RAND_MAX*amplitude-amplitude/2.0;
+		pts[i].y+=(double)rand()/RAND_MAX*amplitude-amplitude/2.0;
+	}
+}
+
 //////////////////////////////////////////////////////////////////////////////
 // test 1 : un exemple de figure XFIG avec différents objets
 // et différentes profondeurs
@@ -730,7 +741,7 @@ void partie1()
 		printf("3 : points sur une courbe de subdivision fermée  \n");
 		scanf("%i", &num_test);
 
-		printf("Entrez le facteur multiplicatif du pas de la grille :\n");
+		printf("Entrez le facteur multiplicatif pour le pas de la grille :\n");
 		scanf("%f",&facteurPas);
 	}
 
@@ -805,25 +816,6 @@ void partie1()
 
 	double pas=calc_pas(n,pTab,facteurPas);
 	grille gr=calc_grille_dist(n,pTab,nTab,pas);
-	for(int i=gr.nl-1;i>=0;i--){
-		for(int j=0;j<gr.nc;j++){
-			if(gr(i,j)==numeric_limits<double>::infinity()){
-				std::cout<<"  ";
-			}
-			else if(gr(i,j)==0){
-				std::cout<<" 0";
-			}
-			else if(gr(i,j)>=0){
-				std::cout<<" +";
-			}
-			else{
-				std::cout<<" -";
-			}
-
-			//std::cout<<gr(i,j)<<" ";
-		}
-		std::cout<<std::endl;
-	}
 
 	vPoint E1,E2;
 	gr.calc_iso_courbe(0,E1,E2);
@@ -865,7 +857,7 @@ void partie1()
 
 
 
-void partie2_shell(int num_test,float facteurPas,float facteurRay,const char * fic_sortie)
+void partie2_shell(int num_test,float facteurBruit,float facteurPas,float facteurRay,const char * fic_sortie)
 {
 	// création du jeu de données
 	vPoint P ,NP;
@@ -922,12 +914,17 @@ void partie2_shell(int num_test,float facteurPas,float facteurRay,const char * f
 		}
 	}
 
+	double dmin, dmax;
+	ecart_min_max(P, dmin, dmax);
+	bruiter(P,2*facteurBruit*dmin);
+
 	int n=P.size();
 	Point pTab[n];
 	Point nTab[n];
 	for(int i=0;i<n;i++){
 		pTab[i]=P[i];
 	}
+
 
 	double pas=calc_pas(n,pTab,facteurPas);
 	normales(n,pTab,nTab,pas*facteurRay);
@@ -941,12 +938,6 @@ void partie2_shell(int num_test,float facteurPas,float facteurRay,const char * f
 	std::string filename(fic_sortie);
 	filename+=".fig";
 	XFIG_open(filename.c_str());
-
-	// tracé des n points, chaque point sur la forme
-	// d'un cercle	rouge de rayon dmin/3, d'épaisseur 2,
-	// les points sont tracés  à la profondeur 49
-	double dmin, dmax;
-	ecart_min_max(P, dmin, dmax);
 
 	XFIG_thickness=2;
 	XFIG_depth = 49;
@@ -974,8 +965,9 @@ void partie2_shell(int num_test,float facteurPas,float facteurRay,const char * f
 
 void partie2()
 {
-	float facteurPas;
+	float facteurPas=1;
 	float facteurRay;
+	float facteurBruit;
 
 	printf("Création d'un ensemble de points et normales orientées\n");
 	printf("et export aux formats EPS, JPG, GIF\n");
@@ -989,8 +981,11 @@ void partie2()
 		printf("3 : points sur une courbe de subdivision fermée  \n");
 		scanf("%i", &num_test);
 
-		printf("Entrez le facteur multiplicatif du pas :\n");
-		scanf("%f",&facteurPas);
+		printf("Entrez le facteur du bruit :\n");
+		scanf("%f",&facteurBruit);
+
+// 		printf("Entrez le facteur multiplicatif du pas :\n");
+// 		scanf("%f",&facteurPas);
 
 		printf("Entrez le facteur multiplicatif rayon r :\n");
 		scanf("%f",&facteurRay);
@@ -1051,6 +1046,10 @@ void partie2()
 		}
 	}
 
+	double dmin, dmax;
+	ecart_min_max(P, dmin, dmax);
+	bruiter(P,2*facteurBruit*dmin);
+
 	int n=P.size();
 	Point pTab[n];
 	Point nTab[n];
@@ -1069,14 +1068,6 @@ void partie2()
 	// création du fichier FIG
 	printf("Création du fichier partie2.fig\n");
 	XFIG_open("partie2.fig");
-
-	// tracé des n points, chaque point sur la forme
-	// d'un cercle	rouge de rayon dmin/3, d'épaisseur 2,
-	// les points sont tracés  à la profondeur 49
-	double dmin, dmax;
-	ecart_min_max(P, dmin, dmax);
-	printf("dmin = %f\n", dmin);
-	printf("dmax = %f\n", dmax);
 
 	XFIG_thickness=2;
 	XFIG_depth = 49;
@@ -1106,23 +1097,36 @@ void partie2()
 // PROGRAMME PRINCIPAL
 int main(int argc, char *argv[])
 {
-	if(argc==5){
-		float facteurPas;
-		float facteurRay;
-		sscanf(argv[2],"%f",&facteurPas);
-		sscanf(argv[3],"%f",&facteurRay);
+// 	if(argc==6){
+// 		float facteurPas;
+// 		float facteurRay;
+// 		float facteurBruit;
+// 		sscanf(argv[2],"%f",&facteurBruit);
+// 		sscanf(argv[3],"%f",&facteurPas);
+// 		sscanf(argv[4],"%f",&facteurRay);
 
-		partie2_shell(atoi(argv[1]),facteurPas,facteurRay,argv[4]);
+// 		partie2_shell(atoi(argv[1]),facteurBruit,facteurPas,facteurRay,argv[5]);
+// 	}
+// 	else if(argc==4){
+// 		float facteurPas;
+// 		sscanf(argv[2],"%f",&facteurPas);
+
+// 		partie1_shell(atoi(argv[1]),facteurPas,argv[3]);
+// 	}
+
+
+// POUR L'UTILISATEUR
+	int choix;
+	do{
+		std::cout<<"Entrez 1 pour la partie 1 ou 2 pour la partie 2"<<std::endl;
+		cin>>choix;
 	}
-	else if(argc==4){
-		float facteurPas;
-		sscanf(argv[2],"%f",&facteurPas);
+	while(choix!=1 && choix!=2);
 
-		partie1_shell(atoi(argv[1]),facteurPas,argv[3]);
-	}
-
-	//partie1();
-	//partie2();
+	if(choix==1)
+		partie1();
+	else
+		partie2();
 	return 0;
 }
 
