@@ -48,6 +48,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <string>
+#include <iostream>
 ///////////////////////////////////////////////////////////////////////////////
 // lecture d'un fichier de nS points
 // Entrée : nom_f = le nom du fichier à créer
@@ -402,7 +404,7 @@ void test_visualisation_jeu_donnees()
 }
 
 
-void saisir(char* nom_f,Point * & S,Point * & NS,ULONG & nS,double & r)
+void saisir(const char* nom_f,Point * & S,Point * & NS,ULONG & nS,double & r)
 {
 	// ouverture du fichier
 	FILE *f = fopen(nom_f,"r");
@@ -430,30 +432,30 @@ void saisir(char* nom_f,Point * & S,Point * & NS,ULONG & nS,double & r)
 			return;
 		}
 	}
+
+	std::cout<<"le pas dedans "<<r<<std::endl;
 }
 
-void bruiter(int n,Point * pts,double amplitude){
-	for(int i=0;i<n;i++){
-		pts[i].x+=(double)rand()/RAND_MAX*amplitude-amplitude/2.0;
-		pts[i].y+=(double)rand()/RAND_MAX*amplitude-amplitude/2.0;
-		pts[i].z+=(double)rand()/RAND_MAX*amplitude-amplitude/2.0;
-	}
-}
-
-void makeSurf(Point * S,Point * & NS,ULONG nS,double r,
+void makeSurf(Point * S,Point * & NS,ULONG nS,double pas,double r,
               Point * & pts,ULONG & npts,Triangle * & Trs,ULONG & nT){
 
+	std::cout<<"calcul des normales"<<std::endl;
 	if(NS==NULL){
 		NS=new Point[nS];
 		normales(nS,S,NS,r);
 	}
 
-	grille gr=calc_grille_dist(nS,S,NS);
-	gr(2,0,0)=gr(2,0,0);
+	std::cout<<"calcul de la grille des distances signées"<<std::endl;
+
+	grille gr=calc_grille_dist(nS,S,NS,pas);
+
+	std::cout<<"calcul de la surface iso-valeur"<<std::endl;
 
 	std::list<Triangle> T;
 	std::list<Point> SS;
 	gr.calc_iso_surf(0,T,SS);
+
+	std::cout<<"fin"<<std::endl;
 
 	nT=T.size();
 	Trs=new Triangle[nT];
@@ -472,6 +474,15 @@ void makeSurf(Point * S,Point * & NS,ULONG nS,double r,
 	}
 }
 
+// bruitage des points
+void bruiter(int n,Point * pts,double amplitude){
+	for(int i=0;i<n;i++){
+		pts[i].x+=(double)rand()/RAND_MAX*amplitude-amplitude/2.0;
+		pts[i].y+=(double)rand()/RAND_MAX*amplitude-amplitude/2.0;
+		pts[i].z+=(double)rand()/RAND_MAX*amplitude-amplitude/2.0;
+	}
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // PROGRAMME PRINCIPAL
 int main(int argc, char *argv[])
@@ -481,15 +492,39 @@ int main(int argc, char *argv[])
 	Point * pts=NULL;
 	Triangle * Trs=NULL;
 	ULONG nS,nSS,nT;
-	double r;
-	saisir(argv[1],S,NS,nS,r);
+	double pas,r;
+	double facteurBruit,facteurRay;
+	bool traceNormales=false;
 
-	makeSurf(S,NS,nS,r,pts,nSS,Trs,nT);
+	std::string file;
+	std::cout<<"Entrez le nom du jeu de donnees"<<std::endl;
+	cin>>file;
 
-	GEOMVIEW_open("test_isosurf.list");
+	std::cout<<"========"<<file.c_str()<<std::endl;
 
-	// fichiers des points : en rouge, d'épaisseur 10
-	GEOMVIEW_points(S, nS, Couleur(1.0,0.0,0.0), 10);
+	saisir(file.c_str(),S,NS,nS,pas);
+	pas*=1.1;
+
+	if(NS==NULL){
+		traceNormales=true;
+
+		printf("Entrez le facteur du bruit :\n");
+		scanf("%lf",&facteurBruit);
+
+		printf("Entrez le facteur multiplicatif rayon r :\n");
+		scanf("%lf",&facteurRay);
+
+		std::cout<<"facteurRay "<<facteurRay<<std::endl;
+
+		r=facteurRay*pas;
+
+		if(facteurBruit!=0)
+			bruiter(nS,S,facteurBruit);
+	}
+
+	makeSurf(S,NS,nS,pas,r,pts,nSS,Trs,nT);
+
+	GEOMVIEW_open("isosurf.list");
 
 // 	Point S2[gr.nl*gr.nc*gr.nt];
 // 	int iS2=0;
@@ -505,87 +540,23 @@ int main(int argc, char *argv[])
 
 	//GEOMVIEW_points(S2, gr.nl*gr.nc*gr.nt, Couleur(1.0,0.0,0.0), 10);
 
-	// fichiers des normales : en noir, épaisseur 2, longueur 0.3
-	GEOMVIEW_points_vects(S, NS, nS, Couleur(0.0,0.0,0.0), 2, 0.3);
-
 	GEOMVIEW_triangulation(pts, nSS, Trs, nT,
 	  Couleur(1.0,0.7,0.9), Couleur(0.0,0.0,0.7));
 
 	GEOMVIEW_close();
 
+	if(traceNormales){
+		GEOMVIEW_open("normales.list");
 
+		// fichiers des points : en rouge, d'épaisseur 10
+		GEOMVIEW_points(S, nS, Couleur(1.0,0.0,0.0), 10);
 
+		// fichiers des normales : en noir, épaisseur 2, longueur 0.3
+		GEOMVIEW_points_vects(S, NS, nS, Couleur(0.0,0.0,0.0), 2, 0.3);
 
+		GEOMVIEW_close();
+	}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// 	int num_test=1;
-// 	if (argc>=2)
-// 	{
-// 		sscanf(argv[1],"%i",&num_test);
-// 	}
-// 	fprintf(stdout, "TEST DES LIBRAIRIES lib_base3 ET geomview - test %d\n\n",
-// 	  num_test);
-
-// 	switch(num_test)
-// 	{
-// 		case 1 :
-// 		{
-// 			test_elements_propres_min_mat_sym();
-// 			break;
-// 		}
-// 		case 2 :
-// 		{
-// 			test_trace_points_normales_orientees();
-// 			break;
-// 		}
-// 		case 3 :
-// 		{
-// 			test_graphe_et_arbre_couvrant_minimal();
-// 			break;
-// 		}
-//  		case 4 :
-// 		{
-// 			test_objet_composite();
-// 			break;
-// 		}
-//  		case 5 :
-// 		{
-// 			test_visualisation_jeu_donnees();
-// 			break;
-// 		}
-// 		default :
-// 		{
-// 			printf("num_test incorrect\n");
-// 		}
-//  	}
-// 	return 0;
+	return 0;
 }
 

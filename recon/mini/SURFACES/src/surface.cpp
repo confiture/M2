@@ -1,7 +1,6 @@
 #include "surface.hpp"
 
-grille calc_grille_dist(ULONG n,Point * pts,Point * normales){
-	double pas=calc_pas(n,pts);
+grille calc_grille_dist(ULONG n,Point * pts,Point * normales,double pas){
 	double xmin,xmax,ymin,ymax,zmin,zmax;
 
 	boite_englobante(pts,n,xmin,xmax,ymin,ymax,zmin,zmax);
@@ -70,7 +69,7 @@ grille calc_grille_dist(ULONG n,Point * pts,Point * normales){
 					               indj*pas+jg*pas+ymin,
 					               indk*pas+kg*pas+zmin);
 
-					double d=norm(ptGrille-pts[i]);
+					double d=distance_point2(ptGrille,pts[i]);
 
 					if(d<grDist[indi+ig][indj+jg][indk+kg])grDist[indi+ig][indj+jg][indk+kg]=d;
 				}
@@ -115,7 +114,7 @@ grille calc_grille_dist(ULONG n,Point * pts,Point * normales){
 					               indj*pas+jg*pas+ymin,
 					               indk*pas+kg*pas+zmin);
 
-					double d=norm(ptGrille-pts[i]);
+					double d=distance_point2(ptGrille,pts[i]);
 
 					if(d<=grDist[indi+ig][indj+jg][indk+kg])grDistSig(indi+ig,indj+jg,indk+kg)=dot(ptGrille-pts[i],normales[i])/dot(normales[i],normales[i]);
 				}
@@ -162,7 +161,7 @@ void grille::calc_iso_surf(double v,std::list<Triangle> & T,std::list<Point> & S
 				/*   | /          | /          /                    */
 				/*   |/           |/          /                     */
 				/*   2------------1          x                      */
-				p[0]=Point4(i    *pas+xmin,(j+1)*pas+ymin,k*pas+zmin,(*this)(i  ,j+1,k));
+				p[0]=Point4(i    *pas+xmin,(j+1)*pas+ymin,k*pas+zmin,(*this)(i  ,j+1,k));//la 4eme dimension des points est valeur de la grille au point courant
 				p[1]=Point4((i+1)*pas+xmin,(j+1)*pas+ymin,k*pas+zmin,(*this)(i+1,j+1,k));
 				p[2]=Point4((i+1)*pas+xmin,j    *pas+ymin,k*pas+zmin,(*this)(i+1,j  ,k));
 				p[3]=Point4(i    *pas+xmin,j    *pas+ymin,k*pas+zmin,(*this)(i  ,j  ,k));
@@ -172,15 +171,15 @@ void grille::calc_iso_surf(double v,std::list<Triangle> & T,std::list<Point> & S
 				p[6]=Point4((i+1)*pas+xmin,j    *pas+ymin,(k+1)*pas+zmin,(*this)(i+1,j  ,k+1));
 				p[7]=Point4(i    *pas+xmin,j    *pas+ymin,(k+1)*pas+zmin,(*this)(i  ,j  ,k+1));
 
-
+				// on fabrique un tableau de 6 tetraedres en dimension 4 qui décompose la maille courante
 				Tetraedre4 trs[6];
 				{
 					int s;
-					s=0;
+					s=0;//on teste si l'hyperplan w=v intersecte la maille courante
 					for (int is=0; is<8; is++)
 						s+=p[is].w<v;
 
-					if (s>0 && s<8)
+					if (s>0 && s<8)// si c'est le cas, on décompose la maille courante en 6 tétraèdres
 					{
 						trs[0].p[0]=p[2];
 						trs[0].p[1]=p[1];
@@ -212,26 +211,34 @@ void grille::calc_iso_surf(double v,std::list<Triangle> & T,std::list<Point> & S
 						trs[5].p[2]=p[1];
 						trs[5].p[3]=p[0];
 
+						// on parcourt tous les tetraedres pour calculer leur intersection
+						// avec l'hyperplan w=v
 						for(int iTrs=0;iTrs<6;iTrs++){
+						// on vérifie qu'aucun des points ne vaut l'infini, auquel cas cela signifie
+							// qu'il n'a jamais été initialisé
 							if(trs[iTrs].p[0].w<numeric_limits<double>::infinity() &&
 							   trs[iTrs].p[1].w<numeric_limits<double>::infinity() &&
 							   trs[iTrs].p[2].w<numeric_limits<double>::infinity() &&
 							   trs[iTrs].p[3].w<numeric_limits<double>::infinity())
 							{
 
-								s=0;
+
+								s=0;// on teste si le tétraèdre courant trs[iTrs] est intersecté par l'hyperplan w=v
 								for(int is=0;is<4;is++)
 									s+=trs[iTrs].p[is].w<v;
 
-								if(s>0 && s<4){//il y a donc intersection avec l'isosurface
+								if(s>0 && s<4){//il y a alors intersection avec l'hyperplan w=v
 									Point4 pts[4];
 									int length;
 
+									//on calcule l'intersection du tétraèdre trs[iTrs] avec l'hyperplan w=v
 									intersectionTetra4(trs[iTrs],v,pts,length);
 
+									// on ajoute les points intersectés a la liste des sommets S
 									for(int is=0;is<3;is++)
 										S.push_back(Point(pts[is].x,pts[is].y,pts[is].z));
 
+									// on fabrique le triangle qui est l'intersection de l'hyperplan avec le tétraèdre courant
 									Triangle tri3d;
 									tri3d.s1=numSommet;
 									tri3d.s2=numSommet+1;
@@ -239,6 +246,8 @@ void grille::calc_iso_surf(double v,std::list<Triangle> & T,std::list<Point> & S
 
 									T.push_back(tri3d);
 
+									//s'il y a 4 points intersectés dans le tétraèdre, on fait alors tous les triangles possibles
+									// avec ces 4 points qu'on ajoute à la liste des triangles
 									if(length==4){
 										S.push_back(Point(pts[3].x,pts[3].y,pts[3].z));
 
@@ -271,7 +280,7 @@ void grille::calc_iso_surf(double v,std::list<Triangle> & T,std::list<Point> & S
 }
 
 /**
- *Retourne l'intersection du  avec le plan z=v.
+ *Retourne l'intersection du  avec l'hyperplan plan w=v.
  *
  */
 void intersectionTetra4(Tetraedre4 te,double v,Point4* tr,int & taille){
@@ -288,31 +297,23 @@ void intersectionTetra4(Tetraedre4 te,double v,Point4* tr,int & taille){
 }
 
 
+
 void normales(int n,Point * pts,Point * normales,double r){
-	double** dist=new double*[n];
-	for(int i=0;i<n;i++)
-		dist[i]=new double[n];
+	double r2=r*r;
 
 	// B : barycentre et v vecteur normale au plan
 	Point B,v;
 
-	// calcul des distances entre les points de pts
-	for(int i=0;i<n;i++){
-		dist[i][i]=0;
-		for(int j=i+1;j<n;j++){
-				dist[i][j]=distance_point(pts[i],pts[j]);
-				dist[j][i]=distance_point(pts[i],pts[j]);
-		}
-	}
-
+	std::cout<<"calcul normales non orientees"<<std::endl;
 	// on parcourt tous les points
 	for(int i=0;i<n;i++){
 		std::list<Point> voisinage; // voisinage de pts[i], c'est à dire tous les points pts[j] tels
 		                            // que distance(pts[i],pts[j])<=r
 		for(int j=0;j<n;j++){
-			if(i!=j && dist[i][j]<=r){
+			if(i!=j && distance_point2(pts[i],pts[j])<=r2){
 				voisinage.push_back(pts[j]);
 			}
+
 		}
 
 		// evaluation de la normale grace à la fonction qui calcule le plan
@@ -325,16 +326,16 @@ void normales(int n,Point * pts,Point * normales,double r){
 	int nA = 0;
 	for (int i=0; i<n; i++)
 		for (int j=i+1; j<n; j++)
-			if (dist[i][j]<=r)
+			if (distance_point2(pts[i],pts[j])<=r2)
 				nA ++;
 
 	// On fabrique le graphe G de l'algorithme
-	Arete aretes[nA];
-
+	Arete* aretes=new Arete[nA];
+	std::cout<<"calcul des aretes"<<std::endl;
 	int k=0;
 	for(int i=0;i<n-1;i++){
 		for(int j=i+1;j<n;j++){
-			if(dist[i][j]<=r){
+			if(distance_point2(pts[i],pts[j])<=r2){
 				Arete ac;
 				ac.v=1-ABS(dot(pts[i],pts[j]));
 				ac.s1=i;
@@ -346,10 +347,7 @@ void normales(int n,Point * pts,Point * normales,double r){
 		}
 	}
 
-	for(int i=0;i<n;i++)
-		delete[] dist[i];
-	delete[] dist;
-
+	std::cout<<"tri des aretes"<<std::endl;
 	Arete* begin=&aretes[0];
 	Arete* end=&aretes[nA-1];
 	end++;
@@ -357,6 +355,7 @@ void normales(int n,Point * pts,Point * normales,double r){
 	// on ordonne les aretes selon leur cout
 	sort(begin,end);
 
+	std::cout<<"calcul ACM"<<std::endl;
 	Graphe G = {aretes,nA,n};
 	Arbre ACM = calcule_ACM(G);// on calcule l'arbre couvrant minimal
 
@@ -365,7 +364,10 @@ void normales(int n,Point * pts,Point * normales,double r){
 		visite[i]=false;
 
 	// on oriente les normales
+	std::cout<<"orientation normales"<<std::endl;
 	oriente_normales(ACM,0,normales,visite);
+
+	delete[] aretes;
 }
 
 void oriente_normales(Arbre ACM,int numNoeud,Point * normales,bool * visite){

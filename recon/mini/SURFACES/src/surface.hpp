@@ -9,7 +9,7 @@
 #include <algorithm>
 
 /**
- *Retourne le pas de la grille max_i(min_(j!=i)(P_i,P_j)) * facteur.
+ *Retourne le pas de la grille max_i(min_(j!=i)(P_i,P_j)) * 2.
  */
 inline double calc_pas(int n,Point * pts){
 	int indMinDist;
@@ -144,13 +144,22 @@ Point4 operator*(Point4 A, double r);
 // calcul de A/r avec r de type double et A de type Point4
 Point4 operator/(Point4 A, double r);
 
-grille calc_grille_dist(ULONG n,Point * pts,Point * normales);
+/**
+ *Retourne la grille régulière des distances signées.
+ *n   : nombre de points
+ *pts : les points
+ *normales : les normales aux points
+ *pas : pas de la grille régulière
+ */
+grille calc_grille_dist(ULONG n,Point * pts,Point * normales,double pas);
 
 /**
  *Retourne l'intersection du segment [p1,p2] avec le plan w=v.
  *
  */
 inline Point4 intersection(const Point4& p1,const Point4& p2,double v){
+	if(p1.w==v && p2.w==v)return p1;
+
 	double a = (v-p2.w)/(p1.w-p2.w);
 	return a*p1+(1-a)*p2;
 }

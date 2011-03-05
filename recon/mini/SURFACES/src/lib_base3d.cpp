@@ -85,9 +85,6 @@ double distance_point(Point A, Point B)
 	return norm(A-B);
 }
 
-
-
-
 // calcule la boite englobante des n points du tableau P
 // Entree : P = tableay de Point
 //          n = nombre de points

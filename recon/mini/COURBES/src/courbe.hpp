@@ -123,6 +123,10 @@ Point3 operator/(Point3 A, double r);
 
 /**
  *Retourne la grille régulière des distances signées.
+ *n   : nombre de points
+ *pts : les points
+ *normales : les normales aux points
+ *pas : pas de la grille régulière
  */
 grille calc_grille_dist(int n,Point * pts,Point * normales,double pas);
 

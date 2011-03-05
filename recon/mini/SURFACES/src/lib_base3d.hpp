@@ -137,6 +137,13 @@ double norm(Point A) ;
 // calcule la distance entre A et B
 double distance_point(Point A, Point B) ;
 
+// calcule la distance entre A et B au carre
+inline double distance_point2(const Point & A, const Point & B)
+{
+	return (A.x -B.x)*(A.x -B.x) + (A.y-B.y)*(A.y-B.y)+ (A.z-B.z)*(A.z-B.z);
+}
+
+
 // calcule la boite englobante des n points du tableau P
 void boite_englobante(Point *P, ULONG n,
    double &Pxmin, double &Pxmax,
