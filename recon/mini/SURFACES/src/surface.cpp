@@ -337,7 +337,7 @@ void normales(int n,Point * pts,Point * normales,double r){
 		for(int j=i+1;j<n;j++){
 			if(distance_point2(pts[i],pts[j])<=r2){
 				Arete ac;
-				ac.v=1-ABS(dot(pts[i],pts[j]));
+				ac.v=1-ABS(dot(normales[i],normales[j]));
 				ac.s1=i;
 				ac.s2=j;
 
