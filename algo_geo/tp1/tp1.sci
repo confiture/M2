@@ -1,4 +1,4 @@
-// Cette fonction renvoie 1 si angle(Ox,OM)<angle(Ox,OP) ou angle(Ox,OM) = angle(Ox,OP) et norme(OM) <= norme(OP)
+// Cette fonction renvoie 1 si angle(Ox,OM)<angle(Ox,OP) ou angle(Ox,OM) = angle(Ox,OP) et norme(OM) <= norme(OP) test
 //				  renvoie 0 sinon.
 function [X]=ordre_pol(O,M,P)
 	// Construction de la matrice qui nous permet de déterminer l'ordre polaire
